@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'screens/login_screen.dart';
 import 'screens/manager/manager_shell.dart';
-import 'screens/officer/officer_home.dart';
+import 'screens/officer/officer_shell.dart';
 import 'services/notifier.dart';
 import 'services/session.dart';
 import 'services/tracking_service.dart';
@@ -67,7 +67,7 @@ class _TrackKaroAppState extends State<TrackKaroApp> {
           if (s.restoring) return const _Splash();
           if (!s.loggedIn) return const LoginScreen();
           final u = s.user!;
-          if (u.isOfficer) return OfficerHome(key: ValueKey('fo-${u.id}'));
+          if (u.isOfficer) return OfficerShell(key: ValueKey('fo-${u.id}'));
           return ManagerShell(key: ValueKey('bm-${u.id}'));
         },
       ),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../services/chat_store.dart';
 import '../../services/manager_store.dart';
 import '../../services/notifier.dart';
 import '../../services/session.dart';
 import '../../theme.dart';
+import '../chat/chat_list_screen.dart';
 import 'alerts_screen.dart';
 import 'assign_screen.dart';
 import 'live_map_screen.dart';
@@ -25,7 +27,7 @@ class _ManagerShellState extends State<ManagerShell>
   int _tab = 0;
   bool _paused = false;
 
-  static const _titles = ['Team', 'Live map', 'Assign tasks', 'Alerts', 'Reports'];
+  static const _titles = ['Team', 'Live map', 'Assign tasks', 'Alerts', 'Chat', 'Reports'];
 
   @override
   void initState() {
@@ -105,6 +107,19 @@ class _ManagerShellState extends State<ManagerShell>
                             : Colors.white)),
               ),
             ),
+          if (_tab == 4)
+            ListenableBuilder(
+              listenable: ChatStore.instance,
+              builder: (_, _) {
+                final unread = ChatStore.instance.unreadTotal;
+                return TextButton(
+                  onPressed: unread == 0 ? null : ChatStore.instance.markAllRead,
+                  child: Text('Mark all read',
+                      style: TextStyle(
+                          color: unread == 0 ? Colors.white38 : Colors.white)),
+                );
+              },
+            ),
           IconButton(
             tooltip: 'Log out',
             icon: const Icon(Icons.logout),
@@ -119,11 +134,12 @@ class _ManagerShellState extends State<ManagerShell>
           LiveMapScreen(),
           AssignScreen(),
           AlertsScreen(),
+          ChatListScreen(),
           ReportsScreen(),
         ],
       ),
       bottomNavigationBar: ListenableBuilder(
-        listenable: _store,
+        listenable: Listenable.merge([_store, ChatStore.instance]),
         builder: (_, _) => NavigationBar(
           selectedIndex: _tab,
           onDestinationSelected: (i) => setState(() => _tab = i),
@@ -152,6 +168,22 @@ class _ManagerShellState extends State<ManagerShell>
                   child: const Icon(Icons.notifications, color: kNavy),
                 ),
                 label: 'Alerts'),
+            NavigationDestination(
+                icon: Badge(
+                  isLabelVisible: ChatStore.instance.unreadTotal > 0,
+                  label: Text(ChatStore.instance.unreadTotal > 99
+                      ? '99+'
+                      : '${ChatStore.instance.unreadTotal}'),
+                  child: const Icon(Icons.chat_bubble_outline),
+                ),
+                selectedIcon: Badge(
+                  isLabelVisible: ChatStore.instance.unreadTotal > 0,
+                  label: Text(ChatStore.instance.unreadTotal > 99
+                      ? '99+'
+                      : '${ChatStore.instance.unreadTotal}'),
+                  child: const Icon(Icons.chat_bubble, color: kNavy),
+                ),
+                label: 'Chat'),
             const NavigationDestination(
                 icon: Icon(Icons.bar_chart_outlined),
                 selectedIcon: Icon(Icons.bar_chart, color: kNavy),

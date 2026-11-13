@@ -1,6 +1,6 @@
 <!--
 TRACK_KARO app shell - conventions for the CSS and JS authors
-- Views: <section class="view" id="view-NAME" data-view="NAME" hidden>. NAMES: dashboard (visible by default), live, replay, tasks, reports, alerts, customers, team, branches (admin), settings (admin).
+- Views: <section class="view" id="view-NAME" data-view="NAME" hidden>. NAMES: dashboard (visible by default), live, replay, tasks, reports, alerts, chat, customers, team, branches (admin), settings (admin).
 - Sidebar buttons: <button class="nav-item" data-view="NAME">. Role gating: data-roles="admin" (hide for everyone else). Not hidden by default in HTML; JS removes/hides them.
 - ids are kebab-case (exception: stat cards use stat-<api_field> with underscores, e.g. stat-officers_total). Forms: form-*. Buttons that trigger actions: btn-*. Modals: <dialog class="modal" id="modal-*"> with a [data-close] button.
 - Form controls: name = API field name, each with a <label for>. Hidden id inputs: name="id".
@@ -20,6 +20,7 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
   <link rel="icon" type="image/png" href="assets/logo.png">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/chat.css">
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <script type="module" src="js/app.js"></script>
 </head>
@@ -67,6 +68,22 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
   <symbol id="i-lunch" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></symbol>
   <symbol id="i-unexplained" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></symbol>
   <symbol id="i-customer" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></symbol>
+  <symbol id="i-paperclip" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></symbol>
+  <symbol id="i-emoji" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol>
+  <symbol id="i-megaphone" viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h2l3 5 3-2-2-3h2l8 4V4L5 10H4a1 1 0 0 0-1 1z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></symbol>
+  <symbol id="i-reply" viewBox="0 0 24 24"><path d="M9 17l-5-5 5-5"/><path d="M4 12h11a5 5 0 0 1 5 5v2"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="M1 6l7-4 8 4 7-4v16l-7 4-8-4-7 4V6z"/><path d="M8 2v16M16 6v16"/></symbol>
 </svg>
 
 <div class="app-shell">
@@ -100,6 +117,10 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
       <button type="button" class="nav-item" data-view="alerts">
         <svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg><span class="nav-label">Alerts</span>
         <span id="nav-alerts-badge" class="badge" hidden>0</span>
+      </button>
+      <button type="button" class="nav-item" data-view="chat">
+        <svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg><span class="nav-label">Chat</span>
+        <span id="nav-chat-badge" class="badge" hidden>0</span>
       </button>
       <button type="button" class="nav-item" data-view="customers">
         <svg class="icon" aria-hidden="true"><use href="#i-customers"/></svg><span class="nav-label">Customers</span>
@@ -754,6 +775,118 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
         </section>
       </section>
 
+      <!-- ============ CHAT ============ -->
+      <section class="view view-chat" id="view-chat" data-view="chat" aria-labelledby="h-chat" hidden>
+        <h2 id="h-chat" class="visually-hidden">Chat</h2>
+
+        <div class="chat" id="chat" data-theme="light">
+          <aside class="chat-side" aria-label="Conversations">
+            <div class="chat-side__head">
+              <div>
+                <h3>Chats</h3>
+                <p><span id="chat-unread-total">All caught up</span> &middot; preview build</p>
+              </div>
+              <div class="chat-side__actions">
+                <button type="button" id="btn-chat-theme" class="icon-btn" aria-label="Switch to dark chat" title="Toggle chat theme">
+                  <svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg>
+                </button>
+                <div class="chat-people">
+                  <button type="button" id="btn-chat-new" class="icon-btn" aria-label="New chat" aria-expanded="false" aria-controls="chat-people">
+                    <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+                  </button>
+                  <ul id="chat-people" class="chat-people__list" hidden></ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="chat-search">
+              <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+              <label class="visually-hidden" for="chat-search">Search chats</label>
+              <input type="search" id="chat-search" placeholder="Search chats" autocomplete="off">
+            </div>
+
+            <ul id="chat-list" class="chat-list" aria-label="Chats"></ul>
+            <p id="chat-list-empty" class="empty-state" hidden>No chats match your search.</p>
+          </aside>
+
+          <section class="chat-thread" id="chat-thread" aria-label="Conversation">
+            <header class="chat-thread__head">
+              <button type="button" id="btn-chat-back" class="icon-btn chat-back" aria-label="Back to chats">
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg>
+              </button>
+              <span id="chat-head-avatar"></span>
+              <div class="chat-thread__who">
+                <h3 id="chat-title">AI Assistant</h3>
+                <p id="chat-subtitle">Always available - preview mode</p>
+              </div>
+              <div class="chat-thread__actions">
+                <button type="button" id="btn-chat-info" class="icon-btn" aria-label="Conversation info" title="Conversation info">
+                  <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+                </button>
+              </div>
+            </header>
+
+            <div class="chat-thread__body">
+              <ul id="chat-messages" class="chat-messages" aria-live="polite" aria-relevant="additions"></ul>
+              <div id="chat-typing" class="chat-typing" hidden>
+                <div class="chat-typing__bubble" role="status" aria-label="typing">
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+            </div>
+
+            <div id="chat-reply" class="chat-reply" hidden>
+              <div class="chat-reply__body">
+                <strong id="chat-reply-author"></strong>
+                <span id="chat-reply-text"></span>
+              </div>
+              <button type="button" id="btn-chat-reply-close" class="chat-reply__close" aria-label="Cancel reply">&times;</button>
+            </div>
+
+            <div id="chat-emoji" class="chat-emoji" role="dialog" aria-label="Emoji picker" hidden></div>
+
+            <div id="chat-record" class="chat-record" hidden>
+              <span class="dot" aria-hidden="true"></span>
+              <span id="chat-record-time" class="chat-record__time">0:00</span>
+              <span class="chat-record__hint">Recording voice note</span>
+              <button type="button" id="btn-chat-record-cancel" class="btn btn-sm">Cancel</button>
+              <button type="button" id="btn-chat-record-send" class="btn btn-sm btn-primary">Send</button>
+            </div>
+
+            <form id="chat-form" class="chat-composer" autocomplete="off">
+              <input type="file" id="chat-file" hidden>
+              <div class="chat-attach-wrap">
+                <button type="button" id="btn-chat-attach" class="icon-btn" aria-label="Attach" aria-expanded="false" aria-controls="chat-attach">
+                  <svg class="icon" aria-hidden="true"><use href="#i-paperclip"/></svg>
+                </button>
+                <div id="chat-attach" class="chat-attach" hidden>
+                  <button type="button" data-attach="photo"><svg class="icon" aria-hidden="true"><use href="#i-image"/></svg>Photo</button>
+                  <button type="button" data-attach="file"><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>Document</button>
+                  <button type="button" data-attach="location"><svg class="icon" aria-hidden="true"><use href="#i-map"/></svg>Location</button>
+                </div>
+              </div>
+              <label class="visually-hidden" for="chat-input">Message</label>
+              <textarea id="chat-input" rows="1" placeholder="Message"></textarea>
+              <button type="button" id="btn-chat-emoji" class="icon-btn" aria-label="Emoji" aria-expanded="false" aria-controls="chat-emoji">
+                <svg class="icon" aria-hidden="true"><use href="#i-emoji"/></svg>
+              </button>
+              <button type="button" id="btn-chat-mic" class="icon-btn" aria-label="Record a voice note">
+                <svg class="icon" aria-hidden="true"><use href="#i-mic"/></svg>
+              </button>
+              <button type="submit" id="btn-chat-send" class="icon-btn chat-send" aria-label="Send message" hidden>
+                <svg class="icon" aria-hidden="true"><use href="#i-send"/></svg>
+              </button>
+            </form>
+
+            <p id="chat-readonly" class="chat-readonly" hidden>
+              <svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>Only admins can post in this channel
+            </p>
+          </section>
+
+          <div id="chat-quick-react" class="chat-quick-react" role="menu" aria-label="React" hidden></div>
+        </div>
+      </section>
+
     </main>
   </div>
 </div>
@@ -909,6 +1042,19 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
       <button type="submit" id="btn-save-branch" class="btn btn-primary">Save</button>
     </footer>
   </form>
+</dialog>
+
+<dialog class="modal modal-sm" id="modal-chat-info" aria-labelledby="chat-info-title">
+  <div class="modal-form">
+    <header class="modal-header">
+      <h2 id="chat-info-title">Conversation</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body" id="chat-info-body"></div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Close</button>
+    </footer>
+  </div>
 </dialog>
 
 <dialog class="modal modal-sm" id="modal-confirm" aria-labelledby="confirm-title" aria-describedby="confirm-message">
@@ -1137,6 +1283,57 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
     <button type="button" class="btn btn-sm" data-action="read">
       <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Mark read</span>
     </button>
+  </li>
+</template>
+
+<!-- Chat: one conversation row -->
+<template id="tpl-chat-row">
+  <li class="chat-row" tabindex="0" role="button" data-conversation-id="">
+    <span class="chat-avatar" data-avatar>
+      <span class="chat-avatar__text"></span>
+      <span class="chat-avatar__dot" hidden></span>
+    </span>
+    <div class="chat-row__main">
+      <div class="chat-row__top">
+        <span class="chat-row__name" data-field="name"></span>
+        <span class="chat-row__ai" hidden>AI</span>
+        <span class="chat-row__time" data-field="time"></span>
+      </div>
+      <div class="chat-row__bottom">
+        <span class="chat-row__preview" data-field="preview"></span>
+        <span class="chat-row__spark" hidden><svg class="icon" aria-hidden="true"><use href="#i-sparkle"/></svg></span>
+        <span class="chat-row__count" data-count hidden>0</span>
+      </div>
+    </div>
+  </li>
+</template>
+
+<!-- Chat: one message bubble -->
+<template id="tpl-chat-msg">
+  <li class="chat-msg" data-message-id="">
+    <span class="chat-msg__avatar-slot" data-avatar-slot></span>
+    <div class="chat-msg__col">
+      <div class="chat-msg__tools">
+        <button type="button" class="chat-msg__tool" data-msg-action="react" aria-label="React">
+          <svg class="icon" aria-hidden="true"><use href="#i-emoji"/></svg>
+        </button>
+        <button type="button" class="chat-msg__tool" data-msg-action="reply" aria-label="Reply">
+          <svg class="icon" aria-hidden="true"><use href="#i-reply"/></svg>
+        </button>
+      </div>
+      <div class="chat-msg__bubble">
+        <p class="chat-msg__author" hidden></p>
+        <div class="chat-msg__quote" hidden>
+          <div class="chat-msg__quote-body"><strong></strong><span></span></div>
+        </div>
+        <div class="chat-msg__body"></div>
+        <div class="chat-msg__reactions"></div>
+        <div class="chat-msg__meta">
+          <time class="chat-msg__time"></time>
+          <span class="chat-msg__ticks" hidden></span>
+        </div>
+      </div>
+    </div>
   </li>
 </template>
 
