@@ -9,13 +9,14 @@ import live from './views/live.js';
 import replay from './views/replay.js';
 import tasks from './views/tasks.js';
 import reports from './views/reports.js';
+import audit from './views/audit.js';
 import alerts from './views/alerts.js';
 import customers from './views/customers.js';
 import team from './views/team.js';
 import branches from './views/branches.js';
 import settings from './views/settings.js';
 
-const VIEWS = { dashboard, live, replay, tasks, reports, alerts, customers, team, branches, settings };
+const VIEWS = { dashboard, live, replay, tasks, reports, audit, alerts, customers, team, branches, settings };
 const WEB_ROLES = ['admin', 'branch_manager'];
 const MOBILE_QUERY = window.matchMedia('(max-width: 900px)');
 

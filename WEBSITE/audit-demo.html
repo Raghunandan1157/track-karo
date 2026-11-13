@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Internal audit - UI preview</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<!--
+  Standalone preview of the Internal Audit module.
+
+  It reuses the real markup in app.html and the real view module
+  (js/views/audit.js), so nothing is duplicated. It only needs a static HTTP
+  server (ES modules + fetch do not run from file://):
+
+      cd WEBSITE && npm run dev   ->  http://localhost:3100/audit-demo.html
+
+  No database, no API and no login: the module's data lives in memory
+  (or in this browser's localStorage if you switch "Keep my changes" on).
+-->
+<body class="app-body">
+  <main class="content audit-preview-page" id="audit-demo-mount"></main>
+
+  <script type="module">
+    import { state } from './js/state.js';
+    import { initDialogs, initConfirm } from './js/ui.js';
+    import audit from './js/views/audit.js';
+
+    const html = await (await fetch('app.html')).text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+    const sprite = doc.querySelector('svg.sprite');
+    const view = doc.getElementById('view-audit');
+    const modals = ['modal-cycle', 'modal-finding', 'modal-finding-detail', 'modal-scorecard', 'modal-confirm']
+      .map((id) => doc.getElementById(id));
+    const templates = ['tpl-audit-cycle', 'tpl-audit-finding', 'tpl-audit-action', 'tpl-audit-evidence', 'tpl-audit-trail', 'tpl-audit-score']
+      .map((id) => doc.getElementById(id));
+
+    view.hidden = false;
+    document.getElementById('audit-demo-mount').append(sprite, view);
+    for (const el of [...modals, ...templates]) document.body.appendChild(el);
+
+    // A stand-in session so the view knows which role it is previewing.
+    state.user = { id: 1, name: 'Latha M', role: 'admin', branch_id: 1, branch_name: 'Mysuru Main' };
+
+    initDialogs();
+    initConfirm();
+    audit.init();
+    audit.show();
+  </script>
+</body>
+</html>

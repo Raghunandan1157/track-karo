@@ -67,6 +67,7 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
   <symbol id="i-lunch" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></symbol>
   <symbol id="i-unexplained" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></symbol>
   <symbol id="i-customer" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-audit" viewBox="0 0 24 24"><path d="M9 5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3"/><rect x="9" y="2" width="6" height="5" rx="1"/><path d="M8 13l3 3 5-5"/></symbol>
 </svg>
 
 <div class="app-shell">
@@ -96,6 +97,9 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
       </button>
       <button type="button" class="nav-item" data-view="reports">
         <svg class="icon" aria-hidden="true"><use href="#i-reports"/></svg><span class="nav-label">Daily Reports</span>
+      </button>
+      <button type="button" class="nav-item" data-view="audit">
+        <svg class="icon" aria-hidden="true"><use href="#i-audit"/></svg><span class="nav-label">Internal Audit</span>
       </button>
       <button type="button" class="nav-item" data-view="alerts">
         <svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg><span class="nav-label">Alerts</span>
@@ -533,7 +537,181 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
         </section>
       </section>
 
-      <!-- ============ 6. ALERTS ============ -->
+      <!-- ============ 6. INTERNAL AUDIT ============ -->
+      <section class="view" id="view-audit" data-view="audit" aria-labelledby="h-audit" hidden>
+        <h2 id="h-audit" class="visually-hidden">Internal audit</h2>
+
+        <div class="audit-demo-note" role="note">
+          <p class="audit-demo-text">
+            <strong>UI preview</strong> - demo data, nothing is sent to the server.
+            <span id="audit-demo-status">Changes are kept in memory and lost when you reload.</span>
+          </p>
+          <label class="check"><input type="checkbox" id="audit-persist"><span>Keep my changes in this browser</span></label>
+          <button type="button" id="btn-audit-reset" class="btn btn-sm">Reset demo data</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="audit-preview-role">Preview as</label>
+            <select id="audit-preview-role">
+              <option value="auditor">Auditor (full access)</option>
+              <option value="manager">Branch manager (respond)</option>
+            </select>
+          </div>
+          <div class="field field-inline">
+            <label for="audit-branch">Branch</label>
+            <select id="audit-branch"><option value="">All branches</option></select>
+          </div>
+          <div class="field field-inline">
+            <label for="audit-status">Status</label>
+            <select id="audit-status">
+              <option value="">All</option>
+              <option value="open">Open</option>
+              <option value="in_review">In review</option>
+              <option value="signed_off">Signed off</option>
+            </select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-audit-csv" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export CSV</span>
+          </button>
+          <button type="button" id="btn-audit-scorecard" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-reports"/></svg><span>Scorecard</span>
+          </button>
+          <button type="button" id="btn-audit-new" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>New audit</span>
+          </button>
+        </div>
+
+        <section class="card" aria-labelledby="h-audit-cycles">
+          <header class="card-header"><h3 id="h-audit-cycles">Audit cycles</h3></header>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Branch</th>
+                  <th scope="col">Period</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Auditor</th>
+                  <th scope="col">To close / total</th>
+                  <th scope="col">Score</th>
+                  <th scope="col">Grade</th>
+                  <th scope="col"><span class="visually-hidden">Open</span></th>
+                </tr>
+              </thead>
+              <tbody id="audit-cycles-table"></tbody>
+            </table>
+          </div>
+          <p id="audit-cycles-empty" class="empty-state" hidden>No audit cycles for this filter.</p>
+        </section>
+
+        <section class="card audit-cycle-panel" id="audit-cycle-panel" aria-label="Audit cycle detail" hidden>
+          <header class="card-header audit-head">
+            <div class="audit-head-main">
+              <h3 id="audit-cycle-title">Audit</h3>
+              <p class="audit-sub">
+                <span id="audit-cycle-status" class="chip"></span>
+                <span id="audit-cycle-auditor"></span>
+              </p>
+            </div>
+            <div class="audit-head-actions">
+              <button type="button" id="btn-audit-back" class="btn btn-sm">
+                <svg class="icon" aria-hidden="true"><use href="#i-chevron-left"/></svg><span>All cycles</span>
+              </button>
+              <button type="button" id="btn-audit-scan" class="btn btn-sm">
+                <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><span>Scan now</span>
+              </button>
+              <button type="button" id="btn-audit-add-finding" class="btn btn-sm">
+                <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Add finding</span>
+              </button>
+              <button type="button" id="btn-audit-signoff" class="btn btn-sm btn-primary">Sign off</button>
+            </div>
+          </header>
+
+          <div class="audit-summary">
+            <div class="audit-score-box">
+              <span class="audit-score-label">Score</span>
+              <strong id="audit-score">-</strong>
+              <span class="audit-grade" id="audit-grade">-</span>
+            </div>
+            <div class="audit-kpis">
+              <div class="audit-kpi"><span>Total</span><strong id="audit-sum-total">0</strong></div>
+              <div class="audit-kpi audit-kpi--open"><span>To close</span><strong id="audit-sum-open">0</strong></div>
+              <div class="audit-kpi audit-kpi--critical"><span>Critical</span><strong id="audit-sum-critical">0</strong></div>
+              <div class="audit-kpi audit-kpi--high"><span>High</span><strong id="audit-sum-high">0</strong></div>
+              <div class="audit-kpi audit-kpi--medium"><span>Medium</span><strong id="audit-sum-medium">0</strong></div>
+              <div class="audit-kpi audit-kpi--low"><span>Low</span><strong id="audit-sum-low">0</strong></div>
+            </div>
+          </div>
+          <p id="audit-cycle-notes" class="audit-notes"></p>
+
+          <div class="toolbar audit-filters">
+            <div class="field field-inline">
+              <label for="audit-area">Area</label>
+              <select id="audit-area">
+                <option value="">All areas</option>
+                <option value="tracking">Tracking</option>
+                <option value="visits">Visits</option>
+                <option value="distance_duty">Distance &amp; duty</option>
+                <option value="customer_data">Customer data</option>
+                <option value="alert_response">Alert response</option>
+              </select>
+            </div>
+            <div class="field field-inline">
+              <label for="audit-severity">Severity</label>
+              <select id="audit-severity">
+                <option value="">All</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+            <div class="field field-inline">
+              <label for="audit-finding-status">Status</label>
+              <select id="audit-finding-status">
+                <option value="">All</option>
+                <option value="open">Open</option>
+                <option value="responded">Responded</option>
+                <option value="resolved">Resolved</option>
+                <option value="accepted_risk">Accepted risk</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+            <div class="field field-inline field-grow">
+              <label for="audit-search">Search</label>
+              <input type="search" id="audit-search" placeholder="Finding, detail or officer" autocomplete="off">
+            </div>
+            <span class="audit-count"><strong id="audit-findings-count">0</strong> findings</span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Severity</th>
+                  <th scope="col">Area</th>
+                  <th scope="col">Officer</th>
+                  <th scope="col">Day</th>
+                  <th scope="col">Finding</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span class="visually-hidden">Open</span></th>
+                </tr>
+              </thead>
+              <tbody id="audit-findings-table"></tbody>
+            </table>
+          </div>
+          <p id="audit-findings-empty" class="empty-state" hidden>No findings match this filter.</p>
+
+          <details class="audit-trail" id="audit-trail-details">
+            <summary>Audit trail <span class="audit-count">(<span id="audit-trail-count">0</span> events)</span></summary>
+            <ul id="audit-trail" class="list" aria-label="Audit trail"></ul>
+            <p id="audit-trail-empty" class="empty-state" hidden>No activity has been recorded for this audit yet.</p>
+          </details>
+        </section>
+      </section>
+
+      <!-- ============ 7. ALERTS ============ -->
       <section class="view" id="view-alerts" data-view="alerts" aria-labelledby="h-alerts" hidden>
         <h2 id="h-alerts" class="visually-hidden">Alerts</h2>
 
@@ -562,7 +740,7 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
         </section>
       </section>
 
-      <!-- ============ 7. CUSTOMERS ============ -->
+      <!-- ============ 8. CUSTOMERS ============ -->
       <section class="view" id="view-customers" data-view="customers" aria-labelledby="h-customers" hidden>
         <h2 id="h-customers" class="visually-hidden">Customers</h2>
 
@@ -615,7 +793,7 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
         </section>
       </section>
 
-      <!-- ============ 8. TEAM ============ -->
+      <!-- ============ 9. TEAM ============ -->
       <section class="view" id="view-team" data-view="team" aria-labelledby="h-team" hidden>
         <h2 id="h-team" class="visually-hidden">Team</h2>
 
@@ -660,7 +838,7 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
         </section>
       </section>
 
-      <!-- ============ 9. BRANCHES ============ -->
+      <!-- ============ 10. BRANCHES ============ -->
       <section class="view" id="view-branches" data-view="branches" data-roles="admin" aria-labelledby="h-branches" hidden>
         <h2 id="h-branches" class="visually-hidden">Branches</h2>
 
@@ -692,7 +870,7 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
         </section>
       </section>
 
-      <!-- ============ 10. SETTINGS ============ -->
+      <!-- ============ 11. SETTINGS ============ -->
       <section class="view" id="view-settings" data-view="settings" data-roles="admin" aria-labelledby="h-settings" hidden>
         <h2 id="h-settings" class="visually-hidden">Settings</h2>
 
@@ -911,6 +1089,215 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
   </form>
 </dialog>
 
+<dialog class="modal" id="modal-cycle" aria-labelledby="modal-cycle-title">
+  <form id="form-cycle" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="modal-cycle-title">New audit cycle</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="field">
+        <label for="cycle-branch">Branch to audit</label>
+        <select id="cycle-branch" required><option value="">Select branch</option></select>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="cycle-start">Period start</label>
+          <input type="date" id="cycle-start" required>
+        </div>
+        <div class="field">
+          <label for="cycle-end">Period end</label>
+          <input type="date" id="cycle-end" required>
+        </div>
+      </div>
+      <p class="help">The automatic scan reads duty days, GPS points, geofence visits, alerts and customer records for this period. One branch can have only one cycle per period.</p>
+      <p id="cycle-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-save-cycle" class="btn btn-primary">Create and open</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal" id="modal-finding" aria-labelledby="modal-finding-title">
+  <form id="form-finding" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="modal-finding-title">Add a finding</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field">
+          <label for="finding-area">Area</label>
+          <select id="finding-area" required>
+            <option value="tracking">Tracking</option>
+            <option value="visits">Visits</option>
+            <option value="distance_duty">Distance &amp; duty</option>
+            <option value="customer_data">Customer data</option>
+            <option value="alert_response">Alert response</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="finding-severity">Severity</label>
+          <select id="finding-severity" required>
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="finding-officer">Officer</label>
+          <select id="finding-officer"><option value="">Branch-level (no officer)</option></select>
+        </div>
+        <div class="field">
+          <label for="finding-day">Day</label>
+          <input type="date" id="finding-day">
+        </div>
+      </div>
+      <div class="field">
+        <label for="finding-title">Short title</label>
+        <input type="text" id="finding-title" maxlength="200" required placeholder="e.g. Fuel claim did not match the recorded route">
+      </div>
+      <div class="field">
+        <label for="finding-detail">Detail</label>
+        <textarea id="finding-detail" rows="4" placeholder="What was found, and why it matters."></textarea>
+      </div>
+      <p id="finding-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-save-finding" class="btn btn-primary">Add finding</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal modal-md" id="modal-finding-detail" aria-labelledby="fd-title">
+  <div class="modal-form">
+    <header class="modal-header">
+      <h2 id="fd-title">Finding</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div id="fd-meta" class="audit-chips"></div>
+      <p id="fd-detail" class="audit-detail"></p>
+
+      <section class="audit-block" aria-labelledby="h-fd-response">
+        <h3 id="h-fd-response" class="audit-block-title">Branch response</h3>
+        <p id="fd-response-info" class="help"></p>
+        <label for="fd-response" class="visually-hidden">Branch response</label>
+        <textarea id="fd-response" rows="3" placeholder="What was done about this finding?"></textarea>
+        <div class="audit-inline">
+          <div id="fd-status-wrap" class="field field-inline">
+            <label for="fd-status">Status</label>
+            <select id="fd-status">
+              <option value="open">Open</option>
+              <option value="responded">Responded</option>
+              <option value="resolved">Resolved</option>
+              <option value="accepted_risk">Accepted risk</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="fd-delete" class="btn btn-danger">Delete</button>
+          <button type="button" id="btn-fd-save" class="btn btn-primary">Save</button>
+        </div>
+      </section>
+
+      <section class="audit-block" aria-labelledby="h-fd-actions">
+        <h3 id="h-fd-actions" class="audit-block-title">Corrective actions</h3>
+        <ul id="fd-actions" class="list"></ul>
+        <p id="fd-actions-empty" class="empty-state" hidden>No actions yet.</p>
+        <form id="form-add-action" class="audit-inline" novalidate>
+          <div class="field field-grow">
+            <label for="fd-action-title">Action</label>
+            <input type="text" id="fd-action-title" maxlength="200" placeholder="e.g. Collect a written explanation">
+          </div>
+          <div class="field field-inline">
+            <label for="fd-action-due">Due</label>
+            <input type="date" id="fd-action-due">
+          </div>
+          <button type="submit" class="btn">Add</button>
+        </form>
+      </section>
+
+      <section class="audit-block" aria-labelledby="h-fd-evidence">
+        <h3 id="h-fd-evidence" class="audit-block-title">Evidence</h3>
+        <ul id="fd-evidence" class="list"></ul>
+        <p id="fd-evidence-empty" class="empty-state" hidden>No evidence attached.</p>
+        <form id="form-add-evidence" class="audit-inline" novalidate>
+          <div class="field field-inline">
+            <label for="fd-evidence-kind">Type</label>
+            <select id="fd-evidence-kind">
+              <option value="note">Note</option>
+              <option value="link">Link</option>
+            </select>
+          </div>
+          <div class="field field-grow">
+            <label for="fd-evidence-url">URL</label>
+            <input type="url" id="fd-evidence-url" placeholder="https://...">
+          </div>
+          <div class="field field-grow">
+            <label for="fd-evidence-note">Note</label>
+            <input type="text" id="fd-evidence-note" maxlength="200">
+          </div>
+          <button type="submit" class="btn">Add</button>
+        </form>
+      </section>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Close</button>
+    </footer>
+  </div>
+</dialog>
+
+<dialog class="modal modal-wide" id="modal-scorecard" aria-labelledby="modal-scorecard-title">
+  <div class="modal-form">
+    <header class="modal-header">
+      <h2 id="modal-scorecard-title">Branch scorecard</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="toolbar">
+        <div class="field field-inline">
+          <label for="scorecard-from">From</label>
+          <input type="date" id="scorecard-from">
+        </div>
+        <div class="field field-inline">
+          <label for="scorecard-to">To</label>
+          <input type="date" id="scorecard-to">
+        </div>
+        <div class="toolbar-spacer"></div>
+        <button type="button" id="btn-scorecard-load" class="btn">Apply</button>
+      </div>
+      <div class="table-wrap">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th scope="col">Branch</th>
+              <th scope="col">Cycles</th>
+              <th scope="col">Signed off</th>
+              <th scope="col">Avg score</th>
+              <th scope="col">Min</th>
+              <th scope="col">Max</th>
+              <th scope="col">Critical</th>
+              <th scope="col">High</th>
+              <th scope="col">Medium</th>
+              <th scope="col">Low</th>
+            </tr>
+          </thead>
+          <tbody id="scorecard-table"></tbody>
+        </table>
+      </div>
+      <p id="scorecard-empty" class="empty-state" hidden>No audit cycles in this period.</p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Close</button>
+    </footer>
+  </div>
+</dialog>
+
 <dialog class="modal modal-sm" id="modal-confirm" aria-labelledby="confirm-title" aria-describedby="confirm-message">
   <div class="modal-form">
     <header class="modal-header">
@@ -1123,6 +1510,100 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
 <!-- Reports detail: one missed location (goes into [data-list="missed"]) -->
 <template id="tpl-report-missed">
   <li class="list-item"><span data-field="name"></span></li>
+</template>
+
+<!-- Audit: one cycle row -->
+<template id="tpl-audit-cycle">
+  <tr data-cycle-id="">
+    <td data-field="branch_name"></td>
+    <td data-field="period"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td data-field="auditor_name"></td>
+    <td data-field="findings"></td>
+    <td><strong data-field="score"></strong></td>
+    <td data-field="grade"></td>
+    <td>
+      <button type="button" class="icon-btn" data-action="open-cycle" aria-label="Open audit cycle">
+        <svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<!-- Audit: one finding row -->
+<template id="tpl-audit-finding">
+  <tr data-finding-id="">
+    <td><span class="chip" data-field="severity"></span></td>
+    <td><span class="chip" data-field="area"></span></td>
+    <td data-field="officer_name"></td>
+    <td data-field="day"></td>
+    <td data-field="title"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td>
+      <button type="button" class="icon-btn" data-action="open-finding" aria-label="Open finding">
+        <svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<!-- Audit: one corrective action -->
+<template id="tpl-audit-action">
+  <li class="list-item audit-line" data-action-id="">
+    <div class="list-item-main">
+      <p class="list-item-title" data-field="title"></p>
+      <p class="list-item-sub" data-field="meta"></p>
+    </div>
+    <span class="chip" data-field="status"></span>
+    <button type="button" class="btn btn-sm" data-action="toggle-action">Mark done</button>
+    <button type="button" class="icon-btn" data-action="delete-action" aria-label="Delete corrective action">
+      <svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>
+    </button>
+  </li>
+</template>
+
+<!-- Audit: one evidence item -->
+<template id="tpl-audit-evidence">
+  <li class="list-item audit-line" data-evidence-id="">
+    <div class="list-item-main">
+      <p class="list-item-title" data-field="text"></p>
+      <p class="list-item-sub"><span class="audit-tag" data-field="kind"></span><span data-field="meta"></span></p>
+    </div>
+    <a class="btn btn-sm btn-link" data-field="link" href="#" target="_blank" rel="noopener noreferrer">
+      <svg class="icon" aria-hidden="true"><use href="#i-external"/></svg><span>Open</span>
+    </a>
+    <button type="button" class="icon-btn" data-action="delete-evidence" aria-label="Remove evidence">
+      <svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>
+    </button>
+  </li>
+</template>
+
+<!-- Audit: one audit-trail entry -->
+<template id="tpl-audit-trail">
+  <li class="list-item audit-line">
+    <span class="chip" data-field="event"></span>
+    <div class="list-item-main">
+      <p class="list-item-title" data-field="message"></p>
+      <p class="list-item-sub"><span data-field="actor"></span> &middot; <time data-field="when"></time></p>
+    </div>
+    <button type="button" class="btn btn-sm" data-action="open-trail-finding" hidden>View finding</button>
+  </li>
+</template>
+
+<!-- Audit: one scorecard row -->
+<template id="tpl-audit-score">
+  <tr>
+    <td data-field="branch_name"></td>
+    <td data-field="cycles"></td>
+    <td data-field="signed_off"></td>
+    <td data-field="avg_score"></td>
+    <td data-field="min_score"></td>
+    <td data-field="max_score"></td>
+    <td data-field="critical"></td>
+    <td data-field="high"></td>
+    <td data-field="medium"></td>
+    <td data-field="low"></td>
+  </tr>
 </template>
 
 <!-- Alerts: one alert -->

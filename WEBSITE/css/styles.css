@@ -21,6 +21,7 @@
    18. Customers / pagination / settings / import
    19. Modals
    20. Toasts
+   20b. Internal audit (UI preview)
    21. Loading states
    22. Responsive
    23. Reduced motion
@@ -1654,6 +1655,127 @@ input[type="range"] {
   from { opacity: 0; transform: translateX(16px); }
   to   { opacity: 1; transform: none; }
 }
+
+/* 20b. Internal audit (UI preview) ======================================== */
+.audit-demo-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 9px 14px;
+  border-radius: var(--radius);
+  border: 1px dashed var(--orange);
+  background: var(--orange-50);
+  color: #7A4A08;
+  font-size: var(--fs-sm);
+}
+.audit-demo-note strong { color: #5C3700; }
+.audit-demo-note { flex-wrap: wrap; }
+.audit-demo-text { flex: 1 1 280px; margin: 0; }
+.audit-demo-note .check { min-height: 0; color: inherit; }
+
+.audit-head { align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.audit-head-main { min-width: 0; }
+.audit-head-main h3 { font-size: var(--fs-lg); }
+.audit-sub { display: flex; align-items: center; gap: 8px; margin-top: 4px; color: var(--text-muted); font-size: var(--fs-sm); }
+.audit-head-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.audit-summary {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  padding: 16px 20px 4px;
+  flex-wrap: wrap;
+}
+.audit-score-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 132px;
+  padding: 12px 18px;
+  border-radius: var(--radius-lg);
+  background: var(--blue-50);
+  border: 1px solid var(--border);
+}
+.audit-score-label { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); font-weight: 700; }
+.audit-score-box strong { font-size: 40px; line-height: 1.05; color: var(--navy); }
+.audit-grade { margin-top: 2px; font-weight: 800; font-size: var(--fs-md); color: var(--blue-700); }
+.audit-kpis { flex: 1 1 420px; display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 10px; }
+.audit-kpi {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.audit-kpi span { display: block; font-size: var(--fs-xs); color: var(--text-muted); font-weight: 600; }
+.audit-kpi strong { font-size: 22px; color: var(--navy); line-height: 1.2; }
+.audit-kpi--open strong { color: var(--slate); }
+.audit-kpi--critical strong { color: var(--darkred); }
+.audit-kpi--high strong { color: var(--red); }
+.audit-kpi--medium strong { color: var(--amber); }
+.audit-kpi--low strong { color: var(--grey); }
+
+.audit-notes { padding: 0 20px 12px; color: var(--text-muted); font-size: var(--fs-sm); }
+.audit-filters { margin: 0; border-top: 1px solid var(--border); border-radius: 0; }
+.audit-count { color: var(--text-muted); font-size: var(--fs-sm); white-space: nowrap; }
+
+#audit-cycles-table tr[data-cycle-id],
+#audit-findings-table tr[data-finding-id] { cursor: pointer; }
+#audit-cycles-table td[data-field="period"],
+#audit-cycles-table td[data-field="branch_name"],
+#audit-cycles-table td[data-field="findings"] { white-space: nowrap; }
+#audit-findings-table td[data-field="day"] { white-space: nowrap; }
+
+.audit-chips { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.audit-chips .muted { font-size: var(--fs-sm); }
+.audit-detail {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.audit-block { padding-top: 14px; border-top: 1px solid var(--border); }
+.audit-block-title { font-size: var(--fs-md); font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.audit-inline { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px; }
+.audit-inline > .field { margin: 0; }
+.audit-inline .toolbar-spacer { align-self: center; }
+#fd-response { min-height: 88px; }
+.audit-line { gap: 10px; align-items: flex-start; }
+.audit-line .btn-sm { flex: none; }
+.audit-tag { color: var(--text-muted); font-weight: 700; margin-right: 6px; text-transform: uppercase; font-size: var(--fs-xs); letter-spacing: .04em; }
+.modal-md { width: min(680px, calc(100vw - 32px)); }
+.modal-wide { width: min(920px, calc(100vw - 32px)); }
+
+/* audit trail */
+.audit-trail { border-top: 1px solid var(--border); }
+.audit-trail > summary { cursor: pointer; padding: 12px 20px; font-weight: 700; color: var(--navy); }
+.audit-trail > summary .audit-count { margin-left: 6px; font-weight: 400; }
+.audit-trail .list-item { padding-left: 20px; padding-right: 20px; }
+.audit-trail .chip { flex: none; min-width: 116px; justify-content: center; }
+.audit-trail .empty-state { padding: 4px 20px 16px; }
+
+/* audit chip colours */
+.chip[data-value="critical"] { --chip-fg: #fff;              --chip-bg: var(--darkred); }
+.chip[data-value="high"]     { --chip-fg: var(--red);        --chip-bg: var(--red-bg); }
+.chip[data-value="medium"]   { --chip-fg: var(--amber);      --chip-bg: var(--amber-bg); }
+.chip[data-value="low"]      { --chip-fg: var(--grey);       --chip-bg: var(--grey-bg); }
+.chip[data-value="open"]     { --chip-fg: var(--amber);      --chip-bg: var(--amber-bg); }
+.chip[data-value="in_review"]{ --chip-fg: var(--blue-700);   --chip-bg: var(--blue-50); }
+.chip[data-value="signed_off"]{ --chip-fg: var(--green);     --chip-bg: var(--green-bg); }
+.chip[data-value="responded"]{ --chip-fg: var(--blue-700);   --chip-bg: var(--blue-50); }
+.chip[data-value="resolved"] { --chip-fg: var(--green);      --chip-bg: var(--green-bg); }
+.chip[data-value="accepted_risk"] { --chip-fg: var(--purple); --chip-bg: var(--purple-bg); }
+.chip[data-value="closed"]   { --chip-fg: var(--slate);      --chip-bg: var(--slate-bg); }
+.chip[data-value="done"]     { --chip-fg: var(--green);      --chip-bg: var(--green-bg); }
+.chip[data-value="cancelled"]{ --chip-fg: var(--grey);       --chip-bg: var(--grey-bg); }
+.chip[data-value="auto"]     { --chip-fg: var(--blue-700);   --chip-bg: var(--blue-50); }
+.chip[data-value="manual"]   { --chip-fg: var(--purple);     --chip-bg: var(--purple-bg); }
+.chip[data-value="signoff"]  { --chip-fg: var(--green);      --chip-bg: var(--green-bg); }
+.chip[data-value="reopen"]   { --chip-fg: var(--amber);      --chip-bg: var(--amber-bg); }
+.chip[data-value="finding_deleted"] { --chip-fg: var(--red); --chip-bg: var(--red-bg); }
 
 /* 21. Loading states ======================================================= */
 .btn.is-loading,
