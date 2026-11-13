@@ -25,6 +25,11 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
 </head>
 <body class="app-body">
 
+<div id="demo-banner" class="demo-banner" role="status" hidden>
+  <strong>Demo mode</strong>
+  <span>HR data lives in this browser only - no server or database is connected.</span>
+</div>
+
 <!-- Icon sprite -->
 <svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0" xmlns="http://www.w3.org/2000/svg">
   <symbol id="i-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
@@ -79,6 +84,15 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
   <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-hr" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+  <symbol id="i-leave" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 15l6 6M15 15l-6 6"/></symbol>
+  <symbol id="i-recruit" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></symbol>
+  <symbol id="i-money" viewBox="0 0 24 24"><path d="M6 3h12M6 8h12M15 21L6 13h4a5 5 0 0 0 5-5"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-clipboard" viewBox="0 0 24 24"><path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1z"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 14l2 2 4-4"/></symbol>
 </svg>
 
 <div class="app-shell">
@@ -140,6 +154,33 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
       <button type="button" class="nav-item" data-view="team">
         <svg class="icon" aria-hidden="true"><use href="#i-team"/></svg><span class="nav-label">Team</span>
       </button>
+
+      <p class="nav-section" aria-hidden="true">HR</p>
+      <button type="button" class="nav-item" data-view="hr">
+        <svg class="icon" aria-hidden="true"><use href="#i-hr"/></svg><span class="nav-label">HR Overview</span>
+      </button>
+      <button type="button" class="nav-item" data-view="employees">
+        <svg class="icon" aria-hidden="true"><use href="#i-user"/></svg><span class="nav-label">Employees</span>
+      </button>
+      <button type="button" class="nav-item" data-view="attendance">
+        <svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg><span class="nav-label">Attendance</span>
+      </button>
+      <button type="button" class="nav-item" data-view="leave">
+        <svg class="icon" aria-hidden="true"><use href="#i-leave"/></svg><span class="nav-label">Leave &amp; Holidays</span>
+      </button>
+      <button type="button" class="nav-item" data-view="recruitment">
+        <svg class="icon" aria-hidden="true"><use href="#i-recruit"/></svg><span class="nav-label">Recruitment</span>
+      </button>
+      <button type="button" class="nav-item" data-view="payroll">
+        <svg class="icon" aria-hidden="true"><use href="#i-money"/></svg><span class="nav-label">Payroll</span>
+      </button>
+      <button type="button" class="nav-item" data-view="performance">
+        <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><span class="nav-label">Performance</span>
+      </button>
+      <button type="button" class="nav-item" data-view="documents">
+        <svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg><span class="nav-label">Documents</span>
+      </button>
+
       <button type="button" class="nav-item" data-view="branches" data-roles="admin">
         <svg class="icon" aria-hidden="true"><use href="#i-branches"/></svg><span class="nav-label">Branches</span>
       </button>
@@ -1258,6 +1299,593 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
         </section>
       </section>
 
+      <!-- ============ 11. HR OVERVIEW ============ -->
+      <section class="view" id="view-hr" data-view="hr" aria-labelledby="h-hr" hidden>
+        <h2 id="h-hr" class="visually-hidden">HR overview</h2>
+        <div class="hr-page-head">
+          <p id="hr-scope-note" class="muted" hidden></p>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-hr-reset" class="btn btn-sm">Reset demo data</button>
+          <a class="btn btn-sm btn-primary" href="#employees" data-view-link="employees">
+            <svg class="icon" aria-hidden="true"><use href="#i-team"/></svg><span>Open directory</span>
+          </a>
+        </div>
+
+        <div class="stat-grid stat-grid-hr">
+          <article class="stat-card stat-hr-people">
+            <h3 class="stat-label">Headcount</h3>
+            <p class="stat-value" id="hr-stat-headcount">0</p>
+            <p class="stat-sub" id="hr-stat-headcount-sub"></p>
+          </article>
+          <article class="stat-card stat-hr-new">
+            <h3 class="stat-label">New joiners</h3>
+            <p class="stat-value" id="hr-stat-newjoiners">0</p>
+            <p class="stat-sub" id="hr-stat-newjoiners-sub"></p>
+          </article>
+          <article class="stat-card stat-hr-leave">
+            <h3 class="stat-label">On leave today</h3>
+            <p class="stat-value" id="hr-stat-onleave">0</p>
+            <p class="stat-sub" id="hr-stat-onleave-sub"></p>
+          </article>
+          <article class="stat-card stat-hr-present">
+            <h3 class="stat-label">Present today</h3>
+            <p class="stat-value" id="hr-stat-present">0</p>
+            <p class="stat-sub" id="hr-stat-present-sub"></p>
+          </article>
+        </div>
+
+        <div class="dash-grid hr-dash">
+          <section class="card" aria-labelledby="h-hr-dept">
+            <header class="card-header"><h3 id="h-hr-dept">Headcount by department</h3></header>
+            <div id="hr-dept-bars" class="bar-list"></div>
+          </section>
+
+          <section class="card" aria-labelledby="h-hr-att">
+            <header class="card-header"><h3 id="h-hr-att">Attendance today</h3></header>
+            <div class="ring-wrap">
+              <div class="ring" id="hr-att-ring" role="img" aria-label="Attendance percentage">
+                <span id="hr-att-ring-label">0%</span>
+              </div>
+            </div>
+            <ul class="legend-list" id="hr-att-legend"></ul>
+          </section>
+
+          <section class="card" aria-labelledby="h-hr-pay">
+            <header class="card-header"><h3 id="h-hr-pay">Payroll · <span id="hr-pay-month-label"></span></h3></header>
+            <div id="hr-pay-summary" class="kv-list"></div>
+          </section>
+
+          <section class="card" aria-labelledby="h-hr-upcoming">
+            <header class="card-header"><h3 id="h-hr-upcoming">Upcoming · next 30 days</h3></header>
+            <ul class="list hr-list" id="hr-upcoming"></ul>
+          </section>
+
+          <section class="card" aria-labelledby="h-hr-pending">
+            <header class="card-header"><h3 id="h-hr-pending">Leave approvals</h3></header>
+            <ul class="list hr-list" id="hr-pending-leaves"></ul>
+          </section>
+
+          <section class="card" aria-labelledby="h-hr-onboarding">
+            <header class="card-header"><h3 id="h-hr-onboarding">Onboarding</h3></header>
+            <ul class="list hr-list onboarding-list" id="hr-onboarding"></ul>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============ 12. EMPLOYEES ============ -->
+      <section class="view" id="view-employees" data-view="employees" aria-labelledby="h-employees" hidden>
+        <h2 id="h-employees" class="visually-hidden">Employees</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline field-grow">
+            <label for="hr-emp-q">Search</label>
+            <input type="search" id="hr-emp-q" placeholder="Name, code, email, designation">
+          </div>
+          <div class="field field-inline">
+            <label for="hr-emp-dept">Department</label>
+            <select id="hr-emp-dept"><option value="">All departments</option></select>
+          </div>
+          <div class="field field-inline">
+            <label for="hr-emp-branch">Branch</label>
+            <select id="hr-emp-branch"><option value="">All branches</option></select>
+          </div>
+          <div class="field field-inline">
+            <label for="hr-emp-status">Status</label>
+            <select id="hr-emp-status">
+              <option value="">All statuses</option>
+              <option value="active">Active</option>
+              <option value="probation">Probation</option>
+              <option value="notice">Notice period</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <span id="hr-emp-count" class="toolbar-count"></span>
+          <button type="button" id="btn-hr-emp-export" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export</span>
+          </button>
+          <button type="button" id="btn-hr-add-employee" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Add employee</span>
+          </button>
+        </div>
+
+        <section class="card" aria-label="Employee directory">
+          <div class="table-wrap">
+            <table class="table table-hr">
+              <thead>
+                <tr>
+                  <th scope="col">Employee</th>
+                  <th scope="col">Designation</th>
+                  <th scope="col">Department</th>
+                  <th scope="col">Branch</th>
+                  <th scope="col">Joined</th>
+                  <th scope="col">Tenure</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="hr-emp-table"></tbody>
+            </table>
+          </div>
+          <p id="hr-emp-empty" class="empty-state" hidden>No employees match these filters.</p>
+        </section>
+      </section>
+
+      <!-- ============ 13. ATTENDANCE ============ -->
+      <section class="view" id="view-attendance" data-view="attendance" aria-labelledby="h-attendance" hidden>
+        <h2 id="h-attendance" class="visually-hidden">Attendance</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="hr-att-date">Date</label>
+            <input type="date" id="hr-att-date">
+          </div>
+          <div class="field field-inline">
+            <label for="hr-att-month">Month</label>
+            <input type="month" id="hr-att-month">
+          </div>
+          <div class="field field-inline">
+            <label for="hr-att-branch">Branch</label>
+            <select id="hr-att-branch"><option value="">All branches</option></select>
+          </div>
+          <div class="field field-inline">
+            <label for="hr-att-dept">Department</label>
+            <select id="hr-att-dept"><option value="">All departments</option></select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-hr-att-export" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export</span>
+          </button>
+          <button type="button" id="btn-hr-mark-att" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Mark attendance</span>
+          </button>
+        </div>
+
+        <div class="stat-grid stat-grid-hr">
+          <article class="stat-card stat-hr-present"><h3 class="stat-label">Present</h3><p class="stat-value" id="hr-att-stat-present">0</p><p class="stat-sub" id="hr-att-stat-pct"></p></article>
+          <article class="stat-card stat-hr-late"><h3 class="stat-label">Late</h3><p class="stat-value" id="hr-att-stat-late">0</p><p class="stat-sub">After shift grace</p></article>
+          <article class="stat-card stat-hr-absent"><h3 class="stat-label">Absent</h3><p class="stat-value" id="hr-att-stat-absent">0</p><p class="stat-sub">Unapproved</p></article>
+          <article class="stat-card stat-hr-leave"><h3 class="stat-label">On leave</h3><p class="stat-value" id="hr-att-stat-leave">0</p><p class="stat-sub">Approved leave</p></article>
+          <article class="stat-card"><h3 class="stat-label">Not marked</h3><p class="stat-value" id="hr-att-stat-notmarked">0</p><p class="stat-sub">No record yet</p></article>
+        </div>
+
+        <div class="seg" role="tablist" aria-label="Attendance view">
+          <button type="button" class="seg-btn" role="tab" data-hr-att-mode="daily" aria-selected="true">Daily register</button>
+          <button type="button" class="seg-btn" role="tab" data-hr-att-mode="monthly" aria-selected="false">Monthly summary</button>
+        </div>
+
+        <section class="card" id="hr-att-daily-card" aria-labelledby="h-hr-att-day">
+          <header class="card-header"><h3 id="h-hr-att-day">Register for <span id="hr-att-day-label"></span></h3></header>
+          <div class="table-wrap">
+            <table class="table table-hr">
+              <thead>
+                <tr>
+                  <th scope="col">Employee</th>
+                  <th scope="col">Shift</th>
+                  <th scope="col">In</th>
+                  <th scope="col">Out</th>
+                  <th scope="col">Worked</th>
+                  <th scope="col">OT</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Note</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="hr-att-table"></tbody>
+            </table>
+          </div>
+          <p id="hr-att-empty" class="empty-state" hidden>No employees for this selection.</p>
+        </section>
+
+        <section class="card" id="hr-att-monthly-card" aria-labelledby="h-hr-att-month" hidden>
+          <header class="card-header"><h3 id="h-hr-att-month">Summary for <span id="hr-att-month-label"></span></h3></header>
+          <div class="table-wrap">
+            <table class="table table-hr">
+              <thead>
+                <tr>
+                  <th scope="col">Employee</th>
+                  <th scope="col">Working</th>
+                  <th scope="col">Present</th>
+                  <th scope="col">Late</th>
+                  <th scope="col">Half day</th>
+                  <th scope="col">Leave</th>
+                  <th scope="col">Absent</th>
+                  <th scope="col">OT</th>
+                  <th scope="col">Attendance</th>
+                </tr>
+              </thead>
+              <tbody id="hr-att-month-table"></tbody>
+            </table>
+          </div>
+          <p id="hr-att-month-empty" class="empty-state" hidden>No employees for this selection.</p>
+        </section>
+
+        <section class="card" aria-labelledby="h-hr-shifts">
+          <header class="card-header"><h3 id="h-hr-shifts">Shift roster</h3></header>
+          <div class="shift-grid" id="hr-shift-list"></div>
+        </section>
+      </section>
+
+      <!-- ============ 14. LEAVE ============ -->
+      <section class="view" id="view-leave" data-view="leave" aria-labelledby="h-leave" hidden>
+        <h2 id="h-leave" class="visually-hidden">Leave and holidays</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="hr-leave-branch">Branch</label>
+            <select id="hr-leave-branch"><option value="">All branches</option></select>
+          </div>
+          <div class="field field-inline">
+            <label for="hr-leave-status">Status</label>
+            <select id="hr-leave-status">
+              <option value="">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="field field-inline">
+            <label for="hr-leave-type">Type</label>
+            <select id="hr-leave-type"><option value="">All types</option></select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-hr-leave-export" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export</span>
+          </button>
+          <button type="button" id="btn-hr-apply-leave" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Apply leave</span>
+          </button>
+        </div>
+
+        <div class="stat-grid stat-grid-hr">
+          <article class="stat-card stat-hr-late"><h3 class="stat-label">Pending approval</h3><p class="stat-value" id="hr-leave-stat-pending">0</p><p class="stat-sub">Requests waiting</p></article>
+          <article class="stat-card stat-hr-leave"><h3 class="stat-label">On leave today</h3><p class="stat-value" id="hr-leave-stat-onleave">0</p><p class="stat-sub">Approved leave</p></article>
+          <article class="stat-card stat-hr-present"><h3 class="stat-label">Approved this month</h3><p class="stat-value" id="hr-leave-stat-approved">0</p><p class="stat-sub">Requests starting this month</p></article>
+          <article class="stat-card stat-hr-new"><h3 class="stat-label">Holidays this month</h3><p class="stat-value" id="hr-leave-stat-holidays">0</p><p class="stat-sub">Company calendar</p></article>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Leave view">
+          <button type="button" class="tab-btn" role="tab" data-hr-leave-tab="approvals" aria-selected="true">Approvals</button>
+          <button type="button" class="tab-btn" role="tab" data-hr-leave-tab="requests" aria-selected="false">All requests</button>
+          <button type="button" class="tab-btn" role="tab" data-hr-leave-tab="balances" aria-selected="false">Balances</button>
+          <button type="button" class="tab-btn" role="tab" data-hr-leave-tab="holidays" aria-selected="false">Holidays</button>
+        </div>
+
+        <section class="card" id="hr-leave-approvals" aria-label="Pending leave approvals">
+          <ul class="list hr-list" id="hr-leave-pending"></ul>
+          <p id="hr-leave-pending-empty" class="empty-state" hidden>No pending requests - the inbox is clear.</p>
+        </section>
+
+        <section class="card" id="hr-leave-requests" aria-label="All leave requests" hidden>
+          <div class="table-wrap">
+            <table class="table table-hr">
+              <thead>
+                <tr>
+                  <th scope="col">Employee</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Dates</th>
+                  <th scope="col">Days</th>
+                  <th scope="col">Applied</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Decided</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="hr-leave-table"></tbody>
+            </table>
+          </div>
+          <p id="hr-leave-empty" class="empty-state" hidden>No leave requests for these filters.</p>
+        </section>
+
+        <section class="card" id="hr-leave-balances" aria-label="Leave balances" hidden>
+          <div class="table-wrap">
+            <table class="table table-hr">
+              <thead>
+                <tr><th scope="col">Employee</th><th scope="col">Leave balance (left / entitlement)</th></tr>
+              </thead>
+              <tbody id="hr-leave-balance-table"></tbody>
+            </table>
+          </div>
+          <p id="hr-leave-balance-empty" class="empty-state" hidden>No employees for this selection.</p>
+        </section>
+
+        <section class="card" id="hr-leave-holidays" aria-label="Holiday calendar" hidden>
+          <div id="hr-holiday-list" class="holiday-list"></div>
+        </section>
+      </section>
+
+      <!-- ============ 15. RECRUITMENT ============ -->
+      <section class="view" id="view-recruitment" data-view="recruitment" aria-labelledby="h-recruitment" hidden>
+        <h2 id="h-recruitment" class="visually-hidden">Recruitment</h2>
+
+        <div class="toolbar">
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-hr-rec-export" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export</span>
+          </button>
+          <button type="button" id="btn-hr-add-job" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Post a job</span>
+          </button>
+          <button type="button" id="btn-hr-add-candidate" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-recruit"/></svg><span>Add candidate</span>
+          </button>
+        </div>
+
+        <div class="stat-grid stat-grid-hr">
+          <article class="stat-card stat-hr-people"><h3 class="stat-label">Open jobs</h3><p class="stat-value" id="hr-rec-stat-open">0</p><p class="stat-sub">Live requisitions</p></article>
+          <article class="stat-card stat-hr-new"><h3 class="stat-label">Openings</h3><p class="stat-value" id="hr-rec-stat-openings">0</p><p class="stat-sub">Positions to fill</p></article>
+          <article class="stat-card stat-hr-leave"><h3 class="stat-label">In pipeline</h3><p class="stat-value" id="hr-rec-stat-pipeline">0</p><p class="stat-sub">Active candidates</p></article>
+          <article class="stat-card stat-hr-late"><h3 class="stat-label">Interviews this week</h3><p class="stat-value" id="hr-rec-stat-interviews">0</p><p class="stat-sub">Scheduled</p></article>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Recruitment view">
+          <button type="button" class="tab-btn" role="tab" data-hr-rec-tab="pipeline" aria-selected="true">Pipeline</button>
+          <button type="button" class="tab-btn" role="tab" data-hr-rec-tab="jobs" aria-selected="false">Job openings</button>
+          <button type="button" class="tab-btn" role="tab" data-hr-rec-tab="onboarding" aria-selected="false">Onboarding</button>
+        </div>
+
+        <section id="hr-rec-pipeline" aria-label="Candidate pipeline">
+          <div class="kanban" id="hr-pipeline"></div>
+        </section>
+
+        <section class="card" id="hr-rec-jobs" aria-label="Job openings" hidden>
+          <div class="table-wrap">
+            <table class="table table-hr">
+              <thead>
+                <tr>
+                  <th scope="col">Role</th>
+                  <th scope="col">Department</th>
+                  <th scope="col">Branch</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Openings</th>
+                  <th scope="col">Filled</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Posted</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="hr-jobs-table"></tbody>
+            </table>
+          </div>
+          <p id="hr-jobs-empty" class="empty-state" hidden>No job openings yet.</p>
+        </section>
+
+        <section id="hr-rec-onboarding" class="onboarding-grid" aria-label="Onboarding" hidden>
+          <div id="hr-onboarding-list" class="onboarding-cards"></div>
+        </section>
+      </section>
+
+      <!-- ============ 16. PAYROLL ============ -->
+      <section class="view" id="view-payroll" data-view="payroll" aria-labelledby="h-payroll" hidden>
+        <h2 id="h-payroll" class="visually-hidden">Payroll</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="hr-pay-month">Month</label>
+            <select id="hr-pay-month"></select>
+          </div>
+          <div class="field field-inline">
+            <label for="hr-pay-branch">Branch</label>
+            <select id="hr-pay-branch"><option value="">All branches</option></select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-hr-pay-export" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export</span>
+          </button>
+          <button type="button" id="btn-hr-mark-paid" class="btn">Mark paid</button>
+          <button type="button" id="btn-hr-process-payroll" class="btn btn-primary">Process payroll</button>
+        </div>
+
+        <p id="hr-pay-run-status" class="run-banner" aria-live="polite"></p>
+
+        <div class="stat-grid stat-grid-hr">
+          <article class="stat-card"><h3 class="stat-label">Employees</h3><p class="stat-value" id="hr-pay-stat-employees">0</p><p class="stat-sub">In this run</p></article>
+          <article class="stat-card stat-hr-people"><h3 class="stat-label">Gross</h3><p class="stat-value" id="hr-pay-stat-gross">0</p><p class="stat-sub">Earnings before deductions</p></article>
+          <article class="stat-card stat-hr-absent"><h3 class="stat-label">Deductions</h3><p class="stat-value" id="hr-pay-stat-deductions">0</p><p class="stat-sub">PF, ESI, PT and TDS</p></article>
+          <article class="stat-card stat-hr-present"><h3 class="stat-label">Net payable</h3><p class="stat-value" id="hr-pay-stat-net">0</p><p class="stat-sub">Bank transfer amount</p></article>
+        </div>
+
+        <section class="card" aria-label="Payslips">
+          <div class="table-wrap">
+            <table class="table table-hr">
+              <thead>
+                <tr>
+                  <th scope="col">Employee</th>
+                  <th scope="col">Days paid</th>
+                  <th scope="col">LOP</th>
+                  <th scope="col">Gross</th>
+                  <th scope="col">Deductions</th>
+                  <th scope="col">Net</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="hr-pay-table"></tbody>
+            </table>
+          </div>
+          <p id="hr-pay-empty" class="empty-state" hidden>No employees for this selection.</p>
+        </section>
+
+        <div class="dash-grid hr-dash">
+          <section class="card" aria-labelledby="h-hr-pay-dept">
+            <header class="card-header"><h3 id="h-hr-pay-dept">Net pay by department</h3></header>
+            <div id="hr-pay-dept" class="bar-list"></div>
+          </section>
+          <section class="card" aria-labelledby="h-hr-pay-history">
+            <header class="card-header"><h3 id="h-hr-pay-history">Run history</h3></header>
+            <div id="hr-pay-history" class="run-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============ 17. PERFORMANCE ============ -->
+      <section class="view" id="view-performance" data-view="performance" aria-labelledby="h-performance" hidden>
+        <h2 id="h-performance" class="visually-hidden">Performance and appraisals</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="hr-perf-cycle">Cycle</label>
+            <select id="hr-perf-cycle"></select>
+          </div>
+          <div class="field field-inline">
+            <label for="hr-perf-branch">Branch</label>
+            <select id="hr-perf-branch"><option value="">All branches</option></select>
+          </div>
+          <div class="field field-inline">
+            <label for="hr-perf-dept">Department</label>
+            <select id="hr-perf-dept"><option value="">All departments</option></select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-hr-perf-export" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export</span>
+          </button>
+        </div>
+
+        <p id="hr-perf-cycle-info" class="cycle-banner" aria-live="polite"></p>
+
+        <div class="stat-grid stat-grid-hr">
+          <article class="stat-card"><h3 class="stat-label">Reviews</h3><p class="stat-value" id="hr-perf-stat-total">0</p><p class="stat-sub">In this cycle</p></article>
+          <article class="stat-card stat-hr-present"><h3 class="stat-label">Completed</h3><p class="stat-value" id="hr-perf-stat-completed">0</p><p class="stat-sub">Manager signed off</p></article>
+          <article class="stat-card stat-hr-new"><h3 class="stat-label">Average rating</h3><p class="stat-value" id="hr-perf-stat-avg">0</p><p class="stat-sub">Out of 5</p></article>
+          <article class="stat-card stat-hr-late"><h3 class="stat-label">Pending</h3><p class="stat-value" id="hr-perf-stat-pending">0</p><p class="stat-sub">Self or manager review</p></article>
+        </div>
+
+        <div class="dash-grid hr-dash">
+          <section class="card" aria-labelledby="h-hr-perf-dist">
+            <header class="card-header"><h3 id="h-hr-perf-dist">Rating distribution</h3></header>
+            <div id="hr-perf-dist" class="bar-list"></div>
+          </section>
+          <section class="card" aria-labelledby="h-hr-perf-top">
+            <header class="card-header"><h3 id="h-hr-perf-top">Top performers</h3></header>
+            <div id="hr-perf-top" class="top-list"></div>
+          </section>
+        </div>
+
+        <section class="card" aria-label="Appraisals">
+          <div class="table-wrap">
+            <table class="table table-hr">
+              <thead>
+                <tr>
+                  <th scope="col">Employee</th>
+                  <th scope="col">Department</th>
+                  <th scope="col">Self</th>
+                  <th scope="col">Manager</th>
+                  <th scope="col">Final</th>
+                  <th scope="col">Goals</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="hr-perf-table"></tbody>
+            </table>
+          </div>
+          <p id="hr-perf-empty" class="empty-state" hidden>No reviews for these filters.</p>
+        </section>
+      </section>
+
+      <!-- ============ 18. DOCUMENTS ============ -->
+      <section class="view" id="view-documents" data-view="documents" aria-labelledby="h-documents" hidden>
+        <h2 id="h-documents" class="visually-hidden">Documents</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline field-grow">
+            <label for="hr-doc-q">Search</label>
+            <input type="search" id="hr-doc-q" placeholder="Employee, document number">
+          </div>
+          <div class="field field-inline">
+            <label for="hr-doc-type">Type</label>
+            <select id="hr-doc-type"><option value="">All types</option></select>
+          </div>
+          <div class="field field-inline">
+            <label for="hr-doc-status">Status</label>
+            <select id="hr-doc-status">
+              <option value="">All statuses</option>
+              <option value="valid">Valid</option>
+              <option value="expiring">Expiring in 30 days</option>
+              <option value="expired">Expired</option>
+            </select>
+          </div>
+          <div class="field field-inline">
+            <label for="hr-doc-branch">Branch</label>
+            <select id="hr-doc-branch"><option value="">All branches</option></select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-hr-doc-export" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export</span>
+          </button>
+          <button type="button" id="btn-hr-upload-doc" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg><span>Upload document</span>
+          </button>
+        </div>
+
+        <div class="stat-grid stat-grid-hr">
+          <article class="stat-card stat-hr-present"><h3 class="stat-label">Valid</h3><p class="stat-value" id="hr-doc-stat-valid">0</p><p class="stat-sub">On file and current</p></article>
+          <article class="stat-card stat-hr-late"><h3 class="stat-label">Expiring soon</h3><p class="stat-value" id="hr-doc-stat-expiring">0</p><p class="stat-sub">Within 30 days</p></article>
+          <article class="stat-card stat-hr-absent"><h3 class="stat-label">Expired</h3><p class="stat-value" id="hr-doc-stat-expired">0</p><p class="stat-sub">Needs renewal</p></article>
+          <article class="stat-card"><h3 class="stat-label">Missing insurance</h3><p class="stat-value" id="hr-doc-stat-missing">0</p><p class="stat-sub">Employees with no health cover</p></article>
+        </div>
+
+        <div class="dash-grid hr-dash">
+          <section class="card" aria-labelledby="h-hr-docs-attention">
+            <header class="card-header"><h3 id="h-hr-docs-attention">Needs attention</h3></header>
+            <div id="hr-doc-expiring" class="doc-alerts"></div>
+          </section>
+          <section class="card" aria-labelledby="h-hr-docs-policy">
+            <header class="card-header"><h3 id="h-hr-docs-policy">Compliance checklist</h3></header>
+            <ul class="checklist static">
+              <li><span class="check-dot is-done"></span> Aadhaar and PAN collected for every employee</li>
+              <li><span class="check-dot is-done"></span> Signed offer letter and contract on file</li>
+              <li><span class="check-dot is-warn"></span> Health insurance renewals tracked monthly</li>
+              <li><span class="check-dot is-warn"></span> Field officers' driving licences verified</li>
+              <li><span class="check-dot"></span> POSH policy acknowledgement (backend pending)</li>
+            </ul>
+          </section>
+        </div>
+
+        <section class="card" aria-label="Documents register">
+          <header class="card-header"><h3>Document register <span id="hr-doc-count" class="muted"></span></h3></header>
+          <div class="table-wrap">
+            <table class="table table-hr">
+              <thead>
+                <tr>
+                  <th scope="col">Employee</th>
+                  <th scope="col">Document</th>
+                  <th scope="col">Number</th>
+                  <th scope="col">Issued</th>
+                  <th scope="col">Expires</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="hr-doc-table"></tbody>
+            </table>
+          </div>
+          <p id="hr-doc-empty" class="empty-state" hidden>No documents match these filters.</p>
+        </section>
+      </section>
+
       <!-- ============ 10. SETTINGS ============ -->
       <section class="view" id="view-settings" data-view="settings" data-roles="admin" aria-labelledby="h-settings" hidden>
         <h2 id="h-settings" class="visually-hidden">Settings</h2>
@@ -1730,6 +2358,358 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
 <!-- ===================== TOASTS ===================== -->
 <div id="toasts" class="toasts" role="region" aria-label="Notifications" aria-live="polite"></div>
 
+<!-- ===================== HR MODALS ===================== -->
+
+<dialog class="modal modal-wide" id="modal-hr-employee" aria-labelledby="modal-hr-employee-title">
+  <form id="form-hr-employee" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="modal-hr-employee-title">Add employee</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <input type="hidden" id="hr-emp-id" name="id">
+
+      <h3 class="form-section-title">Personal details</h3>
+      <div class="form-grid">
+        <div class="field"><label for="hr-emp-name">Full name</label><input type="text" id="hr-emp-name" name="name" maxlength="120" required></div>
+        <div class="field"><label for="hr-emp-email">Work email</label><input type="email" id="hr-emp-email" name="email" maxlength="120"></div>
+        <div class="field"><label for="hr-emp-phone">Phone</label><input type="tel" id="hr-emp-phone" name="phone" inputmode="tel" maxlength="15"></div>
+        <div class="field"><label for="hr-emp-dob">Date of birth</label><input type="date" id="hr-emp-dob" name="dob"></div>
+        <div class="field">
+          <label for="hr-emp-gender">Gender</label>
+          <select id="hr-emp-gender" name="gender"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select>
+        </div>
+        <div class="field">
+          <label for="hr-emp-marital">Marital status</label>
+          <select id="hr-emp-marital" name="marital_status"><option value="single">Single</option><option value="married">Married</option><option value="other">Other</option></select>
+        </div>
+        <div class="field">
+          <label for="hr-emp-blood">Blood group</label>
+          <select id="hr-emp-blood" name="blood_group">
+            <option value="">Select</option><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
+          </select>
+        </div>
+      </div>
+
+      <h3 class="form-section-title">Contact &amp; emergency</h3>
+      <div class="form-grid">
+        <div class="field field-span"><label for="hr-emp-address">Address</label><input type="text" id="hr-emp-address" name="address" maxlength="200"></div>
+        <div class="field"><label for="hr-emp-city">City</label><input type="text" id="hr-emp-city" name="city" maxlength="60"></div>
+        <div class="field"><label for="hr-emp-state">State</label><input type="text" id="hr-emp-state" name="state" maxlength="60" value="Karnataka"></div>
+        <div class="field"><label for="hr-emp-pincode">PIN code</label><input type="text" id="hr-emp-pincode" name="pincode" inputmode="numeric" maxlength="6"></div>
+        <div class="field"><label for="hr-emp-emergency-name">Emergency contact</label><input type="text" id="hr-emp-emergency-name" name="emergency_name" maxlength="120"></div>
+        <div class="field">
+          <label for="hr-emp-emergency-relation">Relation</label>
+          <select id="hr-emp-emergency-relation" name="emergency_relation">
+            <option value="">Select</option><option>Spouse</option><option>Father</option><option>Mother</option><option>Sibling</option><option>Guardian</option>
+          </select>
+        </div>
+        <div class="field"><label for="hr-emp-emergency-phone">Emergency phone</label><input type="tel" id="hr-emp-emergency-phone" name="emergency_phone" inputmode="tel" maxlength="15"></div>
+      </div>
+
+      <h3 class="form-section-title">Employment</h3>
+      <div class="form-grid">
+        <div class="field"><label for="hr-emp-designation">Designation</label><input type="text" id="hr-emp-designation" name="designation" maxlength="80" required></div>
+        <div class="field">
+          <label for="hr-emp-dept-input">Department</label>
+          <select id="hr-emp-dept-input" name="department"></select>
+        </div>
+        <div class="field">
+          <label for="hr-emp-branch-input">Branch</label>
+          <select id="hr-emp-branch-input" name="branch_id"></select>
+        </div>
+        <div class="field">
+          <label for="hr-emp-manager">Reports to</label>
+          <select id="hr-emp-manager" name="manager_id"></select>
+        </div>
+        <div class="field"><label for="hr-emp-doj">Date of joining</label><input type="date" id="hr-emp-doj" name="doj" required></div>
+        <div class="field">
+          <label for="hr-emp-type">Employment type</label>
+          <select id="hr-emp-type" name="employment_type">
+            <option value="full_time">Full time</option><option value="part_time">Part time</option><option value="contract">Contract</option><option value="intern">Intern</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="hr-emp-status-input">Status</label>
+          <select id="hr-emp-status-input" name="status">
+            <option value="probation">Probation</option><option value="active">Active</option><option value="notice">Notice period</option><option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="hr-emp-mode">Work mode</label>
+          <select id="hr-emp-mode" name="work_mode"><option value="office">Office</option><option value="field">Field</option><option value="hybrid">Hybrid</option></select>
+        </div>
+        <div class="field">
+          <label for="hr-emp-shift">Shift</label>
+          <select id="hr-emp-shift" name="shift_id"></select>
+        </div>
+        <div class="field">
+          <label for="hr-emp-ctc">Annual CTC (₹)</label>
+          <input type="number" id="hr-emp-ctc" name="ctc" min="0" step="1000" required>
+        </div>
+      </div>
+
+      <h3 class="form-section-title">Salary, statutory &amp; bank</h3>
+      <div class="form-grid">
+        <div class="field"><label for="hr-emp-pan">PAN</label><input type="text" id="hr-emp-pan" name="pan" maxlength="10" autocapitalize="characters"></div>
+        <div class="field"><label for="hr-emp-aadhaar">Aadhaar last 4</label><input type="text" id="hr-emp-aadhaar" name="aadhaar_last4" inputmode="numeric" maxlength="4"></div>
+        <div class="field"><label for="hr-emp-uan">UAN</label><input type="text" id="hr-emp-uan" name="uan" inputmode="numeric" maxlength="12"></div>
+        <div class="field"><label for="hr-emp-esic">ESIC number</label><input type="text" id="hr-emp-esic" name="esic" maxlength="17"></div>
+        <div class="field"><label for="hr-emp-pf">PF number</label><input type="text" id="hr-emp-pf" name="pf_no" maxlength="30"></div>
+        <div class="field">
+          <label for="hr-emp-bank">Bank</label>
+          <select id="hr-emp-bank" name="bank_name">
+            <option value="">Select</option><option>HDFC Bank</option><option>ICICI Bank</option><option>State Bank of India</option><option>Canara Bank</option><option>Axis Bank</option><option>Kotak Mahindra</option>
+          </select>
+        </div>
+        <div class="field"><label for="hr-emp-account">Account last 4</label><input type="text" id="hr-emp-account" name="bank_account_last4" inputmode="numeric" maxlength="4"></div>
+        <div class="field"><label for="hr-emp-ifsc">IFSC</label><input type="text" id="hr-emp-ifsc" name="ifsc" maxlength="11" autocapitalize="characters"></div>
+      </div>
+
+      <p id="hr-emp-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-hr-save-employee" class="btn btn-primary">Save employee</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal modal-wide" id="modal-hr-profile" aria-labelledby="h-hr-profile">
+  <div class="modal-form">
+    <header class="modal-header">
+      <h2 id="h-hr-profile" class="visually-hidden">Employee profile</h2>
+      <div id="hr-profile-head" class="profile-head"></div>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="tabs" role="tablist" aria-label="Profile sections">
+        <button type="button" class="tab-btn" role="tab" data-hr-tab="overview" aria-selected="true">Overview</button>
+        <button type="button" class="tab-btn" role="tab" data-hr-tab="job" aria-selected="false">Job</button>
+        <button type="button" class="tab-btn" role="tab" data-hr-tab="pay" aria-selected="false">Pay &amp; bank</button>
+        <button type="button" class="tab-btn" role="tab" data-hr-tab="docs" aria-selected="false">Documents</button>
+        <button type="button" class="tab-btn" role="tab" data-hr-tab="att" aria-selected="false">Attendance</button>
+      </div>
+      <div data-hr-panel="overview"><dl class="detail-grid" id="hr-profile-overview"></dl></div>
+      <div data-hr-panel="job" hidden><dl class="detail-grid" id="hr-profile-job"></dl></div>
+      <div data-hr-panel="pay" hidden><dl class="detail-grid" id="hr-profile-pay"></dl></div>
+      <div data-hr-panel="docs" hidden><div id="hr-profile-docs" class="doc-list"></div></div>
+      <div data-hr-panel="att" hidden><div id="hr-profile-att" class="profile-att"></div></div>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" id="btn-hr-emp-deactivate" class="btn btn-danger">Mark inactive</button>
+      <div class="toolbar-spacer"></div>
+      <button type="button" id="btn-hr-profile-edit" class="btn">Edit employee</button>
+      <button type="button" class="btn btn-primary" data-close>Done</button>
+    </footer>
+  </div>
+</dialog>
+
+<dialog class="modal" id="modal-hr-attendance" aria-labelledby="modal-hr-att-title">
+  <form id="form-hr-attendance" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="modal-hr-att-title">Mark attendance</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="field"><label for="hr-att-employee">Employee</label><select id="hr-att-employee" name="employee_id" required></select></div>
+      <div class="form-grid">
+        <div class="field"><label for="hr-att-date-input">Date</label><input type="date" id="hr-att-date-input" name="date" required></div>
+        <div class="field">
+          <label for="hr-att-status">Status</label>
+          <select id="hr-att-status" name="status">
+            <option value="present">Present</option><option value="late">Late</option><option value="half_day">Half day</option>
+            <option value="absent">Absent</option><option value="leave">On leave</option><option value="wfh">Work from home</option><option value="field">On field</option>
+          </select>
+        </div>
+        <div class="field"><label for="hr-att-in">Time in</label><input type="time" id="hr-att-in" name="in"></div>
+        <div class="field"><label for="hr-att-out">Time out</label><input type="time" id="hr-att-out" name="out"></div>
+      </div>
+      <div class="field"><label for="hr-att-note">Note</label><input type="text" id="hr-att-note" name="note" maxlength="160" placeholder="Regularised by HR, client visit, etc."></div>
+      <p id="hr-att-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-hr-save-att" class="btn btn-primary">Save attendance</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal" id="modal-hr-leave" aria-labelledby="modal-hr-leave-title">
+  <form id="form-hr-leave" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="modal-hr-leave-title">Apply for leave</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="field"><label for="hr-leave-employee">Employee</label><select id="hr-leave-employee" name="employee_id" required></select></div>
+      <div class="field"><label for="hr-leave-type-input">Leave type</label><select id="hr-leave-type-input" name="type"></select></div>
+      <div class="form-grid">
+        <div class="field"><label for="hr-leave-from">From</label><input type="date" id="hr-leave-from" name="from" required></div>
+        <div class="field"><label for="hr-leave-to">To</label><input type="date" id="hr-leave-to" name="to" required></div>
+      </div>
+      <div class="field"><label for="hr-leave-reason">Reason</label><input type="text" id="hr-leave-reason" name="reason" maxlength="160" required></div>
+      <div class="field"><label for="hr-leave-contact">Contact during leave</label><input type="tel" id="hr-leave-contact" name="contact" inputmode="tel" maxlength="15"></div>
+      <p id="hr-leave-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-hr-save-leave" class="btn btn-primary">Submit request</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal" id="modal-hr-job" aria-labelledby="modal-hr-job-title">
+  <form id="form-hr-job" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="modal-hr-job-title">Post a job</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="field"><label for="hr-job-title">Job title</label><input type="text" id="hr-job-title" name="title" maxlength="100" required></div>
+      <div class="form-grid">
+        <div class="field"><label for="hr-job-dept">Department</label><select id="hr-job-dept" name="department"></select></div>
+        <div class="field"><label for="hr-job-branch">Branch</label><select id="hr-job-branch" name="branch_id"></select></div>
+        <div class="field">
+          <label for="hr-job-type">Employment type</label>
+          <select id="hr-job-type" name="employment_type">
+            <option value="full_time">Full time</option><option value="part_time">Part time</option><option value="contract">Contract</option><option value="intern">Intern</option>
+          </select>
+        </div>
+        <div class="field"><label for="hr-job-openings">Openings</label><input type="number" id="hr-job-openings" name="openings" min="1" step="1" value="1" required></div>
+      </div>
+      <div class="field"><label for="hr-job-manager">Hiring manager</label><select id="hr-job-manager" name="hiring_manager_id"></select></div>
+      <div class="field"><label for="hr-job-description">Description</label><textarea id="hr-job-description" name="description" maxlength="600"></textarea></div>
+      <p id="hr-job-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-hr-save-job" class="btn btn-primary">Post job</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal" id="modal-hr-candidate" aria-labelledby="modal-hr-candidate-title">
+  <form id="form-hr-candidate" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="modal-hr-candidate-title">Add candidate</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field"><label for="hr-cand-name">Full name</label><input type="text" id="hr-cand-name" name="name" maxlength="120" required></div>
+        <div class="field"><label for="hr-cand-phone">Phone</label><input type="tel" id="hr-cand-phone" name="phone" inputmode="tel" maxlength="15"></div>
+      </div>
+      <div class="field"><label for="hr-cand-email">Email</label><input type="email" id="hr-cand-email" name="email" maxlength="120"></div>
+      <div class="field"><label for="hr-cand-job">Job</label><select id="hr-cand-job" name="job_id" required></select></div>
+      <div class="form-grid">
+        <div class="field"><label for="hr-cand-exp">Experience (years)</label><input type="number" id="hr-cand-exp" name="experience_years" min="0" max="40" step="0.5"></div>
+        <div class="field"><label for="hr-cand-current">Current CTC (₹)</label><input type="number" id="hr-cand-current" name="current_ctc" min="0" step="1000"></div>
+        <div class="field"><label for="hr-cand-expected">Expected CTC (₹)</label><input type="number" id="hr-cand-expected" name="expected_ctc" min="0" step="1000"></div>
+        <div class="field">
+          <label for="hr-cand-source">Source</label>
+          <select id="hr-cand-source" name="source"><option>LinkedIn</option><option>Referral</option><option>Naukri</option><option>Campus</option><option>Walk-in</option></select>
+        </div>
+        <div class="field">
+          <label for="hr-cand-rating">Rating</label>
+          <select id="hr-cand-rating" name="rating"><option value="5">5 - Excellent</option><option value="4">4 - Good</option><option value="3" selected>3 - Average</option><option value="2">2 - Weak</option><option value="1">1 - Poor</option></select>
+        </div>
+        <div class="field"><label for="hr-cand-interview">Interview (optional)</label><input type="datetime-local" id="hr-cand-interview" name="interview_at"></div>
+      </div>
+      <div class="field"><label for="hr-cand-notes">Notes</label><input type="text" id="hr-cand-notes" name="notes" maxlength="200"></div>
+      <p id="hr-cand-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-hr-save-candidate" class="btn btn-primary">Add candidate</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal" id="modal-hr-review" aria-labelledby="modal-hr-review-title">
+  <form id="form-hr-review" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="modal-hr-review-title">Appraisal</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <input type="hidden" id="hr-review-id">
+      <div class="review-head">
+        <strong id="hr-review-employee"></strong>
+        <span id="hr-review-meta" class="muted"></span>
+      </div>
+      <h3 class="form-section-title">Goals</h3>
+      <div id="hr-review-goals" class="goal-list"></div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="hr-review-self">Self rating</label>
+          <select id="hr-review-self">
+            <option value="">Not rated</option><option value="5">5 - Outstanding</option><option value="4">4 - Exceeds</option><option value="3">3 - Meets</option><option value="2">2 - Needs improvement</option><option value="1">1 - Unsatisfactory</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="hr-review-manager">Manager rating</label>
+          <select id="hr-review-manager">
+            <option value="">Not rated</option><option value="5">5 - Outstanding</option><option value="4">4 - Exceeds</option><option value="3">3 - Meets</option><option value="2">2 - Needs improvement</option><option value="1">1 - Unsatisfactory</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label for="hr-review-note">Manager note</label><textarea id="hr-review-note" maxlength="600"></textarea></div>
+      <p id="hr-review-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-hr-save-review" class="btn btn-primary">Save review</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal modal-wide" id="modal-hr-payslip" aria-labelledby="hr-payslip-title">
+  <div class="modal-form">
+    <header class="modal-header">
+      <h2 id="hr-payslip-title">Payslip</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body" id="hr-payslip-body"></div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Close</button>
+      <button type="button" id="btn-hr-payslip-print" class="btn btn-primary">
+        <svg class="icon" aria-hidden="true"><use href="#i-printer"/></svg><span>Print</span>
+      </button>
+    </footer>
+  </div>
+</dialog>
+
+<dialog class="modal" id="modal-hr-doc" aria-labelledby="hr-doc-modal-title">
+  <form id="form-hr-doc" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="hr-doc-modal-title">Upload document</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <input type="hidden" id="hr-doc-id">
+      <div class="field"><label for="hr-doc-employee">Employee</label><select id="hr-doc-employee" name="employee_id" required></select></div>
+      <div class="field"><label for="hr-doc-type-input">Document type</label><select id="hr-doc-type-input" name="type"></select></div>
+      <div class="field"><label for="hr-doc-number">Document number</label><input type="text" id="hr-doc-number" name="number" maxlength="40"></div>
+      <div class="form-grid">
+        <div class="field"><label for="hr-doc-issued">Issued on</label><input type="date" id="hr-doc-issued" name="issued_on"></div>
+        <div class="field"><label for="hr-doc-expires">Expires on</label><input type="date" id="hr-doc-expires" name="expires_on"></div>
+      </div>
+      <div class="field">
+        <label for="hr-doc-file">File</label>
+        <input type="file" id="hr-doc-file" name="file" accept=".pdf,.jpg,.jpeg,.png">
+        <p class="help">Demo only - the file is not uploaded anywhere; only its name is stored locally.</p>
+      </div>
+      <div class="field"><label for="hr-doc-notes">Notes</label><input type="text" id="hr-doc-notes" name="notes" maxlength="160"></div>
+      <p id="hr-doc-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-hr-save-doc" class="btn btn-primary">Save document</button>
+    </footer>
+  </form>
+</dialog>
+
 <!-- ===================== TEMPLATES ===================== -->
 
 <!-- Dashboard: one officer row -->
@@ -2051,6 +3031,157 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
     <td class="rec-actions">
       <button type="button" class="btn btn-sm btn-primary" data-action="approve">Approve</button>
       <button type="button" class="btn btn-sm" data-action="reject">Reject</button>
+    </td>
+  </tr>
+</template>
+
+<!-- HR: one employee row -->
+<template id="tpl-hr-employee-row">
+  <tr data-emp-id="">
+    <td class="cell-person" data-field="person"></td>
+    <td data-field="designation"></td>
+    <td data-field="department"></td>
+    <td data-field="branch"></td>
+    <td data-field="doj"></td>
+    <td data-field="tenure"></td>
+    <td data-field="type"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td class="cell-actions">
+      <button type="button" class="icon-btn" data-action="view" aria-label="View profile">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+      </button>
+      <button type="button" class="icon-btn" data-action="edit" aria-label="Edit employee">
+        <svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<!-- HR attendance: one register row -->
+<template id="tpl-hr-att-row">
+  <tr data-emp-id="">
+    <td class="cell-person" data-field="person"></td>
+    <td data-field="shift"></td>
+    <td data-field="in"></td>
+    <td data-field="out"></td>
+    <td data-field="worked"></td>
+    <td data-field="ot"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td data-field="note"></td>
+    <td class="cell-actions">
+      <button type="button" class="icon-btn" data-action="mark" aria-label="Mark attendance">
+        <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<!-- HR attendance: one monthly summary row -->
+<template id="tpl-hr-att-month-row">
+  <tr>
+    <td class="cell-person" data-field="person"></td>
+    <td class="num" data-field="working"></td>
+    <td class="num" data-field="present"></td>
+    <td class="num" data-field="late"></td>
+    <td class="num" data-field="half_day"></td>
+    <td class="num" data-field="leave"></td>
+    <td class="num" data-field="absent"></td>
+    <td class="num" data-field="ot"></td>
+    <td><span class="chip" data-field="pct"></span></td>
+  </tr>
+</template>
+
+<!-- HR leave: one request row -->
+<template id="tpl-hr-leave-row">
+  <tr data-leave-id="">
+    <td class="cell-person" data-field="person"></td>
+    <td data-field="type"></td>
+    <td data-field="dates"></td>
+    <td class="num" data-field="days"></td>
+    <td data-field="applied"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td data-field="decided"></td>
+    <td class="cell-actions">
+      <button type="button" class="icon-btn" data-action="approve" aria-label="Approve leave">
+        <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>
+      </button>
+      <button type="button" class="icon-btn" data-action="reject" aria-label="Reject leave">
+        <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<!-- HR leave: one balance row -->
+<template id="tpl-hr-leave-balance-row">
+  <tr>
+    <td class="cell-person" data-field="person"></td>
+    <td><div class="leave-balances" data-field="balance"></div></td>
+  </tr>
+</template>
+
+<!-- HR recruitment: one job row -->
+<template id="tpl-hr-job-row">
+  <tr data-job-id="">
+    <td data-field="title"></td>
+    <td data-field="department"></td>
+    <td data-field="branch"></td>
+    <td data-field="type"></td>
+    <td class="num" data-field="openings"></td>
+    <td class="num" data-field="filled"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td data-field="posted"></td>
+    <td class="cell-actions">
+      <button type="button" class="btn btn-sm" data-action="toggle-job">Close</button>
+    </td>
+  </tr>
+</template>
+
+<!-- HR payroll: one payslip row -->
+<template id="tpl-hr-pay-row">
+  <tr data-emp-id="">
+    <td class="cell-person" data-field="person"></td>
+    <td class="num" data-field="days"></td>
+    <td class="num" data-field="lop"></td>
+    <td class="num" data-field="gross"></td>
+    <td class="num" data-field="deductions"></td>
+    <td class="num" data-field="net"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td class="cell-actions">
+      <button type="button" class="btn btn-sm" data-action="view">Payslip</button>
+    </td>
+  </tr>
+</template>
+
+<!-- HR performance: one appraisal row -->
+<template id="tpl-hr-perf-row">
+  <tr data-review-id="">
+    <td class="cell-person" data-field="person"></td>
+    <td data-field="department"></td>
+    <td class="stars" data-field="self"></td>
+    <td class="stars" data-field="manager"></td>
+    <td class="stars" data-field="final"></td>
+    <td data-field="goals"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td class="cell-actions">
+      <button type="button" class="btn btn-sm" data-action="review">Open</button>
+    </td>
+  </tr>
+</template>
+
+<!-- HR documents: one register row -->
+<template id="tpl-hr-doc-row">
+  <tr data-doc-id="">
+    <td class="cell-person" data-field="person"></td>
+    <td data-field="type"></td>
+    <td data-field="number"></td>
+    <td data-field="issued"></td>
+    <td data-field="expires"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td class="cell-actions">
+      <button type="button" class="icon-btn" data-action="edit" aria-label="Edit document">
+        <svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg>
+      </button>
     </td>
   </tr>
 </template>

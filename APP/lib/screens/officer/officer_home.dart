@@ -8,8 +8,10 @@ import '../../models/models.dart';
 import '../../services/notifier.dart';
 import '../../services/session.dart';
 import '../../services/tracking_service.dart';
+import '../../services/hr_store.dart';
 import '../../theme.dart';
 import '../../widgets/common.dart';
+import '../hr/hr_me_screen.dart';
 import 'customer_visit_card.dart';
 import 'lunch_card.dart';
 import 'task_map_screen.dart';
@@ -34,6 +36,7 @@ class _OfficerHomeState extends State<OfficerHome> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    HrStore.instance.ensureSeeded(Session.instance.user);
     _load();
   }
 
@@ -293,6 +296,14 @@ class _OfficerHomeState extends State<OfficerHome> with WidgetsBindingObserver {
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: 'My HR',
+            icon: const Icon(Icons.badge_outlined),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const HrMeScreen()),
+            ),
+          ),
           IconButton(
             tooltip: 'Refresh',
             icon: const Icon(Icons.refresh),
