@@ -31,6 +31,10 @@ class Session extends ChangeNotifier {
 
   bool get loggedIn => user != null && Api.instance.token != null;
 
+  /// Local-only demo login used by the Recovery module preview.
+  static const demoToken = 'demo-recovery';
+  bool get isDemo => Api.instance.token == demoToken;
+
   Future<String?> _read(String key) async {
     try {
       final v = await _secure.read(key: key);
@@ -77,7 +81,7 @@ class Session extends ChangeNotifier {
     }
     restoring = false;
     notifyListeners();
-    if (loggedIn) {
+    if (loggedIn && !isDemo) {
       PushService.registerAfterLogin();
       _refreshMe();
     }
@@ -111,6 +115,22 @@ class Session extends ChangeNotifier {
     await _write(_kUser, jsonEncode(user!.toJson()));
     notifyListeners();
     PushService.registerAfterLogin();
+  }
+
+  /// Opens the Recovery module with local sample data - no API call is made.
+  Future<void> loginDemo() async {
+    user = User(
+      id: 'demo-recovery-manager',
+      userid: 'RM001',
+      name: 'Priya Deshmukh',
+      role: 'recovery_manager',
+      branchName: 'Head Office - Recovery Cell',
+    );
+    Api.instance.token = demoToken;
+    expired = false;
+    await _write(_kToken, demoToken);
+    await _write(_kUser, jsonEncode(user!.toJson()));
+    notifyListeners();
   }
 
   Future<void> logout({bool expired = false}) async {

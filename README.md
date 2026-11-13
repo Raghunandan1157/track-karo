@@ -25,3 +25,12 @@ cd WEBSITE && npm install && npm run dev   # http://localhost:3100, needs WEBSIT
 cd APP && flutter pub get && flutter build apk --release
 ```
 The API address is the single constant in `APP/lib/config.dart`.
+
+## Recovery module (UI demo)
+
+The recovery desk is a UI-only module for a `recovery_manager` role. It uses static sample data and does not call the API or database.
+
+- **Website**: open `index.html` and choose **Open as Recovery Manager (demo)**.
+- **App**: on the login screen choose **Preview Recovery Module (demo)**.
+
+The module covers the 28-stage workflow (pre-legal, legal and final recovery), case workspace, notices, settlement calculator/approvals, reports and stage setup. Stage changes, payments, notices and proposals stay in memory and reset on reload/restart.

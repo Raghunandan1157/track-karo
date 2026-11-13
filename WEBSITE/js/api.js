@@ -20,6 +20,17 @@ export function saveAuth(token, user) {
 
 export function saveUser(user) { saveAuth(null, user); }
 
+/** Local-only demo session used by the Recovery module preview. */
+export const DEMO_TOKEN = 'demo-recovery';
+
+export function isDemoSession() {
+  return getToken() === DEMO_TOKEN;
+}
+
+export function startDemoSession(user) {
+  saveAuth(DEMO_TOKEN, user);
+}
+
 export function clearAuth() {
   try { localStorage.removeItem(TOKEN_KEY); localStorage.removeItem(USER_KEY); } catch { /* ignore */ }
 }

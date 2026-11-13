@@ -49,13 +49,14 @@ class User {
   final String id;
   final String userid;
   final String name;
-  final String role; // admin | branch_manager | field_officer
+  final String role; // admin | branch_manager | field_officer | recovery_manager
   final String? branchId;
   final String branchName;
   final String phone;
 
   bool get isOfficer => role == 'field_officer';
   bool get isAdmin => role == 'admin';
+  bool get isRecoveryManager => role == 'recovery_manager';
 
   factory User.fromJson(Map<String, dynamic> j) => User(
         id: asStr(j['id']),

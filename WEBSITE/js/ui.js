@@ -72,7 +72,7 @@ export const ALERT_ICONS = {
   location_off: '#i-location-off', no_signal: '#i-no-signal', geofence_missed: '#i-geofence-missed',
   meeting: '#i-meeting', long_break: '#i-long-break',
 };
-export const ROLE_LABELS = { admin: 'Admin', branch_manager: 'Branch manager', field_officer: 'Field officer' };
+export const ROLE_LABELS = { admin: 'Admin', branch_manager: 'Branch manager', field_officer: 'Field officer', recovery_manager: 'Recovery manager' };
 export const KIND_LABELS = { center: 'Center', village: 'Village', visit: 'Visit', lunch: 'Lunch', unexplained: 'Unexplained stop', customer: 'Customer' };
 export const KIND_ICONS = { visit: '#i-visit', lunch: '#i-lunch', unexplained: '#i-unexplained', customer: '#i-customer' };
 

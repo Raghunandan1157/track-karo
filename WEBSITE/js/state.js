@@ -33,6 +33,7 @@ export function emit(name, detail) {
 // ---------- roles ----------
 export const isAdmin = () => state.user?.role === 'admin';
 export const isManager = () => state.user?.role === 'branch_manager';
+export const isRecoveryManager = () => state.user?.role === 'recovery_manager';
 export const ownBranchId = () => (isManager() ? state.user?.branch_id ?? null : null);
 
 // ---------- branches ----------
