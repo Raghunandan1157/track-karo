@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HCCS Scrub Analysis Report</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#1a2233; --muted:#6b7280;
+    --line:#e6e9f2; --brand:#4f46e5; --brand2:#7c3aed; --teal:#0ea5e9;
+    --green:#16a34a; --amber:#f59e0b; --red:#ef4444; --violet:#8b5cf6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--ink);font-size:14px;line-height:1.5}
+  .wrap{max-width:1280px;margin:0 auto;padding:24px 20px 60px}
+
+  /* header */
+  .topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand2));
+        display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px}
+  h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .meta-badge{display:inline-flex;align-items:center;gap:6px;background:#eef2ff;color:var(--brand);
+        padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600}
+
+  /* filter bar (UI only) */
+  .filters{display:flex;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);
+        border-radius:14px;padding:12px 14px;margin-bottom:22px;align-items:center}
+  .filters .lbl{font-size:12px;color:var(--muted);font-weight:600}
+  select,.inp{background:#f9fafc;border:1px solid var(--line);border-radius:9px;padding:8px 12px;
+        font-size:13px;color:var(--ink);min-width:150px}
+  .btn{background:var(--brand);color:#fff;border:none;border-radius:9px;padding:8px 16px;font-size:13px;
+        font-weight:600;cursor:pointer}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+
+  /* KPI cards */
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:22px}
+  @media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:640px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+  .kpi .k-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  .kpi .k-value{font-size:26px;font-weight:800;margin-top:6px;letter-spacing:-.02em}
+  .kpi .k-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .kpi .k-dot{position:absolute;top:16px;right:16px;width:10px;height:10px;border-radius:50%}
+  .kpi.primary .k-value{color:var(--brand)}
+  .kpi.green .k-value{color:var(--green)}
+  .kpi.amber .k-value{color:var(--amber)}
+  .kpi.red .k-value{color:var(--red)}
+  .kpi.teal .k-value{color:var(--teal)}
+  .kpi.violet .k-value{color:var(--violet)}
+
+  /* sections */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .card h3{font-size:15px;font-weight:700;margin-bottom:4px}
+  .card .desc{font-size:12px;color:var(--muted);margin-bottom:16px}
+  .card.full{grid-column:1/-1}
+
+  /* bars */
+  .vchart{display:flex;align-items:flex-end;gap:8px;height:180px;padding-top:10px}
+  .vbar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}
+  .vbar .col{width:100%;max-width:56px;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,var(--brand),var(--brand2));transition:.2s}
+  .vbar .col:hover{filter:brightness(1.08)}
+  .vbar .val{font-size:11px;font-weight:700;color:var(--ink)}
+  .vbar .tag{font-size:10px;color:var(--muted);text-align:center;white-space:nowrap}
+  .hchart{display:flex;flex-direction:column;gap:9px}
+  .hrow{display:grid;grid-template-columns:160px 1fr 60px;gap:10px;align-items:center}
+  .hrow .name{font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hrow .track{height:14px;background:#eef0f6;border-radius:7px;overflow:hidden}
+  .hrow .fill{height:100%;border-radius:7px;background:linear-gradient(90deg,var(--brand),var(--brand2))}
+  .hrow .num{font-size:12px;font-weight:700;text-align:right;color:var(--ink)}
+
+  /* donut */
+  .donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+  .legend{display:flex;flex-direction:column;gap:8px;flex:1;min-width:180px}
+  .legend .li{display:flex;align-items:center;gap:8px;font-size:12px}
+  .legend .sw{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+  .legend .li .lv{margin-left:auto;font-weight:700}
+  .legend .li .lp{color:var(--muted);margin-left:6px}
+
+  /* tables */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700}
+  .pill.g{background:#e7f6ec;color:#15803d}
+  .pill.a{background:#fef3e2;color:#b45309}
+  .pill.r{background:#fdecec;color:#b91c1c}
+  .pill.b{background:#eef2ff;color:#4f46e5}
+
+  .foot{margin-top:24px;text-align:center;color:var(--muted);font-size:12px}
+  .foot a{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">HK</div>
+      <div>
+        <h1>HCCS Scrub Analysis Report</h1>
+        <div class="sub">CRIF Highmark · Hindusthan Microfinance Pvt. Ltd. · Report date 24-10-2026</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span class="meta-badge">● 100% Match</span>
+      <span class="meta-badge">✓ 100% Success</span>
+    </div>
+  </div>
+
+  <div class="filters">
+    <span class="lbl">FILTERS</span>
+    <select><option>All Branches (16)</option><option>Pusesavali</option><option>Tembhurni</option><option>Thane</option><option>Jogeshwari</option></select>
+    <select><option>All DPD Buckets</option><option>Regular</option><option>1–30</option><option>31–60</option><option>61–90</option><option>91–180</option><option>181–365</option><option>365 &amp; Above</option></select>
+    <select><option>All Products</option><option>JLG Loan</option><option>Personal/PDC</option><option>Daily Hundred Days</option></select>
+    <select><option>Maharashtra</option></select>
+    <input class="inp" type="text" placeholder="Search Customer / Loan No…">
+    <button class="btn">Apply</button>
+    <button class="btn ghost">Reset</button>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid">
+    <div class="card" id="scoreCard"></div>
+    <div class="card" id="dpdCard"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card" id="branchCard"></div>
+    <div class="card" id="statusCard"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card" id="mfiCard"></div>
+    <div class="card" id="lenderCard"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card" id="qualityCard"></div>
+    <div class="card" id="portfolioCard"></div>
+  </div>
+
+  <div class="foot">
+    HCCS Scrub Analysis · Static UI preview (no server / database) · Generated 24-10-2026
+  </div>
+</div>
+
+<script>
+/* ---------- data ---------- */
+const D = {
+  recordsScrubbed: 10119,
+  uniqueCustomers: 10115,
+  matchRate: 100,
+  successRate: 100,
+  crifTotal: 10363,
+  crifUnmatched: 244,
+  accounts: 171943,
+  inquiries: 62096,
+  avgScore: 569, medianScore: 531,
+  avgActive: 3.35,
+  avgTotalAccts: 16.6,
+  overdueBorrowers: 5792, overduePct: 55.9,
+  mfi2Plus: 5582, mfiTotal: 7264, maxMfi: 63,
+  exposureCurrentCr: 234.4, exposureDisbursedCr: 323.0,
+
+  scoreBuckets: [
+    {label:'< 300', v:803, c:'#94a3b8'},
+    {label:'300–499', v:0, c:'#cbd5e1'},
+    {label:'500–599', v:4916, c:'#f59e0b'},
+    {label:'600–699', v:1266, c:'#38bdf8'},
+    {label:'700–799', v:3362, c:'#16a34a'},
+    {label:'800–899', v:16, c:'#4f46e5'},
+  ],
+  dpdBuckets: [
+    {label:'Regular', v:5097, c:'#16a34a'},
+    {label:'1–30', v:224, c:'#38bdf8'},
+    {label:'31–60', v:80, c:'#38bdf8'},
+    {label:'61–90', v:70, c:'#f59e0b'},
+    {label:'91–180', v:121, c:'#f59e0b'},
+    {label:'181–365', v:221, c:'#f97316'},
+    {label:'365 & Above', v:4306, c:'#ef4444'},
+  ],
+  branches: [
+    {name:'Pusesavali', v:1553},{name:'Tembhurni', v:1144},{name:'Thane', v:1120},
+    {name:'Jogeshwari', v:1017},{name:'Borivali', v:977},{name:'Ghatkopar', v:919},
+    {name:'Dahiwali', v:732},{name:'Chembur', v:720},{name:'Satara', v:653},
+    {name:'Chinchwad', v:498},{name:'Panvel', v:289},{name:'Dombivali', v:278},
+    {name:'Mhsawad', v:80},{name:'Jarimari', v:62},{name:'Head Office', v:56},{name:'Sakinaka', v:21},
+  ],
+  accountStatus: [
+    {name:'Closed', v:126081, c:'#94a3b8'},
+    {name:'Active', v:23078, c:'#16a34a'},
+    {name:'Delinquent', v:10665, c:'#f59e0b'},
+    {name:'Written Off', v:8852, c:'#ef4444'},
+    {name:'Sold / Purchased', v:1950, c:'#8b5cf6'},
+    {name:'Settled', v:755, c:'#38bdf8'},
+    {name:'Restructured', v:169, c:'#f97316'},
+    {name:'Suit Filed / Wilful', v:268, c:'#dc2626'},
+    {name:'Other', v:125, c:'#cbd5e1'},
+  ],
+  lenders: [
+    {name:'GrameenKoota', v:9981},{name:'Ujjivan SFB', v:8483},{name:'Bandhan Bank', v:7858},
+    {name:'SVASTI', v:7193},{name:'IndusInd Bank', v:6729},{name:'SVATANTRA Micro', v:5816},
+    {name:'Jana SFB', v:5268},{name:'Unity SFB', v:3534},{name:'RBL Bank', v:3172},
+    {name:'Suryoday', v:3123},
+  ],
+  products: [
+    {name:'JLG Loan', v:9272},{name:'Personal / PDC', v:606},{name:'Daily Hundred Days Loan', v:138},
+    {name:'Vehicle Loan', v:54},{name:'Mortgage / LAP', v:45},{name:'Stock Loan', v:4},
+  ],
+  quality: [
+    {field:'DOB', present:10363-125, missing:125, pct:'98.8%'},
+    {field:'PAN', present:7492, missing:10363-7492, pct:'72.3%'},
+    {field:'Aadhaar (UID)', present:8740, missing:10363-8740, pct:'84.3%'},
+    {field:'Phone 1', present:10205, missing:158, pct:'98.5%'},
+    {field:'Voter ID', present:7867, missing:10363-7867, pct:'75.9%'},
+    {field:'Address', present:9941, missing:422, pct:'95.9%'},
+  ],
+  purposes: [
+    {name:'Animal Husbandry', v:2762},{name:'Mess Business', v:1097},{name:'Tailoring', v:999},
+    {name:'Small Business', v:710},{name:'Vegetable Business', v:393},{name:'Beauty Parlour', v:385},
+  ],
+};
+
+const fmt = n => n.toLocaleString('en-IN');
+const color = (c, v) => { const a=document.createElement('span'); a.className='col'; a.style.background=c; a.style.height=v+'%'; return a; };
+
+/* ---------- KPI cards ---------- */
+function renderKpis(){
+  const k = [
+    {label:'Records Scrubbed', val:fmt(D.recordsScrubbed), sub:'10,115 unique customers', cls:'primary', dot:'#4f46e5'},
+    {label:'Match Rate', val:D.matchRate+'%', sub:D.crifTotal+' CRIF records returned', cls:'green', dot:'#16a34a'},
+    {label:'Credit Accounts', val:fmt(D.accounts), sub:'across 83 lenders', cls:'teal', dot:'#0ea5e9'},
+    {label:'Avg Credit Score', val:D.avgScore, sub:'median '+D.medianScore, cls:'amber', dot:'#f59e0b'},
+    {label:'Borrowers Overdue', val:fmt(D.overdueBorrowers), sub:D.overduePct+'% have ≥1 overdue a/c', cls:'red', dot:'#ef4444'},
+    {label:'≥2 MFI Loans', val:fmt(D.mfi2Plus), sub:'max '+D.maxMfi+' MFI loans / borrower', cls:'violet', dot:'#8b5cf6'},
+  ];
+  document.getElementById('kpis').innerHTML = k.map(x=>`
+    <div class="kpi ${x.cls}">
+      <span class="k-dot" style="background:${x.dot}"></span>
+      <div class="k-label">${x.label}</div>
+      <div class="k-value">${x.val}</div>
+      <div class="k-sub">${x.sub}</div>
+    </div>`).join('');
+}
+
+/* ---------- vertical bar chart ---------- */
+function vchart(title, desc, data, maxOverride){
+  const max = maxOverride || Math.max(...data.map(d=>d.v));
+  return `<h3>${title}</h3><div class="desc">${desc}</div>
+  <div class="vchart">
+    ${data.map(d=>`
+      <div class="vbar" title="${d.label}: ${fmt(d.v)}">
+        <div class="val">${fmt(d.v)}</div>
+        <div class="col" style="background:${d.c};height:${Math.max(3,(d.v/max*100))}%"></div>
+        <div class="tag">${d.label}</div>
+      </div>`).join('')}
+  </div>`;
+}
+
+/* ---------- horizontal bar chart ---------- */
+function hchart(title, desc, data, maxOverride){
+  const max = maxOverride || Math.max(...data.map(d=>d.v));
+  return `<h3>${title}</h3><div class="desc">${desc}</div>
+  <div class="hchart">
+    ${data.map(d=>`
+      <div class="hrow">
+        <div class="name">${d.name}</div>
+        <div class="track"><div class="fill" style="width:${(d.v/max*100).toFixed(1)}%"></div></div>
+        <div class="num">${fmt(d.v)}</div>
+      </div>`).join('')}
+  </div>`;
+}
+
+/* ---------- donut chart (SVG) ---------- */
+function donut(data){
+  const total = data.reduce((a,b)=>a+b.v,0);
+  let acc = 0; const r = 70, cx=90, cy=90, circ=2*Math.PI*r;
+  const segs = data.map(d=>{
+    const frac = d.v/total;
+    const dash = frac*circ;
+    const off = -acc*circ; acc += frac;
+    const col = d.c;
+    return `<circle r="${r}" cx="${cx}" cy="${cy}" fill="none" stroke="${col}" stroke-width="26"
+      stroke-dasharray="${dash} ${circ-dash}" stroke-dashoffset="${off}" transform="rotate(-90 ${cx} ${cy})"/>`;
+  }).join('');
+  return `<svg width="180" height="180" viewBox="0 0 180 180">${segs}
+    <text x="90" y="86" text-anchor="middle" font-size="26" font-weight="800" fill="#1a2233">${fmt(total)}</text>
+    <text x="90" y="106" text-anchor="middle" font-size="11" fill="#6b7280">accounts</text></svg>`;
+}
+function donutLegend(data){
+  const total = data.reduce((a,b)=>a+b.v,0);
+  return `<div class="legend">${data.map(d=>`
+    <div class="li"><span class="sw" style="background:${d.c}"></span>${d.name}
+      <span class="lv">${fmt(d.v)}</span><span class="lp">${(d.v/total*100).toFixed(1)}%</span></div>`).join('')}</div>`;
+}
+
+/* ---------- render ---------- */
+renderKpis();
+
+document.getElementById('scoreCard').innerHTML = vchart('Credit Score Distribution',
+  'PERFORM CNS score across '+fmt(D.crifTotal)+' applicants. Avg '+D.avgScore+' · median '+D.medianScore+'.',
+  D.scoreBuckets, 4916);
+
+document.getElementById('dpdCard').innerHTML = vchart('DPD Bucket (Portfolio Delinquency)',
+  'Days-past-due of the '+fmt(D.recordsScrubbed)+' loans submitted. '+fmt(4306)+' (42.5%) are 365+ DPD.',
+  D.dpdBuckets, 5097);
+
+document.getElementById('branchCard').innerHTML = hchart('Records by Branch',
+  'Distribution of scrub records across '+D.branches.length+' branches.',
+  D.branches, 1553);
+
+document.getElementById('statusCard').innerHTML = `<h3>Credit Account Status</h3>
+  <div class="desc">Status of all ${fmt(D.accounts)} accounts reported by the bureau.</div>
+  <div class="donut-wrap">${donut(D.accountStatus)}${donutLegend(D.accountStatus)}</div>`;
+
+document.getElementById('mfiCard').innerHTML = `<h3>MFI Over-indebtedness</h3>
+  <div class="desc">Multiple microfinance loans per borrower signal over-leverage. ${fmt(D.mfiTotal)} borrowers (70%) hold ≥1 MFI loan.</div>
+  <div class="hchart">
+    ${[
+      {name:'≥ 2 MFI loans', v:5582},
+      {name:'≥ 3 MFI loans', v:4169},
+      {name:'≥ 4 MFI loans', v:3128},
+      {name:'1 MFI loan only', v:1682},
+    ].map(d=>`
+      <div class="hrow">
+        <div class="name">${d.name}</div>
+        <div class="track"><div class="fill" style="width:${(d.v/5582*100).toFixed(1)}%"></div></div>
+        <div class="num">${fmt(d.v)}</div>
+      </div>`).join('')}
+  </div>
+  <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+    <span class="pill r">Max ${D.maxMfi} MFI loans on a single borrower</span>
+    <span class="pill a">Avg ${D.avgTotalAccts} total accounts / borrower</span>
+  </div>`;
+
+document.getElementById('lenderCard').innerHTML = hchart('Top Credit Grantors',
+  'Lenders with the highest account count across the scrub population.',
+  D.lenders, 9981);
+
+/* quality table */
+document.getElementById('qualityCard').innerHTML = `<h3>Data Quality — KYC Fields</h3>
+  <div class="desc">Completeness of key identification fields in the bureau response (${fmt(D.crifTotal)} applicants).</div>
+  <table>
+    <thead><tr><th>Field</th><th class="num">Present</th><th class="num">Missing</th><th class="num">Completeness</th></tr></thead>
+    <tbody>${D.quality.map(q=>`
+      <tr><td>${q.field}</td><td class="num">${fmt(q.present)}</td><td class="num">${fmt(q.missing)}</td>
+      <td class="num">${q.pct}</td></tr>`).join('')}
+    </tbody>
+  </table>
+  <div style="margin-top:14px;font-size:12px;color:var(--muted)">
+    Reconciliation: ${fmt(D.crifTotal)} bureau records vs ${fmt(D.recordsScrubbed)} submitted →
+    <span class="pill a">${fmt(D.crifUnmatched)} unmatched in bureau output</span>
+  </div>`;
+
+/* portfolio table */
+document.getElementById('portfolioCard').innerHTML = `<h3>Portfolio Composition</h3>
+  <div class="desc">Product mix of the ${fmt(D.recordsScrubbed)} loans submitted for scrub.</div>
+  <table>
+    <thead><tr><th>Product</th><th class="num">Loans</th><th class="num">Share</th></tr></thead>
+    <tbody>${D.products.map(p=>`
+      <tr><td>${p.name}</td><td class="num">${fmt(p.v)}</td>
+      <td class="num">${(p.v/10119*100).toFixed(1)}%</td></tr>`).join('')}
+    </tbody>
+  </table>`;
+</script>
+</body>
+</html>
