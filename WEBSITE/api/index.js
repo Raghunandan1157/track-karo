@@ -496,6 +496,13 @@ route('DELETE', '/branches/:id', ADMIN, async ({ params }) => {
 });
 
 // ---- settings ----
+// ======================= scrub analysis (credit-bureau report, admin only) =======================
+route('GET', '/scrub-report', ADMIN, async () => {
+  const report = await q1('SELECT id, report_date, title, data, created_at FROM scrub_reports ORDER BY report_date DESC LIMIT 1');
+  if (!report) throw notFound('No scrub report has been loaded yet');
+  return { report };
+});
+
 route('GET', '/settings', ANY, () => getSettings(true));
 route('PUT', '/settings', ADMIN, ({ body }) => saveSettings(body));
 

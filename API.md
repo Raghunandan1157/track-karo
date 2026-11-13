@@ -80,6 +80,7 @@ alert     { id, type:"location_off"|"no_signal"|"geofence_missed"|"meeting"|"lon
 | DELETE | `/branches/:id` | (admin) | `{ok:true}` |
 | GET | `/settings` | | `settings` |
 | PUT | `/settings` | any subset of settings (admin) | `settings` |
+| GET | `/scrub-report` | (admin) latest credit-bureau scrub report | `{report: {id, report_date, title, data, created_at}}` |
 
 ### report (one per field officer per day)
 ```

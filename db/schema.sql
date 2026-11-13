@@ -180,6 +180,15 @@ CREATE TABLE IF NOT EXISTS settings (
   value jsonb NOT NULL
 );
 
+-- credit-bureau scrub analysis reports (one row per report date; figures as JSON)
+CREATE TABLE IF NOT EXISTS scrub_reports (
+  id serial PRIMARY KEY,
+  report_date date NOT NULL UNIQUE,
+  title text NOT NULL,
+  data jsonb NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
 -- wrong-password attempts (login throttling)
 CREATE TABLE IF NOT EXISTS login_failures (
   userid text NOT NULL,

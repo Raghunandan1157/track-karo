@@ -104,11 +104,12 @@
     <div class="brand">
       <div class="logo">HK</div>
       <div>
-        <h1>HCCS Scrub Analysis Report</h1>
-        <div class="sub">CRIF Highmark · Hindusthan Microfinance Pvt. Ltd. · Report date 24-10-2026</div>
+        <h1 id="report-title">HCCS Scrub Analysis Report</h1>
+        <div class="sub" id="report-sub">Loading report…</div>
       </div>
     </div>
     <div style="display:flex;gap:10px;align-items:center">
+      <a class="meta-badge" href="../app.html" style="text-decoration:none">← Track_karo</a>
       <span class="meta-badge">● 100% Match</span>
       <span class="meta-badge">✓ 100% Success</span>
     </div>
@@ -148,86 +149,44 @@
   </div>
 
   <div class="foot">
-    HCCS Scrub Analysis · Static UI preview (no server / database) · Generated 24-10-2026
+    <span id="report-foot">HCCS Scrub Analysis</span> · <a href="../app.html">Back to Track_karo</a>
   </div>
 </div>
 
 <script>
-/* ---------- data ---------- */
-const D = {
-  recordsScrubbed: 10119,
-  uniqueCustomers: 10115,
-  matchRate: 100,
-  successRate: 100,
-  crifTotal: 10363,
-  crifUnmatched: 244,
-  accounts: 171943,
-  inquiries: 62096,
-  avgScore: 569, medianScore: 531,
-  avgActive: 3.35,
-  avgTotalAccts: 16.6,
-  overdueBorrowers: 5792, overduePct: 55.9,
-  mfi2Plus: 5582, mfiTotal: 7264, maxMfi: 63,
-  exposureCurrentCr: 234.4, exposureDisbursedCr: 323.0,
+/* ---------- data: loaded from the Track_karo database (Neon) through the API ---------- */
+(async function () {
+  const TOKEN = (() => { try { return localStorage.getItem('tk_token') || ''; } catch { return ''; } })();
+  const toLogin = () => location.replace('../index.html');
+  const fail = (msg) => {
+    const box = document.getElementById('kpis');
+    box.textContent = '';
+    const card = document.createElement('div');
+    card.className = 'card'; card.style.gridColumn = '1 / -1'; card.textContent = msg;
+    box.appendChild(card);
+  };
+  if (!TOKEN) return toLogin();
+  let D;
+  try {
+    const r = await fetch('/api/scrub-report', { headers: { Authorization: 'Bearer ' + TOKEN } });
+    if (r.status === 401) {
+      if (TOKEN.startsWith('demo')) return fail('This report needs a real admin sign-in. Log out of the demo and sign in with your admin account.');
+      return toLogin();
+    }
+    if (r.status === 403) return fail('Only an admin can view the scrub analysis.');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const report = (await r.json()).report;
+    D = report.data;
+    const day = String(report.report_date).split('-').reverse().join('-');
+    document.getElementById('report-title').textContent = report.title;
+    document.title = report.title;
+    document.getElementById('report-sub').textContent = `${D.source} · Report date ${day}`;
+    document.getElementById('report-foot').textContent = `${report.title} · Data from the Track_karo database · Report date ${day}`;
+  } catch (err) {
+    console.error(err);
+    return fail('Could not load the report. Check your connection and reload the page.');
+  }
 
-  scoreBuckets: [
-    {label:'< 300', v:803, c:'#94a3b8'},
-    {label:'300–499', v:0, c:'#cbd5e1'},
-    {label:'500–599', v:4916, c:'#f59e0b'},
-    {label:'600–699', v:1266, c:'#38bdf8'},
-    {label:'700–799', v:3362, c:'#16a34a'},
-    {label:'800–899', v:16, c:'#4f46e5'},
-  ],
-  dpdBuckets: [
-    {label:'Regular', v:5097, c:'#16a34a'},
-    {label:'1–30', v:224, c:'#38bdf8'},
-    {label:'31–60', v:80, c:'#38bdf8'},
-    {label:'61–90', v:70, c:'#f59e0b'},
-    {label:'91–180', v:121, c:'#f59e0b'},
-    {label:'181–365', v:221, c:'#f97316'},
-    {label:'365 & Above', v:4306, c:'#ef4444'},
-  ],
-  branches: [
-    {name:'Pusesavali', v:1553},{name:'Tembhurni', v:1144},{name:'Thane', v:1120},
-    {name:'Jogeshwari', v:1017},{name:'Borivali', v:977},{name:'Ghatkopar', v:919},
-    {name:'Dahiwali', v:732},{name:'Chembur', v:720},{name:'Satara', v:653},
-    {name:'Chinchwad', v:498},{name:'Panvel', v:289},{name:'Dombivali', v:278},
-    {name:'Mhsawad', v:80},{name:'Jarimari', v:62},{name:'Head Office', v:56},{name:'Sakinaka', v:21},
-  ],
-  accountStatus: [
-    {name:'Closed', v:126081, c:'#94a3b8'},
-    {name:'Active', v:23078, c:'#16a34a'},
-    {name:'Delinquent', v:10665, c:'#f59e0b'},
-    {name:'Written Off', v:8852, c:'#ef4444'},
-    {name:'Sold / Purchased', v:1950, c:'#8b5cf6'},
-    {name:'Settled', v:755, c:'#38bdf8'},
-    {name:'Restructured', v:169, c:'#f97316'},
-    {name:'Suit Filed / Wilful', v:268, c:'#dc2626'},
-    {name:'Other', v:125, c:'#cbd5e1'},
-  ],
-  lenders: [
-    {name:'GrameenKoota', v:9981},{name:'Ujjivan SFB', v:8483},{name:'Bandhan Bank', v:7858},
-    {name:'SVASTI', v:7193},{name:'IndusInd Bank', v:6729},{name:'SVATANTRA Micro', v:5816},
-    {name:'Jana SFB', v:5268},{name:'Unity SFB', v:3534},{name:'RBL Bank', v:3172},
-    {name:'Suryoday', v:3123},
-  ],
-  products: [
-    {name:'JLG Loan', v:9272},{name:'Personal / PDC', v:606},{name:'Daily Hundred Days Loan', v:138},
-    {name:'Vehicle Loan', v:54},{name:'Mortgage / LAP', v:45},{name:'Stock Loan', v:4},
-  ],
-  quality: [
-    {field:'DOB', present:10363-125, missing:125, pct:'98.8%'},
-    {field:'PAN', present:7492, missing:10363-7492, pct:'72.3%'},
-    {field:'Aadhaar (UID)', present:8740, missing:10363-8740, pct:'84.3%'},
-    {field:'Phone 1', present:10205, missing:158, pct:'98.5%'},
-    {field:'Voter ID', present:7867, missing:10363-7867, pct:'75.9%'},
-    {field:'Address', present:9941, missing:422, pct:'95.9%'},
-  ],
-  purposes: [
-    {name:'Animal Husbandry', v:2762},{name:'Mess Business', v:1097},{name:'Tailoring', v:999},
-    {name:'Small Business', v:710},{name:'Vegetable Business', v:393},{name:'Beauty Parlour', v:385},
-  ],
-};
 
 const fmt = n => n.toLocaleString('en-IN');
 const color = (c, v) => { const a=document.createElement('span'); a.className='col'; a.style.background=c; a.style.height=v+'%'; return a; };
@@ -235,9 +194,9 @@ const color = (c, v) => { const a=document.createElement('span'); a.className='c
 /* ---------- KPI cards ---------- */
 function renderKpis(){
   const k = [
-    {label:'Records Scrubbed', val:fmt(D.recordsScrubbed), sub:'10,115 unique customers', cls:'primary', dot:'#4f46e5'},
+    {label:'Records Scrubbed', val:fmt(D.recordsScrubbed), sub:fmt(D.uniqueCustomers)+' unique customers', cls:'primary', dot:'#4f46e5'},
     {label:'Match Rate', val:D.matchRate+'%', sub:D.crifTotal+' CRIF records returned', cls:'green', dot:'#16a34a'},
-    {label:'Credit Accounts', val:fmt(D.accounts), sub:'across 83 lenders', cls:'teal', dot:'#0ea5e9'},
+    {label:'Credit Accounts', val:fmt(D.accounts), sub:'across '+D.lenderCount+' lenders', cls:'teal', dot:'#0ea5e9'},
     {label:'Avg Credit Score', val:D.avgScore, sub:'median '+D.medianScore, cls:'amber', dot:'#f59e0b'},
     {label:'Borrowers Overdue', val:fmt(D.overdueBorrowers), sub:D.overduePct+'% have ≥1 overdue a/c', cls:'red', dot:'#ef4444'},
     {label:'≥2 MFI Loans', val:fmt(D.mfi2Plus), sub:'max '+D.maxMfi+' MFI loans / borrower', cls:'violet', dot:'#8b5cf6'},
@@ -307,32 +266,27 @@ renderKpis();
 
 document.getElementById('scoreCard').innerHTML = vchart('Credit Score Distribution',
   'PERFORM CNS score across '+fmt(D.crifTotal)+' applicants. Avg '+D.avgScore+' · median '+D.medianScore+'.',
-  D.scoreBuckets, 4916);
+  D.scoreBuckets);
 
 document.getElementById('dpdCard').innerHTML = vchart('DPD Bucket (Portfolio Delinquency)',
-  'Days-past-due of the '+fmt(D.recordsScrubbed)+' loans submitted. '+fmt(4306)+' (42.5%) are 365+ DPD.',
-  D.dpdBuckets, 5097);
+  'Days-past-due of the '+fmt(D.recordsScrubbed)+' loans submitted. '+fmt(D.dpdBuckets[D.dpdBuckets.length-1].v)+' ('+(D.dpdBuckets[D.dpdBuckets.length-1].v/D.recordsScrubbed*100).toFixed(1)+'%) are 365+ DPD.',
+  D.dpdBuckets);
 
 document.getElementById('branchCard').innerHTML = hchart('Records by Branch',
   'Distribution of scrub records across '+D.branches.length+' branches.',
-  D.branches, 1553);
+  D.branches);
 
 document.getElementById('statusCard').innerHTML = `<h3>Credit Account Status</h3>
   <div class="desc">Status of all ${fmt(D.accounts)} accounts reported by the bureau.</div>
   <div class="donut-wrap">${donut(D.accountStatus)}${donutLegend(D.accountStatus)}</div>`;
 
 document.getElementById('mfiCard').innerHTML = `<h3>MFI Over-indebtedness</h3>
-  <div class="desc">Multiple microfinance loans per borrower signal over-leverage. ${fmt(D.mfiTotal)} borrowers (70%) hold ≥1 MFI loan.</div>
+  <div class="desc">Multiple microfinance loans per borrower signal over-leverage. ${fmt(D.mfiTotal)} borrowers (${D.mfiSharePct}%) hold ≥1 MFI loan.</div>
   <div class="hchart">
-    ${[
-      {name:'≥ 2 MFI loans', v:5582},
-      {name:'≥ 3 MFI loans', v:4169},
-      {name:'≥ 4 MFI loans', v:3128},
-      {name:'1 MFI loan only', v:1682},
-    ].map(d=>`
+    ${D.mfiBreakdown.map(d=>`
       <div class="hrow">
         <div class="name">${d.name}</div>
-        <div class="track"><div class="fill" style="width:${(d.v/5582*100).toFixed(1)}%"></div></div>
+        <div class="track"><div class="fill" style="width:${(d.v/Math.max(...D.mfiBreakdown.map(x=>x.v))*100).toFixed(1)}%"></div></div>
         <div class="num">${fmt(d.v)}</div>
       </div>`).join('')}
   </div>
@@ -343,7 +297,7 @@ document.getElementById('mfiCard').innerHTML = `<h3>MFI Over-indebtedness</h3>
 
 document.getElementById('lenderCard').innerHTML = hchart('Top Credit Grantors',
   'Lenders with the highest account count across the scrub population.',
-  D.lenders, 9981);
+  D.lenders);
 
 /* quality table */
 document.getElementById('qualityCard').innerHTML = `<h3>Data Quality — KYC Fields</h3>
@@ -367,9 +321,10 @@ document.getElementById('portfolioCard').innerHTML = `<h3>Portfolio Composition<
     <thead><tr><th>Product</th><th class="num">Loans</th><th class="num">Share</th></tr></thead>
     <tbody>${D.products.map(p=>`
       <tr><td>${p.name}</td><td class="num">${fmt(p.v)}</td>
-      <td class="num">${(p.v/10119*100).toFixed(1)}%</td></tr>`).join('')}
+      <td class="num">${(p.v/D.recordsScrubbed*100).toFixed(1)}%</td></tr>`).join('')}
     </tbody>
   </table>`;
+})();
 </script>
 </body>
 </html>
