@@ -4,3 +4,6 @@ node_modules/
 .env.*
 .vercel
 *.log
+
+# built app copy
+*.apk
