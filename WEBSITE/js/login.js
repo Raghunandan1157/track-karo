@@ -3,10 +3,15 @@ import { api, saveAuth, getToken, tokenLooksValid, clearAuth } from './api.js';
 
 const WEB_ROLES = ['admin', 'branch_manager'];
 
+// Demo mode: no server. The HR module reads its sample data from localStorage.
+const DEMO_USER = {
+  id: 9001, userid: 'ganesh', name: 'Ganesh (demo)', role: 'admin', branch_id: null, branch_name: '',
+};
+
 function init() {
   const stored = getToken();
   if (stored && tokenLooksValid(stored)) {
-    location.replace('app.html');
+    location.replace(stored === 'demo' ? 'app.html#hr' : 'app.html');
     return;
   }
   if (stored) clearAuth();
@@ -37,6 +42,11 @@ function init() {
   });
 
   [useridEl, pwEl].forEach((el) => el.addEventListener('input', () => showError('')));
+
+  document.getElementById('btn-demo')?.addEventListener('click', () => {
+    saveAuth('demo', DEMO_USER);
+    location.replace('app.html#hr');
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

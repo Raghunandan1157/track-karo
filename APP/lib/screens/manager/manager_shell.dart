@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../../services/manager_store.dart';
 import '../../services/notifier.dart';
 import '../../services/session.dart';
+import '../../services/hr_store.dart';
 import '../../theme.dart';
+import '../hr/hr_team_screen.dart';
 import 'alerts_screen.dart';
 import 'assign_screen.dart';
 import 'live_map_screen.dart';
@@ -25,13 +27,14 @@ class _ManagerShellState extends State<ManagerShell>
   int _tab = 0;
   bool _paused = false;
 
-  static const _titles = ['Team', 'Live map', 'Assign tasks', 'Alerts', 'Reports'];
+  static const _titles = ['Team', 'Live map', 'Assign tasks', 'Alerts', 'Reports', 'HR'];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _store.start();
+    HrStore.instance.ensureSeeded(Session.instance.user);
     Notifier.requestPermission();
   }
 
@@ -120,10 +123,11 @@ class _ManagerShellState extends State<ManagerShell>
           AssignScreen(),
           AlertsScreen(),
           ReportsScreen(),
+          HrTeamScreen(),
         ],
       ),
       bottomNavigationBar: ListenableBuilder(
-        listenable: _store,
+        listenable: Listenable.merge([_store, HrStore.instance]),
         builder: (_, _) => NavigationBar(
           selectedIndex: _tab,
           onDestinationSelected: (i) => setState(() => _tab = i),
@@ -156,6 +160,23 @@ class _ManagerShellState extends State<ManagerShell>
                 icon: Icon(Icons.bar_chart_outlined),
                 selectedIcon: Icon(Icons.bar_chart, color: kNavy),
                 label: 'Reports'),
+            NavigationDestination(
+              icon: Badge(
+                isLabelVisible: HrStore.instance.pendingLeaves.isNotEmpty,
+                label: Text(HrStore.instance.pendingLeaves.length > 99
+                    ? '99+'
+                    : '${HrStore.instance.pendingLeaves.length}'),
+                child: const Icon(Icons.badge_outlined),
+              ),
+              selectedIcon: Badge(
+                isLabelVisible: HrStore.instance.pendingLeaves.isNotEmpty,
+                label: Text(HrStore.instance.pendingLeaves.length > 99
+                    ? '99+'
+                    : '${HrStore.instance.pendingLeaves.length}'),
+                child: const Icon(Icons.badge, color: kNavy),
+              ),
+              label: 'HR',
+            ),
           ],
         ),
       ),

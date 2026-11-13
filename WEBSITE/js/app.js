@@ -15,7 +15,23 @@ import team from './views/team.js';
 import branches from './views/branches.js';
 import settings from './views/settings.js';
 
-const VIEWS = { dashboard, live, replay, tasks, reports, alerts, customers, team, branches, settings };
+import hrHome from './hr/views/overview.js';
+import hrEmployees from './hr/views/employees.js';
+import hrAttendance from './hr/views/attendance.js';
+import hrLeave from './hr/views/leave.js';
+import hrRecruitment from './hr/views/recruitment.js';
+import hrPayroll from './hr/views/payroll.js';
+import hrPerformance from './hr/views/performance.js';
+import hrDocuments from './hr/views/documents.js';
+
+const VIEWS = {
+  dashboard, live, replay, tasks, reports, alerts, customers, team,
+  hr: hrHome, employees: hrEmployees, attendance: hrAttendance, leave: hrLeave,
+  recruitment: hrRecruitment, payroll: hrPayroll, performance: hrPerformance, documents: hrDocuments,
+  branches, settings,
+};
+const HR_VIEWS = ['hr', 'employees', 'attendance', 'leave', 'recruitment', 'payroll', 'performance', 'documents'];
+const DEMO = getToken() === 'demo';
 const WEB_ROLES = ['admin', 'branch_manager'];
 const MOBILE_QUERY = window.matchMedia('(max-width: 900px)');
 
@@ -84,6 +100,10 @@ function showView(name) {
   $('content')?.scrollTo?.(0, 0);
 
   const view = VIEWS[name];
+  if (DEMO && !HR_VIEWS.includes(name)) {
+    toast('Demo mode', `${title} needs the tracking API. HR screens run fully in this browser.`, 'info');
+    return;
+  }
   Promise.resolve()
     .then(() => view.show?.())
     .catch((err) => console.error(`view ${name}`, err));
@@ -117,6 +137,14 @@ function onStreamAlert(a) {
 
 // ---------- boot ----------
 async function refreshMe() {
+  // Demo mode: the HR module runs entirely in the browser. A fake user is
+  // stored by the login page, so skip the API round-trip.
+  if (DEMO) {
+    const user = getStoredUser();
+    if (!user) { clearAuth(); location.replace('index.html'); return false; }
+    applyUser(user);
+    return true;
+  }
   try {
     const r = await get('/me');
     if (r.user) {
@@ -150,6 +178,7 @@ async function boot() {
 
   for (const [name, v] of Object.entries(VIEWS)) {
     if (!viewAllowed(name)) continue;
+    if (DEMO && !HR_VIEWS.includes(name)) continue;
     try { v.init(); } catch (err) { console.error(`init ${name}`, err); }
   }
 
@@ -207,10 +236,16 @@ async function boot() {
 
   onHashChange();
   refreshUnread();
-  startStream();
+  if (DEMO) {
+    $('demo-banner').hidden = false;
+    document.body.classList.add('is-demo');
+  } else {
+    startStream();
+  }
 }
 
 async function refreshUnread() {
+  if (DEMO) return;
   try {
     const r = await get('/alerts', { unread: 1, limit: 1 });
     if (r.unread_count !== undefined) setUnread(r.unread_count);
