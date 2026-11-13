@@ -1066,7 +1066,14 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
 
       <!-- ============ RECOVERY: REPORTS ============ -->
       <section class="view" id="view-recovery-reports" data-view="recovery-reports" aria-labelledby="h-recovery-reports" hidden>
-        <h2 id="h-recovery-reports" class="visually-hidden">Recovery reports</h2>
+        <header class="rec-report-head">
+          <img class="rec-report-logo" src="assets/hccs-logo.png" alt="HINDUSTHAN Co-op Credit Society Ltd">
+          <div class="rec-report-title">
+            <p class="rec-report-kicker">Recovery management</p>
+            <h2 id="h-recovery-reports">Recovery Report</h2>
+            <p class="rec-report-meta" id="rec-report-meta">All branches · Last 6 months</p>
+          </div>
+        </header>
 
         <div class="toolbar">
           <div class="field field-inline">
@@ -1082,6 +1089,9 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
             </select>
           </div>
           <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-rec-print-report" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-printer"/></svg><span>Print report</span>
+          </button>
           <button type="button" id="btn-rec-export-report" class="btn">
             <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export report</span>
           </button>

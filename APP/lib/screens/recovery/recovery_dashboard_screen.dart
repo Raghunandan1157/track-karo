@@ -20,6 +20,45 @@ class RecoveryDashboardScreen extends StatelessWidget {
         return ListView(
           padding: const EdgeInsets.fromLTRB(12, 12, 12, 28),
           children: [
+            Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFE3E7EF)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0A14285A),
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Image.asset(
+                      'assets/hccs-logo.png',
+                      height: 38,
+                      fit: BoxFit.contain,
+                      alignment: Alignment.centerLeft,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    'Recovery\nmanagement',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      height: 1.3,
+                      color: kGrey,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,

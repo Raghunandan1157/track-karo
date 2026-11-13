@@ -77,6 +77,18 @@ function applyRoleGating() {
 
 const defaultView = () => (state.user?.role === 'recovery_manager' ? 'recovery' : 'dashboard');
 
+/** The recovery desk uses the society's own logo; the rest of the app keeps Track_karo branding. */
+function applyBrand(viewName) {
+  const recovery = String(viewName || '').startsWith('recovery');
+  const logo = document.querySelector('.sidebar-logo');
+  const brand = document.querySelector('.sidebar-brand');
+  if (!logo || !brand) return;
+  logo.src = recovery ? 'assets/hccs-logo.png' : 'assets/logo.png';
+  logo.alt = recovery ? 'HINDUSTHAN Co-op Credit Society Ltd' : 'Track_karo logo';
+  logo.classList.toggle('is-recovery-logo', recovery);
+  brand.classList.toggle('is-recovery-brand', recovery);
+}
+
 const viewAllowed = (name) => {
   const sec = $('view-' + name);
   return !!VIEWS[name] && !!sec && sec.dataset.removed !== 'true';
@@ -111,6 +123,7 @@ function showView(name) {
   const title = navLabel ? navLabel.textContent.trim() : name;
   $('page-title').textContent = title;
   document.title = `${title} - Track_karo`;
+  applyBrand(name);
   if (MOBILE_QUERY.matches) setSidebar(false);
   $('content')?.scrollTo?.(0, 0);
 

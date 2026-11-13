@@ -311,40 +311,28 @@ class _NoticePreviewDialogState extends State<NoticePreviewDialog> {
                     children: [
                       Row(
                         children: [
-                          Container(
-                            width: 38,
-                            height: 38,
-                            decoration: BoxDecoration(
-                              color: kNavy,
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                'TK',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ),
+                          Image.asset(
+                            'assets/hccs-logo.png',
+                            width: 150,
+                            height: 40,
+                            fit: BoxFit.contain,
                           ),
-                          const SizedBox(width: 9),
+                          const SizedBox(width: 10),
                           const Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Track_karo Co-operative Credit Society Ltd.',
+                                  'Recovery Department',
                                   style: TextStyle(
-                                    fontSize: 12.5,
+                                    fontSize: 10.5,
                                     fontWeight: FontWeight.w700,
                                     color: kNavy,
                                   ),
                                 ),
                                 Text(
                                   'Sahyadri Bhavan, Station Road, Pune 411 001',
-                                  style: TextStyle(fontSize: 9.5, color: kGrey),
+                                  style: TextStyle(fontSize: 8.5, color: kGrey),
                                 ),
                               ],
                             ),

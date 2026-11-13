@@ -1,8 +1,8 @@
 // Recovery reports: stage groups, ageing, officer performance and monthly realization.
-import { $, toast, downloadCsv } from '../ui.js';
+import { $, toast, toastError, downloadCsv } from '../ui.js';
 import {
   BRANCHES, CASES, GROUPS, OFFICERS, PAYMENTS, PROPOSALS, activeCases, caseById,
-  inr, inrCompact, overdueDays, totalOutstanding, totalOverdue,
+  fmtDate, inr, inrCompact, overdueDays, todayISO, totalOutstanding, totalOverdue,
 } from '../recovery/data.js';
 import { clear, el } from '../recovery/dom.js';
 
@@ -173,7 +173,51 @@ function exportReport() {
   toast('Report exported', 'Stage summary downloaded as CSV.', 'success');
 }
 
+function renderMeta() {
+  const branchSel = $('rec-report-branch');
+  const branch = branchSel?.value
+    ? (branchSel.selectedOptions?.[0]?.textContent?.trim() || branchSel.value)
+    : 'All branches';
+  const period = $('rec-report-period')?.selectedOptions?.[0]?.textContent?.trim() || 'Last 6 months';
+  const meta = $('rec-report-meta');
+  if (meta) meta.textContent = `${branch} · ${period} · Generated ${fmtDate(todayISO())}`;
+}
+
+function printReport() {
+  const section = $('view-recovery-reports')?.cloneNode(true);
+  if (!section) return;
+  section.hidden = false;
+  section.querySelectorAll('.toolbar').forEach((node) => node.remove());
+  section.querySelectorAll('img').forEach((img) => {
+    const src = img.getAttribute('src');
+    if (src) img.src = new URL(src, location.href).href;
+  });
+
+  const win = window.open('', '_blank', 'width=1120,height=900');
+  if (!win) {
+    toastError(new Error('Allow pop-ups to print the recovery report.'), 'Could not open print view');
+    return;
+  }
+  const cssHref = new URL('css/styles.css', location.href).href;
+  win.document.write(`<!doctype html><html><head><meta charset="utf-8">
+    <title>Recovery Report - HINDUSTHAN</title>
+    <link rel="stylesheet" href="${cssHref}">
+    <style>
+      body { background: #fff; padding: 18px; }
+      .view { display: flex !important; }
+      .toolbar, .btn, .icon-btn { display: none !important; }
+      .rec-report-head { border: 0; border-bottom: 2px solid #14285A; border-radius: 0; box-shadow: none; padding: 0 0 10px; }
+      .card { box-shadow: none; }
+      @page { size: landscape; margin: 10mm; }
+      @media print { #view-recovery-reports { display: flex !important; } }
+    </style></head><body class="app-body">${section.outerHTML}</body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => win.print(), 500);
+}
+
 function render() {
+  renderMeta();
   renderStats();
   renderStageTable();
   renderAgingTable();
@@ -190,6 +234,7 @@ function init() {
   $('rec-report-branch')?.addEventListener('change', render);
   $('rec-report-period')?.addEventListener('change', render);
   $('btn-rec-export-report')?.addEventListener('click', exportReport);
+  $('btn-rec-print-report')?.addEventListener('click', printReport);
 }
 
 export default {

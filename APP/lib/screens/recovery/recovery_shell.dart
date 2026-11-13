@@ -55,6 +55,19 @@ class _RecoveryShellState extends State<RecoveryShell> {
               '${user.branchName.isEmpty ? '' : ' - ${user.branchName}'}';
     return Scaffold(
       appBar: AppBar(
+        leadingWidth: 56,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.all(4),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: Image.asset('assets/hccs-mark.png', fit: BoxFit.contain),
+          ),
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

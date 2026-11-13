@@ -7,7 +7,7 @@ import {
   fmtDate, fmtDateShort, inr, isoIn, setNoticeStatus, todayISO,
 } from '../recovery/data.js';
 
-const SOCIETY = 'Track_karo Co-operative Credit Society Ltd.';
+const SOCIETY = 'HINDUSTHAN Co-op Credit Society Ltd.';
 const SOCIETY_ADDRESS = 'Sahyadri Bhavan, Station Road, Pune 411 001 · Reg. No. PNA/(CO-OP)/2011/4471';
 
 let previewId = null;
@@ -109,7 +109,7 @@ function noticeHtml(n) {
     <article class="notice-sheet">
       <header class="notice-head">
         <div class="notice-brand">
-          <span class="notice-logo">TK</span>
+          <img class="notice-logo" src="assets/hccs-logo.png" alt="HINDUSTHAN Co-op Credit Society Ltd">
           <div>
             <h1>${escapeHtml(SOCIETY)}</h1>
             <p>${escapeHtml(SOCIETY_ADDRESS)}</p>
@@ -230,12 +230,13 @@ function printNotice(notice) {
   const win = window.open('', '_blank', 'width=900,height=760');
   if (!win) { toastError(new Error('Allow pop-ups to print the notice.'), 'Could not open print view'); return; }
   win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(notice.id)}</title>
+    <base href="${location.href}">
     <style>
       body { margin: 0; padding: 24px; background: #fff; color: #111; font-family: Georgia, 'Times New Roman', serif; }
       .notice-sheet { max-width: 780px; margin: 0 auto; }
       .notice-head { display: flex; justify-content: space-between; gap: 24px; border-bottom: 2px solid #14285A; padding-bottom: 14px; }
       .notice-brand { display: flex; gap: 12px; align-items: flex-start; }
-      .notice-logo { display: inline-flex; width: 46px; height: 46px; align-items: center; justify-content: center; background: #14285A; color: #fff; border-radius: 8px; font-family: Arial, sans-serif; font-weight: 700; }
+      .notice-logo { display: block; width: 190px; height: auto; max-height: 60px; object-fit: contain; }
       .notice-brand h1 { margin: 0; font-size: 17px; color: #14285A; }
       .notice-brand p, .notice-ref span { margin: 3px 0 0; font-size: 10px; color: #555; font-family: Arial, sans-serif; }
       .notice-ref { text-align: right; font-family: Arial, sans-serif; font-size: 11px; }
