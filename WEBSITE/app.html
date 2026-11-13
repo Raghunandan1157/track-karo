@@ -1,0 +1,1205 @@
+<!--
+TRACK_KARO app shell - conventions for the CSS and JS authors
+- Views: <section class="view" id="view-NAME" data-view="NAME" hidden>. NAMES: dashboard (visible by default), live, replay, tasks, reports, alerts, customers, team, branches (admin), settings (admin).
+- Sidebar buttons: <button class="nav-item" data-view="NAME">. Role gating: data-roles="admin" (hide for everyone else). Not hidden by default in HTML; JS removes/hides them.
+- ids are kebab-case (exception: stat cards use stat-<api_field> with underscores, e.g. stat-officers_total). Forms: form-*. Buttons that trigger actions: btn-*. Modals: <dialog class="modal" id="modal-*"> with a [data-close] button.
+- Form controls: name = API field name, each with a <label for>. Hidden id inputs: name="id".
+- Repeated items: an empty container with an id + <template id="tpl-*"> holding one item; elements receiving values carry data-field="apiFieldName". Row buttons carry data-action="replay|edit|delete|read|toggle-detail|deactivate|jump|pick|view-map". Each list has a sibling <p class="empty-state" hidden>.
+- Status values render into <span class="chip" data-field="status">; JS should set a data-status / data-kind / data-type attribute on chips for colouring.
+- Icons: inline SVG sprite at the top of <body> (svg.sprite, symbols id="i-NAME"). Usage: <svg class="icon" aria-hidden="true"><use href="#i-NAME"/></svg>. CSS must give .icon width/height 1em-ish and fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round. The .sprite svg must be visually hidden (0x0, absolute). Alert/kind icons: JS sets the <use> href to #i-location-off, #i-no-signal, #i-geofence-missed, #i-meeting, #i-long-break, #i-visit, #i-lunch, #i-unexplained, #i-customer.
+- Toast container #toasts; generic confirm dialog #modal-confirm (#confirm-title, #confirm-message, #btn-confirm-cancel, #btn-confirm-ok).
+- Live indicator #live-status has data-state="live|reconnecting|paused" and text in #live-status-text.
+- No inline styles, no inline handlers, no inline scripts in this file.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Track_karo - Admin</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body class="app-body">
+
+<!-- Icon sprite -->
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+  <symbol id="i-live" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-replay" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+  <symbol id="i-tasks" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-reports" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+  <symbol id="i-customers" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-team" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-branches" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+  <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+  <symbol id="i-cube" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></symbol>
+  <symbol id="i-fit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M22 12h-4M6 12H2M12 6V2M12 22v-4"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></symbol>
+  <symbol id="i-user-x" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M18 8l5 5M23 8l-5 5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="i-location-off" viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 6 8 12 8 12s3-2.3 5.4-5.2M19.4 14.4C19.8 12.9 20 11.4 20 10a8 8 0 0 0-8-8"/><path d="M1 1l22 22"/></symbol>
+  <symbol id="i-no-signal" viewBox="0 0 24 24"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.58 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></symbol>
+  <symbol id="i-geofence-missed" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></symbol>
+  <symbol id="i-meeting" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-long-break" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-visit" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></symbol>
+  <symbol id="i-lunch" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></symbol>
+  <symbol id="i-unexplained" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></symbol>
+  <symbol id="i-customer" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+</svg>
+
+<div class="app-shell">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside id="sidebar" class="sidebar" aria-label="Main navigation">
+    <div class="sidebar-brand">
+      <img class="sidebar-logo" src="assets/logo.png" alt="Track_karo logo" width="44" height="33">
+      <span class="sidebar-name">Track_karo</span>
+      <button type="button" id="btn-sidebar-close" class="icon-btn sidebar-close" aria-label="Close menu">
+        <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Sections">
+      <button type="button" class="nav-item is-active" data-view="dashboard" aria-current="page">
+        <svg class="icon" aria-hidden="true"><use href="#i-dashboard"/></svg><span class="nav-label">Dashboard</span>
+      </button>
+      <button type="button" class="nav-item" data-view="live">
+        <svg class="icon" aria-hidden="true"><use href="#i-live"/></svg><span class="nav-label">Live Customers &amp; Tracking</span>
+      </button>
+      <button type="button" class="nav-item" data-view="replay">
+        <svg class="icon" aria-hidden="true"><use href="#i-replay"/></svg><span class="nav-label">Route Replay</span>
+      </button>
+      <button type="button" class="nav-item" data-view="tasks">
+        <svg class="icon" aria-hidden="true"><use href="#i-tasks"/></svg><span class="nav-label">Tasks &amp; Geofence</span>
+      </button>
+      <button type="button" class="nav-item" data-view="reports">
+        <svg class="icon" aria-hidden="true"><use href="#i-reports"/></svg><span class="nav-label">Daily Reports</span>
+      </button>
+      <button type="button" class="nav-item" data-view="alerts">
+        <svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg><span class="nav-label">Alerts</span>
+        <span id="nav-alerts-badge" class="badge" hidden>0</span>
+      </button>
+      <button type="button" class="nav-item" data-view="customers">
+        <svg class="icon" aria-hidden="true"><use href="#i-customers"/></svg><span class="nav-label">Customers</span>
+      </button>
+      <button type="button" class="nav-item" data-view="team">
+        <svg class="icon" aria-hidden="true"><use href="#i-team"/></svg><span class="nav-label">Team</span>
+      </button>
+      <button type="button" class="nav-item" data-view="branches" data-roles="admin">
+        <svg class="icon" aria-hidden="true"><use href="#i-branches"/></svg><span class="nav-label">Branches</span>
+      </button>
+      <button type="button" class="nav-item" data-view="settings" data-roles="admin">
+        <svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg><span class="nav-label">Settings</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="sidebar-user-info">
+        <span id="user-name" class="user-name"></span>
+        <span id="user-role" class="user-role"></span>
+        <span id="user-branch" class="user-branch"></span>
+      </div>
+      <button type="button" id="btn-logout" class="icon-btn" aria-label="Log out" title="Log out">
+        <svg class="icon" aria-hidden="true"><use href="#i-logout"/></svg>
+      </button>
+    </div>
+  </aside>
+  <div id="sidebar-backdrop" class="sidebar-backdrop" hidden></div>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <header class="topbar">
+      <button type="button" id="btn-menu" class="icon-btn menu-btn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">
+        <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+      <h1 id="page-title" class="page-title">Dashboard</h1>
+      <div class="topbar-spacer"></div>
+      <span id="live-status" class="live-status" data-state="reconnecting" role="status" aria-live="polite">
+        <span class="dot" aria-hidden="true"></span>
+        <span id="live-status-text" class="live-status-text">Connecting</span>
+      </span>
+      <button type="button" id="btn-bell" class="icon-btn bell-btn" aria-label="Alerts">
+        <svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg>
+        <span id="bell-badge" class="badge badge-float" hidden>0</span>
+      </button>
+    </header>
+
+    <main class="content" id="content">
+
+      <!-- ============ 1. DASHBOARD ============ -->
+      <section class="view" id="view-dashboard" data-view="dashboard" aria-labelledby="h-dashboard">
+        <h2 id="h-dashboard" class="visually-hidden">Dashboard</h2>
+
+        <div class="stat-grid">
+          <article class="stat-card">
+            <h3 class="stat-label">Field officers</h3>
+            <p class="stat-value" id="stat-officers_total">0</p>
+          </article>
+          <article class="stat-card stat-on-duty">
+            <h3 class="stat-label">On duty</h3>
+            <p class="stat-value" id="stat-on_duty">0</p>
+          </article>
+          <article class="stat-card stat-on-lunch">
+            <h3 class="stat-label">On lunch</h3>
+            <p class="stat-value" id="stat-on_lunch">0</p>
+          </article>
+          <article class="stat-card stat-location-off">
+            <h3 class="stat-label">Location off</h3>
+            <p class="stat-value" id="stat-location_off">0</p>
+          </article>
+          <article class="stat-card stat-day-ended">
+            <h3 class="stat-label">Day ended</h3>
+            <p class="stat-value" id="stat-day_ended">0</p>
+          </article>
+          <article class="stat-card">
+            <h3 class="stat-label">Distance today</h3>
+            <p class="stat-value"><span id="stat-distance_km_today">0</span> <span class="stat-unit">km</span></p>
+          </article>
+          <article class="stat-card">
+            <h3 class="stat-label">Locations visited</h3>
+            <p class="stat-value"><span id="stat-assignments_visited">0</span><span class="stat-sep"> / </span><span id="stat-assignments_total">0</span></p>
+          </article>
+          <article class="stat-card">
+            <h3 class="stat-label">Customers located</h3>
+            <p class="stat-value"><span id="stat-customers_located">0</span><span class="stat-sep"> / </span><span id="stat-customers_total">0</span></p>
+          </article>
+          <article class="stat-card stat-alerts">
+            <h3 class="stat-label">Unread alerts</h3>
+            <p class="stat-value" id="stat-unread_alerts">0</p>
+          </article>
+        </div>
+
+        <div class="dash-grid">
+          <section class="card" aria-labelledby="h-dash-officers">
+            <header class="card-header"><h3 id="h-dash-officers">Field officers today</h3></header>
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Officer</th>
+                    <th scope="col">Branch</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Distance</th>
+                    <th scope="col">Tasks</th>
+                    <th scope="col">Last seen</th>
+                    <th scope="col"><span class="visually-hidden">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody id="dash-officers"></tbody>
+              </table>
+            </div>
+            <p id="dash-officers-empty" class="empty-state" hidden>No field officers to show.</p>
+          </section>
+
+          <section class="card" aria-labelledby="h-dash-alerts">
+            <header class="card-header">
+              <h3 id="h-dash-alerts">Recent alerts</h3>
+              <button type="button" id="btn-dash-all-alerts" class="btn btn-link" data-view-link="alerts">View all</button>
+            </header>
+            <ul id="dash-alerts" class="list"></ul>
+            <p id="dash-alerts-empty" class="empty-state" hidden>No recent alerts.</p>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============ 2. LIVE ============ -->
+      <section class="view" id="view-live" data-view="live" aria-labelledby="h-live" hidden>
+        <h2 id="h-live" class="visually-hidden">Live Customers &amp; Tracking</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="live-branch-filter">Branch</label>
+            <select id="live-branch-filter" name="branch_id"><option value="">All branches</option></select>
+          </div>
+          <fieldset class="toggle-group">
+            <legend class="visually-hidden">Map layers</legend>
+            <label class="check legend-officers"><input type="checkbox" id="toggle-officers" checked><span>Field officers</span></label>
+            <label class="check legend-branches"><input type="checkbox" id="toggle-branches" checked><span>Branches</span></label>
+            <label class="check legend-customers"><input type="checkbox" id="toggle-customers" checked><span>Customers</span></label>
+          </fieldset>
+          <div class="toolbar-spacer"></div>
+          <div class="field field-inline">
+            <label for="live-style">Map style</label>
+            <select id="live-style" name="style">
+              <option value="streets" selected>Streets</option>
+              <option value="satellite">Satellite</option>
+            </select>
+          </div>
+          <button type="button" id="btn-live-3d" class="btn" aria-pressed="false">
+            <svg class="icon" aria-hidden="true"><use href="#i-cube"/></svg><span>2D / 3D</span>
+          </button>
+          <button type="button" id="btn-live-fit" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-fit"/></svg><span>Fit all</span>
+          </button>
+        </div>
+
+        <div class="live-layout">
+          <div class="map-card">
+            <div id="live-map" class="map" role="region" aria-label="Live map"></div>
+            <ul class="map-legend" aria-label="Map legend">
+              <li><span class="legend-dot dot-blue" aria-hidden="true"></span>Field officers <strong id="count-officers">0</strong></li>
+              <li><span class="legend-dot dot-red" aria-hidden="true"></span>Branch managers / branch offices <strong id="count-branches">0</strong></li>
+              <li><span class="legend-dot dot-yellow" aria-hidden="true"></span>Customers <strong id="count-customers">0</strong></li>
+            </ul>
+          </div>
+
+          <aside class="side-panel" aria-label="Live lists">
+            <section class="card" aria-labelledby="h-live-officers">
+              <header class="card-header"><h3 id="h-live-officers">Field officers</h3></header>
+              <ul id="live-officers" class="list list-scroll"></ul>
+              <p id="live-officers-empty" class="empty-state" hidden>No field officers to show.</p>
+            </section>
+            <section class="card" aria-labelledby="h-live-customers">
+              <header class="card-header"><h3 id="h-live-customers">Latest customers located</h3></header>
+              <ul id="live-customers-feed" class="list list-scroll"></ul>
+              <p id="live-customers-feed-empty" class="empty-state" hidden>No customers located yet.</p>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ============ 3. REPLAY ============ -->
+      <section class="view" id="view-replay" data-view="replay" aria-labelledby="h-replay" hidden>
+        <h2 id="h-replay" class="visually-hidden">Route Replay</h2>
+
+        <form id="form-replay" class="toolbar" novalidate>
+          <div class="field field-inline">
+            <label for="replay-officer">Officer</label>
+            <select id="replay-officer" name="officer_id" required><option value="">Select officer</option></select>
+          </div>
+          <div class="field field-inline">
+            <label for="replay-day">Date</label>
+            <input type="date" id="replay-day" name="day" required>
+          </div>
+          <button type="submit" id="btn-replay-load" class="btn btn-primary">Load</button>
+        </form>
+
+        <dl class="summary-strip" aria-label="Route summary">
+          <div class="summary-item"><dt>Total distance</dt><dd id="replay-sum-distance">-</dd></div>
+          <div class="summary-item"><dt>Start time</dt><dd id="replay-sum-start">-</dd></div>
+          <div class="summary-item"><dt>End time</dt><dd id="replay-sum-end">-</dd></div>
+          <div class="summary-item"><dt>Points</dt><dd id="replay-sum-points">-</dd></div>
+          <div class="summary-item"><dt>Visits</dt><dd id="replay-sum-visits">-</dd></div>
+          <div class="summary-item"><dt>Stops</dt><dd id="replay-sum-stops">-</dd></div>
+        </dl>
+
+        <div class="replay-layout">
+          <div class="map-card">
+            <div id="replay-map" class="map" role="region" aria-label="Route replay map"></div>
+            <p id="replay-empty" class="empty-state map-empty" hidden>No route data for this officer and date.</p>
+
+            <div class="player" role="group" aria-label="Replay controls">
+              <button type="button" id="btn-play" class="icon-btn icon-btn-primary" aria-label="Play" aria-pressed="false">
+                <svg class="icon icon-play" aria-hidden="true"><use href="#i-play"/></svg>
+                <svg class="icon icon-pause" aria-hidden="true" hidden><use href="#i-pause"/></svg>
+              </button>
+              <div class="field field-inline">
+                <label for="replay-speed">Speed</label>
+                <select id="replay-speed" name="speed">
+                  <option value="1">1x</option>
+                  <option value="2">2x</option>
+                  <option value="5">5x</option>
+                  <option value="10" selected>10x</option>
+                  <option value="30">30x</option>
+                  <option value="60">60x</option>
+                </select>
+              </div>
+              <div class="player-timeline">
+                <label for="replay-slider" class="visually-hidden">Timeline</label>
+                <input type="range" id="replay-slider" min="0" max="0" step="1" value="0">
+              </div>
+              <div class="player-readout">
+                <span id="replay-time" class="player-time">--:--:--</span>
+                <span class="player-distance"><span id="replay-distance">0.00</span> km</span>
+              </div>
+              <button type="button" id="btn-replay-3d" class="btn btn-sm" aria-pressed="false">
+                <svg class="icon" aria-hidden="true"><use href="#i-cube"/></svg><span>3D</span>
+              </button>
+              <label class="check"><input type="checkbox" id="replay-follow" checked><span>Follow</span></label>
+            </div>
+          </div>
+
+          <aside class="side-panel" aria-label="Replay timeline">
+            <section class="card" aria-labelledby="h-replay-events">
+              <header class="card-header"><h3 id="h-replay-events">Timeline</h3></header>
+              <ul id="replay-events" class="list list-scroll"></ul>
+              <p id="replay-events-empty" class="empty-state" hidden>No events for this day.</p>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ============ 4. TASKS ============ -->
+      <section class="view" id="view-tasks" data-view="tasks" aria-labelledby="h-tasks" hidden>
+        <h2 id="h-tasks" class="visually-hidden">Tasks &amp; Geofence</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="tasks-day">Date</label>
+            <input type="date" id="tasks-day" name="day">
+          </div>
+          <div class="field field-inline">
+            <label for="tasks-officer">Officer</label>
+            <select id="tasks-officer" name="officer_id"><option value="">All officers</option></select>
+          </div>
+        </div>
+
+        <section class="card" aria-labelledby="h-add-location">
+          <header class="card-header"><h3 id="h-add-location">Add location</h3></header>
+          <form id="form-assignment" class="assignment-form" novalidate>
+            <div class="assignment-fields">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="assignment-officer">Officer</label>
+                  <select id="assignment-officer" name="officer_id" required><option value="">Select officer</option></select>
+                </div>
+                <div class="field">
+                  <label for="assignment-day">Date</label>
+                  <input type="date" id="assignment-day" name="day">
+                </div>
+                <div class="field">
+                  <label for="assignment-name">Name</label>
+                  <input type="text" id="assignment-name" name="name" required maxlength="120">
+                </div>
+                <div class="field">
+                  <label for="assignment-kind">Kind</label>
+                  <select id="assignment-kind" name="kind" required>
+                    <option value="center">Center</option>
+                    <option value="village">Village</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="place-search">Search a place</label>
+                <div class="input-group">
+                  <input type="search" id="place-search" name="place_search" placeholder="Type a place name" autocomplete="off" aria-controls="place-results">
+                  <button type="button" id="btn-place-search" class="icon-btn" aria-label="Search place">
+                    <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+                  </button>
+                </div>
+                <ul id="place-results" class="results-list" role="listbox" aria-label="Place search results" hidden></ul>
+                <p id="place-results-empty" class="empty-state" hidden>No places found.</p>
+              </div>
+
+              <div class="field">
+                <label for="maps-link">Paste Google Maps link</label>
+                <div class="input-group">
+                  <input type="url" id="maps-link" name="maps_link" placeholder="https://maps.app.goo.gl/..." autocomplete="off">
+                  <button type="button" id="btn-resolve-link" class="btn">
+                    <svg class="icon" aria-hidden="true"><use href="#i-link"/></svg><span>Resolve</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="field">
+                  <label for="assignment-lat">Latitude</label>
+                  <input type="number" id="assignment-lat" name="lat" step="any" min="-90" max="90" required>
+                </div>
+                <div class="field">
+                  <label for="assignment-lng">Longitude</label>
+                  <input type="number" id="assignment-lng" name="lng" step="any" min="-180" max="180" required>
+                </div>
+                <div class="field">
+                  <label for="assignment-radius">Radius (metres)</label>
+                  <input type="number" id="assignment-radius" name="radius_m" value="60" min="10" max="1000" step="1">
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="assignment-address">Address</label>
+                <input type="text" id="assignment-address" name="address" maxlength="255">
+              </div>
+
+              <div class="form-actions">
+                <a id="link-open-gmaps" class="btn btn-link" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">
+                  <svg class="icon" aria-hidden="true"><use href="#i-external"/></svg><span>Open in Google Maps</span>
+                </a>
+                <button type="submit" id="btn-save-assignment" class="btn btn-primary">
+                  <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Add location</span>
+                </button>
+              </div>
+              <p id="assignment-error" class="form-error" role="alert" hidden></p>
+            </div>
+
+            <div class="assignment-map-wrap">
+              <div id="task-map" class="map map-small" role="region" aria-label="Pick location on map"></div>
+              <p class="help">Click the map to drop the pin. The circle shows the geofence radius.</p>
+            </div>
+          </form>
+        </section>
+
+        <section class="card" aria-labelledby="h-assignments">
+          <header class="card-header"><h3 id="h-assignments">Assigned locations</h3></header>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Officer</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Kind</th>
+                  <th scope="col">Address</th>
+                  <th scope="col">Radius</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">First entered</th>
+                  <th scope="col">Time spent</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="assignments-table"></tbody>
+            </table>
+          </div>
+          <p id="assignments-empty" class="empty-state" hidden>No locations assigned for this selection.</p>
+        </section>
+      </section>
+
+      <!-- ============ 5. REPORTS ============ -->
+      <section class="view" id="view-reports" data-view="reports" aria-labelledby="h-reports" hidden>
+        <h2 id="h-reports" class="visually-hidden">Daily Reports</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="reports-day">Date</label>
+            <input type="date" id="reports-day" name="day">
+          </div>
+          <div class="field field-inline">
+            <label for="reports-branch">Branch</label>
+            <select id="reports-branch" name="branch_id"><option value="">All branches</option></select>
+          </div>
+          <div class="field field-inline">
+            <label for="reports-officer">Officer</label>
+            <select id="reports-officer" name="officer_id"><option value="">All officers</option></select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-reports-csv" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export CSV</span>
+          </button>
+          <button type="button" id="btn-reports-print" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-printer"/></svg><span>Print</span>
+          </button>
+        </div>
+
+        <section class="card" aria-labelledby="h-reports-table">
+          <header class="card-header"><h3 id="h-reports-table">Summary for <span id="reports-day-label"></span></h3></header>
+          <div class="table-wrap">
+            <table class="table table-wide">
+              <thead>
+                <tr>
+                  <th scope="col">Officer</th>
+                  <th scope="col">Branch</th>
+                  <th scope="col">Start</th>
+                  <th scope="col">End</th>
+                  <th scope="col">Duty time</th>
+                  <th scope="col">Distance (km)</th>
+                  <th scope="col">Centers visited / assigned</th>
+                  <th scope="col">Villages visited / assigned</th>
+                  <th scope="col">Time at locations (min)</th>
+                  <th scope="col">Lunch (min)</th>
+                  <th scope="col">Lunch excess (min)</th>
+                  <th scope="col">Unexplained stops</th>
+                  <th scope="col">Customers captured</th>
+                  <th scope="col">Location-off count</th>
+                  <th scope="col">Long break</th>
+                  <th scope="col"><span class="visually-hidden">Details</span></th>
+                </tr>
+              </thead>
+              <tbody id="reports-table"></tbody>
+            </table>
+          </div>
+          <p id="reports-empty" class="empty-state" hidden>No reports for this date.</p>
+        </section>
+      </section>
+
+      <!-- ============ 6. ALERTS ============ -->
+      <section class="view" id="view-alerts" data-view="alerts" aria-labelledby="h-alerts" hidden>
+        <h2 id="h-alerts" class="visually-hidden">Alerts</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="alerts-type">Type</label>
+            <select id="alerts-type" name="type">
+              <option value="">All types</option>
+              <option value="location_off">Location off</option>
+              <option value="no_signal">No signal</option>
+              <option value="geofence_missed">Geofence missed</option>
+              <option value="meeting">Meeting</option>
+              <option value="long_break">Long break</option>
+            </select>
+          </div>
+          <label class="check"><input type="checkbox" id="alerts-unread" name="unread"><span>Unread only</span></label>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-alerts-read-all" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Mark all read</span>
+          </button>
+        </div>
+
+        <section class="card" aria-label="Alerts list">
+          <ul id="alerts-list" class="list list-alerts"></ul>
+          <p id="alerts-empty" class="empty-state" hidden>No alerts.</p>
+        </section>
+      </section>
+
+      <!-- ============ 7. CUSTOMERS ============ -->
+      <section class="view" id="view-customers" data-view="customers" aria-labelledby="h-customers" hidden>
+        <h2 id="h-customers" class="visually-hidden">Customers</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline field-grow">
+            <label for="customers-search">Search</label>
+            <input type="search" id="customers-search" name="q" placeholder="Name, village or phone" autocomplete="off">
+          </div>
+          <div class="field field-inline">
+            <label for="customers-branch">Branch</label>
+            <select id="customers-branch" name="branch_id"><option value="">All branches</option></select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-import-customers" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg><span>Import CSV</span>
+          </button>
+          <button type="button" id="btn-add-customer" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Add customer</span>
+          </button>
+        </div>
+
+        <section class="card" aria-label="Customers table">
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Village</th>
+                  <th scope="col">Phone</th>
+                  <th scope="col">Branch</th>
+                  <th scope="col">Located</th>
+                  <th scope="col">Located at</th>
+                  <th scope="col">Located by</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="customers-table"></tbody>
+            </table>
+          </div>
+          <p id="customers-empty" class="empty-state" hidden>No customers found.</p>
+          <footer class="pagination">
+            <button type="button" id="customers-prev" class="btn btn-sm" disabled>
+              <svg class="icon" aria-hidden="true"><use href="#i-chevron-left"/></svg><span>Previous</span>
+            </button>
+            <span id="customers-page-info" class="pagination-info" aria-live="polite"></span>
+            <button type="button" id="customers-next" class="btn btn-sm" disabled>
+              <span>Next</span><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+            </button>
+          </footer>
+        </section>
+      </section>
+
+      <!-- ============ 8. TEAM ============ -->
+      <section class="view" id="view-team" data-view="team" aria-labelledby="h-team" hidden>
+        <h2 id="h-team" class="visually-hidden">Team</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="team-role">Role</label>
+            <select id="team-role" name="role">
+              <option value="">All roles</option>
+              <option value="admin" data-roles="admin">Admin</option>
+              <option value="branch_manager">Branch manager</option>
+              <option value="field_officer">Field officer</option>
+            </select>
+          </div>
+          <div class="field field-inline">
+            <label for="team-branch">Branch</label>
+            <select id="team-branch" name="branch_id"><option value="">All branches</option></select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-add-user" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Add user</span>
+          </button>
+        </div>
+
+        <section class="card" aria-label="Team table">
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">User ID</th>
+                  <th scope="col">Role</th>
+                  <th scope="col">Branch</th>
+                  <th scope="col">Phone</th>
+                  <th scope="col">Active</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="team-table"></tbody>
+            </table>
+          </div>
+          <p id="team-empty" class="empty-state" hidden>No users found.</p>
+        </section>
+      </section>
+
+      <!-- ============ 9. BRANCHES ============ -->
+      <section class="view" id="view-branches" data-view="branches" data-roles="admin" aria-labelledby="h-branches" hidden>
+        <h2 id="h-branches" class="visually-hidden">Branches</h2>
+
+        <div class="toolbar">
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-add-branch" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Add branch</span>
+          </button>
+        </div>
+
+        <section class="card" aria-label="Branches table">
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Address</th>
+                  <th scope="col">Latitude</th>
+                  <th scope="col">Longitude</th>
+                  <th scope="col">Managers</th>
+                  <th scope="col">Officers</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="branches-table"></tbody>
+            </table>
+          </div>
+          <p id="branches-empty" class="empty-state" hidden>No branches yet.</p>
+        </section>
+      </section>
+
+      <!-- ============ 10. SETTINGS ============ -->
+      <section class="view" id="view-settings" data-view="settings" data-roles="admin" aria-labelledby="h-settings" hidden>
+        <h2 id="h-settings" class="visually-hidden">Settings</h2>
+
+        <section class="card" aria-labelledby="h-settings-card">
+          <header class="card-header"><h3 id="h-settings-card">Duty &amp; alert rules</h3></header>
+          <form id="form-settings" class="form settings-form" novalidate>
+            <div class="form-grid">
+              <div class="field">
+                <label for="setting-office-start">Office start</label>
+                <input type="time" id="setting-office-start" name="office_start" required>
+                <p class="help">Time the working day begins (India time).</p>
+              </div>
+              <div class="field">
+                <label for="setting-office-end">Office end</label>
+                <input type="time" id="setting-office-end" name="office_end" required>
+                <p class="help">Time the working day ends (India time).</p>
+              </div>
+              <div class="field">
+                <label for="setting-lunch-allowed">Lunch allowed</label>
+                <div class="input-unit"><input type="number" id="setting-lunch-allowed" name="lunch_allowed_min" min="0" step="1" required><span class="unit">min</span></div>
+                <p class="help">Total lunch minutes allowed per day before it counts as excess.</p>
+              </div>
+              <div class="field">
+                <label for="setting-stop-min">Unexplained stop after</label>
+                <div class="input-unit"><input type="number" id="setting-stop-min" name="stop_min" min="1" step="1" required><span class="unit">min</span></div>
+                <p class="help">Standing still this long outside a location is flagged as a stop.</p>
+              </div>
+              <div class="field">
+                <label for="setting-geofence-radius">Default geofence radius</label>
+                <div class="input-unit"><input type="number" id="setting-geofence-radius" name="geofence_radius_m" min="10" step="1" required><span class="unit">m</span></div>
+                <p class="help">Radius used for a new location when none is given.</p>
+              </div>
+              <div class="field">
+                <label for="setting-meeting-officers">Meeting: minimum officers</label>
+                <div class="input-unit"><input type="number" id="setting-meeting-officers" name="meeting_min_officers" min="2" step="1" required><span class="unit">officers</span></div>
+                <p class="help">Officers gathered together needed to raise a meeting alert.</p>
+              </div>
+              <div class="field">
+                <label for="setting-meeting-radius">Meeting radius</label>
+                <div class="input-unit"><input type="number" id="setting-meeting-radius" name="meeting_radius_m" min="5" step="1" required><span class="unit">m</span></div>
+                <p class="help">Officers within this distance of each other count as together.</p>
+              </div>
+              <div class="field">
+                <label for="setting-meeting-minutes">Meeting: minimum duration</label>
+                <div class="input-unit"><input type="number" id="setting-meeting-minutes" name="meeting_min_minutes" min="1" step="1" required><span class="unit">min</span></div>
+                <p class="help">How long they must stay together before the alert fires.</p>
+              </div>
+              <div class="field">
+                <label for="setting-no-signal">No-signal alert after</label>
+                <div class="input-unit"><input type="number" id="setting-no-signal" name="no_signal_min" min="1" step="1" required><span class="unit">min</span></div>
+                <p class="help">Minutes without a location update before a no-signal alert.</p>
+              </div>
+            </div>
+            <p id="settings-error" class="form-error" role="alert" hidden></p>
+            <div class="form-actions">
+              <button type="submit" id="btn-save-settings" class="btn btn-primary">Save settings</button>
+            </div>
+          </form>
+        </section>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===================== MODALS ===================== -->
+
+<dialog class="modal" id="modal-customer" aria-labelledby="modal-customer-title">
+  <form id="form-customer" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="modal-customer-title">Add customer</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <input type="hidden" name="id" id="customer-id">
+      <div class="field">
+        <label for="customer-name">Name</label>
+        <input type="text" id="customer-name" name="name" required maxlength="120">
+      </div>
+      <div class="field">
+        <label for="customer-village">Village</label>
+        <input type="text" id="customer-village" name="village" maxlength="120">
+      </div>
+      <div class="field">
+        <label for="customer-phone">Phone</label>
+        <input type="tel" id="customer-phone" name="phone" inputmode="tel" maxlength="20">
+      </div>
+      <div class="field">
+        <label for="customer-branch">Branch</label>
+        <select id="customer-branch" name="branch_id" required><option value="">Select branch</option></select>
+      </div>
+      <p id="customer-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-save-customer" class="btn btn-primary">Save</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal" id="modal-import" aria-labelledby="modal-import-title">
+  <form id="form-import" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="modal-import-title">Import customers</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="field">
+        <label for="import-branch">Branch</label>
+        <select id="import-branch" name="branch_id" required><option value="">Select branch</option></select>
+      </div>
+      <div class="field">
+        <label for="import-file">CSV file</label>
+        <input type="file" id="import-file" name="file" accept=".csv,text/csv">
+      </div>
+      <div class="field">
+        <label for="import-text">Or paste rows</label>
+        <textarea id="import-text" name="text" rows="8" placeholder="name, village, phone (one customer per line)"></textarea>
+        <p class="help">One customer per line: name, village, phone.</p>
+      </div>
+      <p class="import-preview"><strong id="import-count">0</strong> customers ready to import</p>
+      <p id="import-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-import-run" class="btn btn-primary">Import</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal" id="modal-user" aria-labelledby="modal-user-title">
+  <form id="form-user" class="modal-form" novalidate autocomplete="off">
+    <header class="modal-header">
+      <h2 id="modal-user-title">Add user</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <input type="hidden" name="id" id="user-id">
+      <div class="field">
+        <label for="user-userid">User ID</label>
+        <input type="text" id="user-userid" name="userid" required autocapitalize="none" spellcheck="false" maxlength="60">
+      </div>
+      <div class="field">
+        <label for="user-fullname">Name</label>
+        <input type="text" id="user-fullname" name="name" required maxlength="120">
+      </div>
+      <div class="field">
+        <label for="user-password">Password</label>
+        <input type="password" id="user-password" name="password" autocomplete="new-password" minlength="6">
+        <p class="help" id="user-password-help">Required for a new user. Leave empty to keep the current password when editing.</p>
+      </div>
+      <div class="field">
+        <label for="user-role-select">Role</label>
+        <select id="user-role-select" name="role" required>
+          <option value="field_officer" selected>Field officer</option>
+          <option value="branch_manager" data-roles="admin">Branch manager</option>
+          <option value="admin" data-roles="admin">Admin</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="user-branch-select">Branch</label>
+        <select id="user-branch-select" name="branch_id"><option value="">Select branch</option></select>
+      </div>
+      <div class="field">
+        <label for="user-phone">Phone</label>
+        <input type="tel" id="user-phone" name="phone" inputmode="tel" maxlength="20">
+      </div>
+      <label class="check"><input type="checkbox" id="user-active" name="active" checked><span>Active</span></label>
+      <p id="user-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-save-user" class="btn btn-primary">Save</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal" id="modal-branch" aria-labelledby="modal-branch-title">
+  <form id="form-branch" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="modal-branch-title">Add branch</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <input type="hidden" name="id" id="branch-id">
+      <div class="field">
+        <label for="branch-name">Name</label>
+        <input type="text" id="branch-name" name="name" required maxlength="120">
+      </div>
+      <div class="field">
+        <label for="branch-address">Address</label>
+        <input type="text" id="branch-address" name="address" maxlength="255">
+      </div>
+      <div class="field">
+        <label for="branch-place-search">Search a place</label>
+        <input type="search" id="branch-place-search" name="place_search" placeholder="Type a place name" autocomplete="off" aria-controls="branch-place-results">
+        <ul id="branch-place-results" class="results-list" role="listbox" aria-label="Place search results" hidden></ul>
+        <p id="branch-place-results-empty" class="empty-state" hidden>No places found.</p>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="branch-lat">Latitude</label>
+          <input type="number" id="branch-lat" name="lat" step="any" min="-90" max="90" required>
+        </div>
+        <div class="field">
+          <label for="branch-lng">Longitude</label>
+          <input type="number" id="branch-lng" name="lng" step="any" min="-180" max="180" required>
+        </div>
+      </div>
+      <p id="branch-error" class="form-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-save-branch" class="btn btn-primary">Save</button>
+    </footer>
+  </form>
+</dialog>
+
+<dialog class="modal modal-sm" id="modal-confirm" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+  <div class="modal-form">
+    <header class="modal-header">
+      <h2 id="confirm-title">Are you sure?</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <p id="confirm-message"></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" id="btn-confirm-cancel" class="btn" data-close>Cancel</button>
+      <button type="button" id="btn-confirm-ok" class="btn btn-danger">Confirm</button>
+    </footer>
+  </div>
+</dialog>
+
+<!-- ===================== TOASTS ===================== -->
+<div id="toasts" class="toasts" role="region" aria-label="Notifications" aria-live="polite"></div>
+
+<!-- ===================== TEMPLATES ===================== -->
+
+<!-- Dashboard: one officer row -->
+<template id="tpl-dash-officer">
+  <tr data-officer-id="">
+    <td data-field="name"></td>
+    <td data-field="branch_name"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td><span data-field="distance_km"></span> km</td>
+    <td><span data-field="assignments_visited"></span> / <span data-field="assignments_total"></span></td>
+    <td data-field="last_point_at"></td>
+    <td>
+      <button type="button" class="btn btn-sm" data-action="replay">
+        <svg class="icon" aria-hidden="true"><use href="#i-replay"/></svg><span>Replay</span>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<!-- Dashboard: one recent alert -->
+<template id="tpl-dash-alert">
+  <li class="list-item alert-item" data-alert-id="">
+    <svg class="icon alert-icon" aria-hidden="true" data-field="type_icon"><use href="#i-bell"/></svg>
+    <div class="list-item-main">
+      <p class="list-item-title" data-field="title"></p>
+      <p class="list-item-sub"><span data-field="officer_name"></span> &middot; <span data-field="created_at"></span></p>
+    </div>
+    <span class="chip" data-field="type"></span>
+  </li>
+</template>
+
+<!-- Live: one officer -->
+<template id="tpl-live-officer">
+  <li class="list-item" data-officer-id="" tabindex="0">
+    <div class="list-item-main">
+      <p class="list-item-title" data-field="name"></p>
+      <p class="list-item-sub"><span data-field="distance_km"></span> km &middot; <span data-field="last_point_at"></span></p>
+    </div>
+    <span class="chip" data-field="status"></span>
+  </li>
+</template>
+
+<!-- Live: one customer in the "latest located" feed -->
+<template id="tpl-live-customer">
+  <li class="list-item" data-customer-id="" tabindex="0">
+    <div class="list-item-main">
+      <p class="list-item-title" data-field="name"></p>
+      <p class="list-item-sub"><span data-field="village"></span> &middot; <span data-field="located_at"></span></p>
+    </div>
+  </li>
+</template>
+
+<!-- Replay: one timeline event (kind: visit | lunch | unexplained | customer) -->
+<template id="tpl-replay-event">
+  <li class="list-item event-item" data-ts="" tabindex="0" role="button">
+    <svg class="icon event-icon" aria-hidden="true" data-field="kind_icon"><use href="#i-visit"/></svg>
+    <div class="list-item-main">
+      <p class="list-item-title" data-field="title"></p>
+      <p class="list-item-sub"><span data-field="time"></span> &middot; <span data-field="duration"></span></p>
+    </div>
+    <span class="chip" data-field="kind"></span>
+  </li>
+</template>
+
+<!-- Place search result (tasks view) -->
+<template id="tpl-place-result">
+  <li class="results-item" role="option" tabindex="0" data-action="pick">
+    <span class="results-name" data-field="name"></span>
+    <span class="results-address" data-field="address"></span>
+  </li>
+</template>
+
+<!-- Place search result (branch dialog) -->
+<template id="tpl-branch-place-result">
+  <li class="results-item" role="option" tabindex="0" data-action="pick">
+    <span class="results-name" data-field="name"></span>
+    <span class="results-address" data-field="address"></span>
+  </li>
+</template>
+
+<!-- Tasks: one assignment row -->
+<template id="tpl-assignment">
+  <tr data-assignment-id="">
+    <td data-field="officer_name"></td>
+    <td data-field="name"></td>
+    <td><span class="chip" data-field="kind"></span></td>
+    <td data-field="address"></td>
+    <td><span data-field="radius_m"></span> m</td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td data-field="first_enter_at"></td>
+    <td><span data-field="time_spent_min"></span> min</td>
+    <td>
+      <button type="button" class="icon-btn" data-action="delete" aria-label="Delete location">
+        <svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<!-- Reports: one summary row (expand button toggles a detail row built from tpl-report-detail) -->
+<template id="tpl-report-row">
+  <tr class="report-row" data-officer-id="">
+    <td data-field="officer_name"></td>
+    <td data-field="branch_name"></td>
+    <td data-field="started_at"></td>
+    <td data-field="ended_at"></td>
+    <td data-field="duty_minutes"></td>
+    <td data-field="distance_km"></td>
+    <td><span data-field="centers_visited"></span> / <span data-field="centers_assigned"></span></td>
+    <td><span data-field="villages_visited"></span> / <span data-field="villages_assigned"></span></td>
+    <td data-field="time_at_locations_min"></td>
+    <td><span data-field="lunch_minutes"></span> / <span data-field="lunch_allowed_min"></span></td>
+    <td data-field="lunch_excess_min"></td>
+    <td><span data-field="unexplained_stop_count"></span> (<span data-field="unexplained_stop_min"></span> min)</td>
+    <td data-field="customers_captured"></td>
+    <td data-field="location_off_count"></td>
+    <td><span class="chip" data-field="long_break"></span></td>
+    <td>
+      <button type="button" class="icon-btn" data-action="toggle-detail" aria-expanded="false" aria-label="Show details">
+        <svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<!-- Reports: expanded detail row (insert after the summary row) -->
+<template id="tpl-report-detail">
+  <tr class="report-detail-row">
+    <td colspan="16">
+      <div class="report-detail">
+        <section class="report-detail-block">
+          <h4>Visit details</h4>
+          <div class="table-wrap">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Kind</th>
+                  <th scope="col">Visited</th>
+                  <th scope="col">Enter</th>
+                  <th scope="col">Exit</th>
+                  <th scope="col">Minutes</th>
+                </tr>
+              </thead>
+              <tbody data-list="visit_details"></tbody>
+            </table>
+          </div>
+          <p class="empty-state" data-empty="visit_details" hidden>No visit details.</p>
+        </section>
+
+        <section class="report-detail-block">
+          <h4>Unexplained stops</h4>
+          <ul class="list" data-list="unexplained_stops"></ul>
+          <p class="empty-state" data-empty="unexplained_stops" hidden>No unexplained stops.</p>
+        </section>
+
+        <section class="report-detail-block">
+          <h4>Missed locations</h4>
+          <ul class="list" data-list="missed"></ul>
+          <p class="empty-state" data-empty="missed" hidden>No missed locations.</p>
+        </section>
+      </div>
+    </td>
+  </tr>
+</template>
+
+<!-- Reports detail: one visit row (goes into [data-list="visit_details"]) -->
+<template id="tpl-report-visit">
+  <tr>
+    <td data-field="name"></td>
+    <td><span class="chip" data-field="kind"></span></td>
+    <td><span class="chip" data-field="visited"></span></td>
+    <td data-field="enter_at"></td>
+    <td data-field="exit_at"></td>
+    <td data-field="minutes"></td>
+  </tr>
+</template>
+
+<!-- Reports detail: one unexplained stop (goes into [data-list="unexplained_stops"]) -->
+<template id="tpl-report-stop">
+  <li class="list-item">
+    <div class="list-item-main">
+      <p class="list-item-title"><span data-field="start"></span> - <span data-field="end"></span> (<span data-field="minutes"></span> min)</p>
+    </div>
+    <a class="btn btn-sm btn-link" data-field="map_link" data-action="view-map" href="#" target="_blank" rel="noopener noreferrer">
+      <svg class="icon" aria-hidden="true"><use href="#i-external"/></svg><span>View on map</span>
+    </a>
+  </li>
+</template>
+
+<!-- Reports detail: one missed location (goes into [data-list="missed"]) -->
+<template id="tpl-report-missed">
+  <li class="list-item"><span data-field="name"></span></li>
+</template>
+
+<!-- Alerts: one alert -->
+<template id="tpl-alert">
+  <li class="list-item alert-item" data-alert-id="">
+    <svg class="icon alert-icon" aria-hidden="true" data-field="type_icon"><use href="#i-bell"/></svg>
+    <div class="list-item-main">
+      <p class="list-item-head"><span class="chip" data-field="type"></span> <strong class="list-item-title" data-field="title"></strong></p>
+      <p class="list-item-body" data-field="body"></p>
+      <p class="list-item-sub"><span data-field="officer_name"></span> &middot; <span data-field="branch_name"></span> &middot; <span data-field="created_at"></span></p>
+    </div>
+    <button type="button" class="btn btn-sm" data-action="read">
+      <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Mark read</span>
+    </button>
+  </li>
+</template>
+
+<!-- Customers: one row -->
+<template id="tpl-customer-row">
+  <tr data-customer-id="">
+    <td data-field="name"></td>
+    <td data-field="village"></td>
+    <td data-field="phone"></td>
+    <td data-field="branch_name"></td>
+    <td><span class="chip" data-field="located"></span></td>
+    <td data-field="located_at"></td>
+    <td data-field="located_by_name"></td>
+    <td>
+      <button type="button" class="icon-btn" data-action="edit" aria-label="Edit customer">
+        <svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg>
+      </button>
+      <button type="button" class="icon-btn" data-action="delete" aria-label="Delete customer">
+        <svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<!-- Team: one user row -->
+<template id="tpl-user-row">
+  <tr data-user-id="">
+    <td data-field="name"></td>
+    <td data-field="userid"></td>
+    <td><span class="chip" data-field="role"></span></td>
+    <td data-field="branch_name"></td>
+    <td data-field="phone"></td>
+    <td><span class="chip" data-field="active"></span></td>
+    <td>
+      <button type="button" class="icon-btn" data-action="edit" aria-label="Edit user">
+        <svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg>
+      </button>
+      <button type="button" class="icon-btn" data-action="deactivate" aria-label="Deactivate user">
+        <svg class="icon" aria-hidden="true"><use href="#i-user-x"/></svg>
+      </button>
+    </td>
+  </tr>
+</template>
+
+<!-- Branches: one row -->
+<template id="tpl-branch-row">
+  <tr data-branch-id="">
+    <td data-field="name"></td>
+    <td data-field="address"></td>
+    <td data-field="lat"></td>
+    <td data-field="lng"></td>
+    <td data-field="manager_names"></td>
+    <td data-field="officer_count"></td>
+    <td>
+      <button type="button" class="icon-btn" data-action="edit" aria-label="Edit branch">
+        <svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg>
+      </button>
+      <button type="button" class="icon-btn" data-action="delete" aria-label="Delete branch">
+        <svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>
+      </button>
+    </td>
+  </tr>
+</template>
+
+</body>
+</html>

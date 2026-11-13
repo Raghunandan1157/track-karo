@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in - Track_karo</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/login.js"></script>
+</head>
+<body class="login-page">
+  <main class="login-wrap">
+    <section class="login-card" aria-labelledby="login-title">
+      <header class="login-brand">
+        <img class="login-logo" src="assets/logo.png" alt="Track_karo logo" width="170" height="127">
+        <h1 id="login-title" class="login-title">Track_karo</h1>
+        <p class="login-tagline">SMART. SWIFT. SECURE.</p>
+      </header>
+
+      <form id="form-login" class="form" novalidate autocomplete="on">
+        <div class="field">
+          <label for="login-userid">User ID</label>
+          <input id="login-userid" name="userid" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
+        </div>
+
+        <div class="field">
+          <label for="login-password">Password</label>
+          <div class="input-group">
+            <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+            <button type="button" id="btn-toggle-password" class="icon-btn" aria-label="Show password" aria-pressed="false">
+              <svg class="icon icon-eye" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="icon icon-eye-off" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C5 20 1 12 1 12a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <p id="login-error" class="form-error" role="alert" aria-live="assertive" hidden></p>
+
+        <button type="submit" id="btn-login" class="btn btn-primary btn-block">Sign in</button>
+      </form>
+
+      <footer class="login-footer">
+        <p>Admin and Branch Manager access only.</p>
+        <p class="muted">&copy; Track_karo. All rights reserved.</p>
+      </footer>
+    </section>
+  </main>
+</body>
+</html>
