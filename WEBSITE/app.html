@@ -138,19 +138,9 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
       <button type="button" class="nav-item" data-view="reports">
         <svg class="icon" aria-hidden="true"><use href="#i-reports"/></svg><span class="nav-label">Daily Reports</span>
       </button>
-      <button type="button" class="nav-item" data-view="audit">
-        <svg class="icon" aria-hidden="true"><use href="#i-audit"/></svg><span class="nav-label">Internal Audit</span>
-      </button>
-      <a class="nav-item" href="scrub-dashboard/index.html" data-roles="admin">
-        <svg class="icon" aria-hidden="true"><use href="#i-reports"/></svg><span class="nav-label">Scrub Analysis</span>
-      </a>
       <button type="button" class="nav-item" data-view="alerts">
         <svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg><span class="nav-label">Alerts</span>
         <span id="nav-alerts-badge" class="badge" hidden>0</span>
-      </button>
-      <button type="button" class="nav-item" data-view="chat">
-        <svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg><span class="nav-label">Chat</span>
-        <span id="nav-chat-badge" class="badge" hidden>0</span>
       </button>
       <button type="button" class="nav-item" data-view="customers">
         <svg class="icon" aria-hidden="true"><use href="#i-customers"/></svg><span class="nav-label">Customers</span>
@@ -158,60 +148,78 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
       <button type="button" class="nav-item" data-view="team">
         <svg class="icon" aria-hidden="true"><use href="#i-team"/></svg><span class="nav-label">Team</span>
       </button>
-
-      <p class="nav-section-label">Recovery</p>
-      <button type="button" class="nav-item" data-view="recovery">
-        <svg class="icon" aria-hidden="true"><use href="#i-recovery"/></svg><span class="nav-label">Recovery Dashboard</span>
-      </button>
-      <button type="button" class="nav-item" data-view="recovery-cases">
-        <svg class="icon" aria-hidden="true"><use href="#i-cases"/></svg><span class="nav-label">Recovery Cases</span>
-      </button>
-      <button type="button" class="nav-item" data-view="recovery-notices">
-        <svg class="icon" aria-hidden="true"><use href="#i-notice"/></svg><span class="nav-label">Notices &amp; Legal Docs</span>
-      </button>
-      <button type="button" class="nav-item" data-view="recovery-settlements">
-        <svg class="icon" aria-hidden="true"><use href="#i-handshake"/></svg><span class="nav-label">Settlements</span>
-      </button>
-      <button type="button" class="nav-item" data-view="recovery-reports">
-        <svg class="icon" aria-hidden="true"><use href="#i-scale"/></svg><span class="nav-label">Recovery Reports</span>
-      </button>
-      <button type="button" class="nav-item" data-view="recovery-stages">
-        <svg class="icon" aria-hidden="true"><use href="#i-sliders"/></svg><span class="nav-label">Stage Setup</span>
-      </button>
-
-
-      <p class="nav-section" aria-hidden="true">HR</p>
-      <button type="button" class="nav-item" data-view="hr">
-        <svg class="icon" aria-hidden="true"><use href="#i-hr"/></svg><span class="nav-label">HR Overview</span>
-      </button>
-      <button type="button" class="nav-item" data-view="employees">
-        <svg class="icon" aria-hidden="true"><use href="#i-user"/></svg><span class="nav-label">Employees</span>
-      </button>
-      <button type="button" class="nav-item" data-view="attendance">
-        <svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg><span class="nav-label">Attendance</span>
-      </button>
-      <button type="button" class="nav-item" data-view="leave">
-        <svg class="icon" aria-hidden="true"><use href="#i-leave"/></svg><span class="nav-label">Leave &amp; Holidays</span>
-      </button>
-      <button type="button" class="nav-item" data-view="recruitment">
-        <svg class="icon" aria-hidden="true"><use href="#i-recruit"/></svg><span class="nav-label">Recruitment</span>
-      </button>
-      <button type="button" class="nav-item" data-view="payroll">
-        <svg class="icon" aria-hidden="true"><use href="#i-money"/></svg><span class="nav-label">Payroll</span>
-      </button>
-      <button type="button" class="nav-item" data-view="performance">
-        <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><span class="nav-label">Performance</span>
-      </button>
-      <button type="button" class="nav-item" data-view="documents">
-        <svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg><span class="nav-label">Documents</span>
-      </button>
-
       <button type="button" class="nav-item" data-view="branches" data-roles="admin">
         <svg class="icon" aria-hidden="true"><use href="#i-branches"/></svg><span class="nav-label">Branches</span>
       </button>
       <button type="button" class="nav-item" data-view="settings" data-roles="admin">
         <svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg><span class="nav-label">Settings</span>
       </button>
+
+      <p class="nav-heading">New modules</p>
+      <button type="button" class="nav-item" data-view="chat">
+        <svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg><span class="nav-label">Chat</span>
+        <span id="nav-chat-badge" class="badge" hidden>0</span>
+      </button>
+      <button type="button" class="nav-item" data-view="audit">
+        <svg class="icon" aria-hidden="true"><use href="#i-audit"/></svg><span class="nav-label">Internal Audit</span>
+      </button>
+      <a class="nav-item" href="scrub-dashboard/index.html" data-roles="admin">
+        <svg class="icon" aria-hidden="true"><use href="#i-reports"/></svg><span class="nav-label">Scrub Analysis</span>
+      </a>
+      <details class="nav-group" data-group="recovery">
+        <summary class="nav-item nav-group-toggle">
+          <svg class="icon" aria-hidden="true"><use href="#i-recovery"/></svg><span class="nav-label">Recovery</span>
+          <svg class="icon nav-chevron" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+        </summary>
+        <button type="button" class="nav-item" data-view="recovery">
+          <svg class="icon" aria-hidden="true"><use href="#i-recovery"/></svg><span class="nav-label">Recovery Dashboard</span>
+        </button>
+        <button type="button" class="nav-item" data-view="recovery-cases">
+          <svg class="icon" aria-hidden="true"><use href="#i-cases"/></svg><span class="nav-label">Recovery Cases</span>
+        </button>
+        <button type="button" class="nav-item" data-view="recovery-notices">
+          <svg class="icon" aria-hidden="true"><use href="#i-notice"/></svg><span class="nav-label">Notices &amp; Legal Docs</span>
+        </button>
+        <button type="button" class="nav-item" data-view="recovery-settlements">
+          <svg class="icon" aria-hidden="true"><use href="#i-handshake"/></svg><span class="nav-label">Settlements</span>
+        </button>
+        <button type="button" class="nav-item" data-view="recovery-reports">
+          <svg class="icon" aria-hidden="true"><use href="#i-scale"/></svg><span class="nav-label">Recovery Reports</span>
+        </button>
+        <button type="button" class="nav-item" data-view="recovery-stages">
+          <svg class="icon" aria-hidden="true"><use href="#i-sliders"/></svg><span class="nav-label">Stage Setup</span>
+        </button>
+      </details>
+      <details class="nav-group" data-group="hr">
+        <summary class="nav-item nav-group-toggle">
+          <svg class="icon" aria-hidden="true"><use href="#i-hr"/></svg><span class="nav-label">HR</span>
+          <svg class="icon nav-chevron" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+        </summary>
+        <button type="button" class="nav-item" data-view="hr">
+          <svg class="icon" aria-hidden="true"><use href="#i-hr"/></svg><span class="nav-label">HR Overview</span>
+        </button>
+        <button type="button" class="nav-item" data-view="employees">
+          <svg class="icon" aria-hidden="true"><use href="#i-user"/></svg><span class="nav-label">Employees</span>
+        </button>
+        <button type="button" class="nav-item" data-view="attendance">
+          <svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg><span class="nav-label">Attendance</span>
+        </button>
+        <button type="button" class="nav-item" data-view="leave">
+          <svg class="icon" aria-hidden="true"><use href="#i-leave"/></svg><span class="nav-label">Leave &amp; Holidays</span>
+        </button>
+        <button type="button" class="nav-item" data-view="recruitment">
+          <svg class="icon" aria-hidden="true"><use href="#i-recruit"/></svg><span class="nav-label">Recruitment</span>
+        </button>
+        <button type="button" class="nav-item" data-view="payroll">
+          <svg class="icon" aria-hidden="true"><use href="#i-money"/></svg><span class="nav-label">Payroll</span>
+        </button>
+        <button type="button" class="nav-item" data-view="performance">
+          <svg class="icon" aria-hidden="true"><use href="#i-star"/></svg><span class="nav-label">Performance</span>
+        </button>
+        <button type="button" class="nav-item" data-view="documents">
+          <svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg><span class="nav-label">Documents</span>
+        </button>
+      </details>
     </nav>
 
     <div class="sidebar-user">

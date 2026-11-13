@@ -681,6 +681,26 @@ a.nav-item { text-decoration: none; }
 }
 .nav-item.is-active .icon { color: var(--orange); opacity: 1; }
 
+/* Sidebar: "New modules" heading and collapsible groups */
+.nav-heading {
+  margin: 14px 12px 4px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .48);
+}
+.nav-group { display: flex; flex-direction: column; gap: 2px; }
+.nav-group-toggle { cursor: pointer; list-style: none; user-select: none; }
+.nav-group-toggle::-webkit-details-marker { display: none; }
+.nav-group-toggle:focus-visible { outline: 2px solid var(--orange); outline-offset: -2px; }
+.nav-item .nav-chevron { width: 1em; height: 1em; opacity: .6; transition: transform .15s var(--ease); }
+.nav-group[open] > .nav-group-toggle .nav-chevron { transform: rotate(180deg); }
+.nav-group > .nav-item:not(.nav-group-toggle) { min-height: 38px; padding-left: 24px; font-size: var(--fs-sm); }
+.nav-group.has-active:not([open]) > .nav-group-toggle { background: rgba(255, 255, 255, .12); color: #fff; }
+
 .sidebar-user {
   display: flex;
   align-items: center;

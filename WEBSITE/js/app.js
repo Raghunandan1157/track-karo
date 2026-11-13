@@ -89,7 +89,11 @@ function applyRoleGating() {
     for (const btn of $$('.nav-item[data-view]')) {
       if (!String(btn.dataset.view || '').startsWith('recovery')) btn.remove();
     }
-    for (const lbl of $$('.nav-section')) lbl.remove(); // HR group heading
+    for (const lbl of $$('.nav-heading')) lbl.remove(); // "New modules" heading
+    for (const grp of $$('.nav-group')) {
+      // keep only the recovery group, opened; drop the now-empty HR group
+      if (grp.querySelector('.nav-item[data-view]')) grp.open = true; else grp.remove();
+    }
     $('btn-bell')?.remove();
     $('live-status')?.remove();
   }
@@ -138,6 +142,12 @@ function showView(name) {
     const active = btn.dataset.view === name;
     btn.classList.toggle('is-active', active);
     if (active) btn.setAttribute('aria-current', 'page'); else btn.removeAttribute('aria-current');
+  }
+  // Collapsible sidebar groups: open the one that holds the current page.
+  for (const grp of $$('.nav-group')) {
+    const has = !!grp.querySelector('.nav-item.is-active');
+    grp.classList.toggle('has-active', has);
+    if (has) grp.open = true;
   }
   const navLabel = document.querySelector(`.nav-item[data-view="${name}"] .nav-label`);
   const title = navLabel ? navLabel.textContent.trim() : name;
