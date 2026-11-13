@@ -180,6 +180,13 @@ CREATE TABLE IF NOT EXISTS settings (
   value jsonb NOT NULL
 );
 
+-- wrong-password attempts (login throttling)
+CREATE TABLE IF NOT EXISTS login_failures (
+  userid text NOT NULL,
+  ts timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS login_failures_userid ON login_failures (userid, ts);
+
 -- assignment + visit summary. "visited" = at least 2 minutes inside the geofence.
 CREATE OR REPLACE VIEW assignment_status AS
 SELECT a.id, a.officer_id, u.name AS officer_name, a.branch_id, a.day, a.name, a.kind, a.address,

@@ -31,8 +31,8 @@ function init() {
     toggle.classList.toggle('is-active', show);
     const eye = toggle.querySelector('.icon-eye');
     const eyeOff = toggle.querySelector('.icon-eye-off');
-    if (eye) eye.hidden = show;
-    if (eyeOff) eyeOff.hidden = !show;
+    if (eye) eye.toggleAttribute('hidden', show);
+    if (eyeOff) eyeOff.toggleAttribute('hidden', !show);
     pwEl.focus();
   });
 

@@ -17,11 +17,15 @@ export default async function handler(req, res) {
     'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-cache, no-transform',
     Connection: 'keep-alive', 'X-Accel-Buffering': 'no', 'Access-Control-Allow-Origin': '*',
   });
-  const write = (event, data) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+  let closed = false;
+  const write = (event, data) => {
+    if (closed || res.writableEnded || res.destroyed) return;
+    try { res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`); } catch { /* client went away */ }
+  };
   res.write('retry: 2000\n\n');
 
   const client = new pg.Client({ connectionString: process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL });
-  let closed = false, ping, timer;
+  let ping, timer;
   const close = () => {
     if (closed) return;
     closed = true; clearInterval(ping); clearTimeout(timer);
@@ -29,6 +33,7 @@ export default async function handler(req, res) {
     try { res.end(); } catch { /* already closed */ }
   };
   req.on('close', close);
+  res.on('error', close);
   client.on('error', close);
 
   try {

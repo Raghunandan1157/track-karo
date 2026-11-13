@@ -1463,7 +1463,7 @@ input[type="range"] {
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
 }
-.field > .results-list { top: auto; }
+.field > .results-list { top: 100%; } /* drop down below the search box */
 /* Inside the scrolling modal body keep it in flow so it is never clipped */
 .modal .results-list { position: static; box-shadow: var(--shadow); }
 

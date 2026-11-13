@@ -80,8 +80,8 @@ function setPlaying(on) {
   btn.classList.toggle('is-playing', on);
   btn.setAttribute('aria-pressed', String(on));
   btn.setAttribute('aria-label', on ? 'Pause' : 'Play');
-  btn.querySelector('.icon-play').hidden = on;
-  btn.querySelector('.icon-pause').hidden = !on;
+  btn.querySelector('.icon-play').toggleAttribute('hidden', on); // SVG has no .hidden property
+  btn.querySelector('.icon-pause').toggleAttribute('hidden', !on);
   if (on) {
     lastFrame = performance.now();
     cancelAnimationFrame(rafId);

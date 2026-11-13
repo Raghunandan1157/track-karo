@@ -48,8 +48,15 @@ async function listOfficers(user, branchId, day = istDay()) {
 route('POST', '/login', null, async ({ body }) => {
   const userid = str(body.userid, 80), password = body.password;
   if (!userid || !password) throw bad('Enter user ID and password');
+  // slow down password guessing: 8 wrong tries per user ID in 15 minutes locks that ID for a while
+  const fails = await q1(`SELECT count(*)::int AS n FROM login_failures WHERE userid = lower($1) AND ts > now() - interval '15 minutes'`, [userid]);
+  if (fails.n >= 8) throw new HttpError(429, 'Too many wrong attempts. Try again after 15 minutes.');
   const row = await q1('SELECT id, password_hash, active FROM users WHERE lower(userid) = lower($1)', [userid]);
-  if (!row || !row.active || !(await checkPassword(password, row.password_hash))) throw new HttpError(401, 'Wrong user ID or password');
+  if (!row || !row.active || !(await checkPassword(password, row.password_hash))) {
+    await q('INSERT INTO login_failures (userid) VALUES (lower($1))', [userid]);
+    throw new HttpError(401, 'Wrong user ID or password');
+  }
+  await q('DELETE FROM login_failures WHERE userid = lower($1) OR ts < now() - interval \'1 day\'', [userid]);
   const user = await loadUser(row.id);
   return { token: signToken(user), user };
 });
