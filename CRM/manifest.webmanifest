@@ -1,0 +1,25 @@
+{
+  "name": "Track_karo CRM",
+  "short_name": "TK CRM",
+  "description": "Customer calling feedback, response categories and blacklist reporting. UI demo with local-only data.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F3F6FA",
+  "theme_color": "#14285A",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
