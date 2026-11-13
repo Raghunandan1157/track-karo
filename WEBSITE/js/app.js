@@ -10,6 +10,7 @@ import replay from './views/replay.js';
 import tasks from './views/tasks.js';
 import reports from './views/reports.js';
 import alerts from './views/alerts.js';
+import chat from './views/chat.js';
 import customers from './views/customers.js';
 import team from './views/team.js';
 import branches from './views/branches.js';
@@ -32,7 +33,7 @@ import hrPerformance from './hr/views/performance.js';
 import hrDocuments from './hr/views/documents.js';
 
 const VIEWS = {
-  dashboard, live, replay, tasks, reports, alerts, customers, team,
+  dashboard, live, replay, tasks, reports, alerts, chat, customers, team,
   recovery,
   'recovery-cases': recoveryCases,
   'recovery-case': recoveryCase,
@@ -47,6 +48,8 @@ const VIEWS = {
 const HR_VIEWS = ['hr', 'employees', 'attendance', 'leave', 'recruitment', 'payroll', 'performance', 'documents'];
 // Two local-only demo sessions exist: the HR demo (token 'demo') and the recovery demo.
 const DEMO = getToken() === 'demo';
+// Screens that run on sample data in the browser and need no server.
+const isLocalView = (name) => HR_VIEWS.includes(name) || name === 'chat' || String(name).startsWith('recovery');
 const WEB_ROLES = ['admin', 'branch_manager', 'recovery_manager'];
 const MOBILE_QUERY = window.matchMedia('(max-width: 900px)');
 
@@ -85,6 +88,7 @@ function applyRoleGating() {
     for (const btn of $$('.nav-item[data-view]')) {
       if (!String(btn.dataset.view || '').startsWith('recovery')) btn.remove();
     }
+    for (const lbl of $$('.nav-section')) lbl.remove(); // HR group heading
     $('btn-bell')?.remove();
     $('live-status')?.remove();
   }
@@ -143,7 +147,7 @@ function showView(name) {
   $('content')?.scrollTo?.(0, 0);
 
   const view = VIEWS[name];
-  if (DEMO && !HR_VIEWS.includes(name)) {
+  if (DEMO && !isLocalView(name)) {
     toast('Demo mode', `${title} needs the tracking API. HR screens run fully in this browser.`, 'info');
     return;
   }
@@ -222,7 +226,7 @@ async function boot() {
 
   for (const [name, v] of Object.entries(VIEWS)) {
     if (!viewAllowed(name)) continue;
-    if (DEMO && !HR_VIEWS.includes(name)) continue;
+    if (DEMO && !isLocalView(name)) continue;
     try { v.init?.(); } catch (err) { console.error(`init ${name}`, err); }
   }
 
