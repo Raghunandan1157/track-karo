@@ -7,6 +7,10 @@ const Color kRed = Color(0xFFC62828);
 const Color kGreen = Color(0xFF2E7D32);
 const Color kYellow = Color(0xFFF9C80E);
 const Color kGrey = Color(0xFF6B7280);
+const Color kTeal = Color(0xFF0F766E);
+const Color kTealDark = Color(0xFF115E59);
+const Color kPurple = Color(0xFF6D3FC0);
+const Color kAmber = Color(0xFFB26A00);
 
 ThemeData buildTheme() {
   final scheme = ColorScheme.fromSeed(

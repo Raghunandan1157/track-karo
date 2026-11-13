@@ -128,6 +128,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(color: kGrey),
                   ),
+                  const SizedBox(height: 14),
+                  OutlinedButton.icon(
+                    onPressed: _busy ? null : () => Session.instance.loginDemo(),
+                    icon: const Icon(Icons.engineering_outlined, size: 20),
+                    label: const Text('Preview Recovery Module (demo)'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 50),
+                      foregroundColor: kTeal,
+                      side: const BorderSide(color: kTeal),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Opens the Recovery Manager UI with sample cases. No server connection.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: kGrey, fontSize: 12),
+                  ),
                 ],
               ),
             ),

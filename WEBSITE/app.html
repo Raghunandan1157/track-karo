@@ -1,6 +1,6 @@
 <!--
 TRACK_KARO app shell - conventions for the CSS and JS authors
-- Views: <section class="view" id="view-NAME" data-view="NAME" hidden>. NAMES: dashboard (visible by default), live, replay, tasks, reports, alerts, customers, team, branches (admin), settings (admin).
+- Views: <section class="view" id="view-NAME" data-view="NAME" hidden>. NAMES: dashboard (visible by default), live, replay, tasks, reports, alerts, customers, team, branches (admin), settings (admin), recovery, recovery-cases, recovery-case, recovery-notices, recovery-settlements, recovery-reports, recovery-stages.
 - Sidebar buttons: <button class="nav-item" data-view="NAME">. Role gating: data-roles="admin" (hide for everyone else). Not hidden by default in HTML; JS removes/hides them.
 - ids are kebab-case (exception: stat cards use stat-<api_field> with underscores, e.g. stat-officers_total). Forms: form-*. Buttons that trigger actions: btn-*. Modals: <dialog class="modal" id="modal-*"> with a [data-close] button.
 - Form controls: name = API field name, each with a <label for>. Hidden id inputs: name="id".
@@ -67,6 +67,18 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
   <symbol id="i-lunch" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></symbol>
   <symbol id="i-unexplained" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></symbol>
   <symbol id="i-customer" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-recovery" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-cases" viewBox="0 0 24 24"><path d="M4 4h6l2 2h8v14H4z"/><path d="M4 9h16"/></symbol>
+  <symbol id="i-notice" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M5 6h14M7 6l-3 6h6zM17 6l-3 6h6zM8 21h8"/></symbol>
+  <symbol id="i-handshake" viewBox="0 0 24 24"><path d="M3 12l4-4 5 5 5-5 4 4-7 7-2-2-2 2z"/></symbol>
+  <symbol id="i-calculator" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h4"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
+  <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></symbol>
+  <symbol id="i-rupee" viewBox="0 0 24 24"><path d="M6 3h12M6 8h12M15 3c0 5-4 5-9 5l9 10"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
 </svg>
 
 <div class="app-shell">
@@ -104,6 +116,27 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
       <button type="button" class="nav-item" data-view="customers">
         <svg class="icon" aria-hidden="true"><use href="#i-customers"/></svg><span class="nav-label">Customers</span>
       </button>
+
+      <p class="nav-section-label">Recovery</p>
+      <button type="button" class="nav-item" data-view="recovery">
+        <svg class="icon" aria-hidden="true"><use href="#i-recovery"/></svg><span class="nav-label">Recovery Dashboard</span>
+      </button>
+      <button type="button" class="nav-item" data-view="recovery-cases">
+        <svg class="icon" aria-hidden="true"><use href="#i-cases"/></svg><span class="nav-label">Recovery Cases</span>
+      </button>
+      <button type="button" class="nav-item" data-view="recovery-notices">
+        <svg class="icon" aria-hidden="true"><use href="#i-notice"/></svg><span class="nav-label">Notices &amp; Legal Docs</span>
+      </button>
+      <button type="button" class="nav-item" data-view="recovery-settlements">
+        <svg class="icon" aria-hidden="true"><use href="#i-handshake"/></svg><span class="nav-label">Settlements</span>
+      </button>
+      <button type="button" class="nav-item" data-view="recovery-reports">
+        <svg class="icon" aria-hidden="true"><use href="#i-scale"/></svg><span class="nav-label">Recovery Reports</span>
+      </button>
+      <button type="button" class="nav-item" data-view="recovery-stages">
+        <svg class="icon" aria-hidden="true"><use href="#i-sliders"/></svg><span class="nav-label">Stage Setup</span>
+      </button>
+
       <button type="button" class="nav-item" data-view="team">
         <svg class="icon" aria-hidden="true"><use href="#i-team"/></svg><span class="nav-label">Team</span>
       </button>
@@ -615,6 +648,538 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
         </section>
       </section>
 
+      <!-- ============ RECOVERY: DASHBOARD ============ -->
+      <section class="view" id="view-recovery" data-view="recovery" aria-labelledby="h-recovery" hidden>
+        <h2 id="h-recovery" class="visually-hidden">Recovery dashboard</h2>
+
+        <div class="stat-grid rec-stat-grid">
+          <article class="stat-card rec-stat">
+            <h3 class="stat-label">Outstanding portfolio</h3>
+            <p class="stat-value" id="rec-stat-outstanding">-</p>
+            <p class="rec-stat-sub">Across active cases</p>
+          </article>
+          <article class="stat-card rec-stat">
+            <h3 class="stat-label">Active cases</h3>
+            <p class="stat-value" id="rec-stat-active">-</p>
+            <p class="rec-stat-sub">In pre-legal, legal or final stage</p>
+          </article>
+          <article class="stat-card rec-stat rec-stat-warn">
+            <h3 class="stat-label">Overdue amount</h3>
+            <p class="stat-value" id="rec-stat-overdue">-</p>
+            <p class="rec-stat-sub">Past due across active cases</p>
+          </article>
+          <article class="stat-card rec-stat rec-stat-legal">
+            <h3 class="stat-label">Legal cases</h3>
+            <p class="stat-value" id="rec-stat-legal">-</p>
+            <p class="rec-stat-sub">Stages 13 to 22</p>
+          </article>
+          <article class="stat-card rec-stat rec-stat-good">
+            <h3 class="stat-label">Recovered this month</h3>
+            <p class="stat-value" id="rec-stat-recovered">-</p>
+            <p class="rec-stat-sub">Payments credited this month</p>
+          </article>
+          <article class="stat-card rec-stat">
+            <h3 class="stat-label">Cases closed</h3>
+            <p class="stat-value" id="rec-stat-closed">-</p>
+            <p class="rec-stat-sub">Closed after full recovery / settlement</p>
+          </article>
+        </div>
+
+        <div class="rec-grid-2">
+          <section class="card" aria-labelledby="h-rec-funnel">
+            <header class="card-header">
+              <div>
+                <h3 id="h-rec-funnel">Portfolio by recovery stage</h3>
+                <p class="rec-card-sub">Case count and exposure by stage group</p>
+              </div>
+              <span class="chip">28 stages</span>
+            </header>
+            <div class="card-body" id="rec-funnel"></div>
+          </section>
+
+          <section class="card" aria-labelledby="h-rec-aging">
+            <header class="card-header">
+              <div>
+                <h3 id="h-rec-aging">Ageing of overdue accounts</h3>
+                <p class="rec-card-sub">Days since the account became overdue</p>
+              </div>
+            </header>
+            <div class="card-body" id="rec-aging"></div>
+          </section>
+        </div>
+
+        <div class="rec-grid-2">
+          <section class="card" aria-labelledby="h-rec-followups">
+            <header class="card-header">
+              <h3 id="h-rec-followups">Today's follow-ups</h3>
+              <button type="button" class="btn btn-link" data-view-link="recovery-cases">All cases</button>
+            </header>
+            <ul id="rec-followups" class="list"></ul>
+            <p id="rec-followups-empty" class="empty-state" hidden>No follow-ups due.</p>
+          </section>
+
+          <section class="card" aria-labelledby="h-rec-activity">
+            <header class="card-header">
+              <h3 id="h-rec-activity">Recent recovery activity</h3>
+            </header>
+            <ol id="rec-activity" class="timeline timeline-compact"></ol>
+          </section>
+        </div>
+      </section>
+
+      <!-- ============ RECOVERY: CASES ============ -->
+      <section class="view" id="view-recovery-cases" data-view="recovery-cases" aria-labelledby="h-recovery-cases" hidden>
+        <h2 id="h-recovery-cases" class="visually-hidden">Recovery cases</h2>
+
+        <div class="toolbar">
+          <div class="field field-inline field-grow">
+            <label for="rec-cases-search">Search</label>
+            <input type="search" id="rec-cases-search" name="q" placeholder="Case, borrower, loan no or village" autocomplete="off">
+          </div>
+          <div class="field field-inline">
+            <label for="rec-cases-group">Group</label>
+            <select id="rec-cases-group"></select>
+          </div>
+          <div class="field field-inline">
+            <label for="rec-cases-stage">Stage</label>
+            <select id="rec-cases-stage"></select>
+          </div>
+          <div class="field field-inline">
+            <label for="rec-cases-officer">Officer</label>
+            <select id="rec-cases-officer"></select>
+          </div>
+          <div class="field field-inline">
+            <label for="rec-cases-aging">Ageing</label>
+            <select id="rec-cases-aging" name="aging">
+              <option value="">Any ageing</option>
+              <option value="0-30">0-30 days</option>
+              <option value="31-60">31-60 days</option>
+              <option value="61-90">61-90 days</option>
+              <option value="91-180">91-180 days</option>
+              <option value="181-365">181-365 days</option>
+              <option value="366-0">Above 365 days</option>
+            </select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-rec-export-cases" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export CSV</span>
+          </button>
+          <button type="button" id="btn-rec-new-case" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>New case</span>
+          </button>
+        </div>
+
+        <section class="card" aria-label="Recovery cases table">
+          <header class="card-header">
+            <div>
+              <h3>Recovery register</h3>
+              <p class="rec-card-sub" id="rec-cases-count">-</p>
+            </div>
+            <span class="chip" data-value="pre_legal">28-stage workflow</span>
+          </header>
+          <div class="table-wrap">
+            <table class="table rec-table">
+              <thead>
+                <tr>
+                  <th scope="col">Case</th>
+                  <th scope="col">Borrower</th>
+                  <th scope="col">Branch</th>
+                  <th scope="col">Loan</th>
+                  <th scope="col">Outstanding</th>
+                  <th scope="col">Overdue</th>
+                  <th scope="col">Ageing</th>
+                  <th scope="col">Stage</th>
+                  <th scope="col">Officer</th>
+                  <th scope="col">Next action</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="rec-cases-table"></tbody>
+            </table>
+          </div>
+          <p id="rec-cases-empty" class="empty-state" hidden>No cases match these filters.</p>
+          <footer class="pagination">
+            <button type="button" id="rec-cases-prev" class="btn btn-sm" disabled>
+              <svg class="icon" aria-hidden="true"><use href="#i-chevron-left"/></svg><span>Previous</span>
+            </button>
+            <span id="rec-cases-page-info" class="pagination-info" aria-live="polite"></span>
+            <button type="button" id="rec-cases-next" class="btn btn-sm" disabled>
+              <span>Next</span><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+            </button>
+          </footer>
+        </section>
+      </section>
+
+      <!-- ============ RECOVERY: CASE WORKSPACE ============ -->
+      <section class="view" id="view-recovery-case" data-view="recovery-case" aria-labelledby="h-recovery-case" hidden>
+        <h2 id="h-recovery-case" class="visually-hidden">Recovery case workspace</h2>
+
+        <div id="rec-case-empty" class="card rec-empty-card">
+          <div class="card-body rec-empty">
+            <svg class="icon rec-empty-icon" aria-hidden="true"><use href="#i-cases"/></svg>
+            <h3>No case selected</h3>
+            <p>Pick a case from the recovery register to open its 28-stage workflow.</p>
+            <button type="button" class="btn btn-primary" data-view-link="recovery-cases">Browse recovery cases</button>
+          </div>
+        </div>
+
+        <div id="rec-case-body" hidden>
+          <section class="rec-case-hero">
+            <div class="rec-case-hero-main">
+              <button type="button" class="btn btn-link rec-back" data-view-link="recovery-cases">
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"/></svg><span>Back to cases</span>
+              </button>
+              <p class="rec-kicker" id="rec-case-kicker"></p>
+              <h2 id="rec-case-title"></h2>
+              <p class="rec-case-sub" id="rec-case-sub"></p>
+              <div class="case-chips" id="rec-case-chips"></div>
+            </div>
+            <div class="rec-case-hero-actions">
+              <button type="button" id="btn-rec-payment" class="btn">
+                <svg class="icon" aria-hidden="true"><use href="#i-rupee"/></svg><span>Record payment</span>
+              </button>
+              <button type="button" id="btn-rec-draft-notice" class="btn">
+                <svg class="icon" aria-hidden="true"><use href="#i-notice"/></svg><span>Draft notice</span>
+              </button>
+              <button type="button" id="btn-rec-settlement" class="btn" data-view-link="recovery-settlements">
+                <svg class="icon" aria-hidden="true"><use href="#i-handshake"/></svg><span>Settlement</span>
+              </button>
+            </div>
+          </section>
+
+          <div class="rec-case-layout">
+            <section class="card rec-stage-card" aria-labelledby="h-rec-stepper">
+              <header class="card-header rec-stage-head">
+                <div class="rec-stage-head-main">
+                  <h3 id="h-rec-stepper">Recovery workflow</h3>
+                  <p class="rec-card-sub" id="rec-case-progress"></p>
+                  <div class="rec-progress"><div class="rec-progress-fill" id="rec-case-progress-bar"></div></div>
+                </div>
+                <span class="chip" id="rec-case-group-chip"></span>
+              </header>
+              <div id="rec-stepper" class="stepper"></div>
+            </section>
+
+            <aside class="rec-case-side">
+              <section class="card" aria-labelledby="h-rec-summary">
+                <header class="card-header"><h3 id="h-rec-summary">Loan &amp; case summary</h3></header>
+                <dl class="kv" id="rec-case-summary"></dl>
+              </section>
+              <section class="card" aria-labelledby="h-rec-assignment">
+                <header class="card-header"><h3 id="h-rec-assignment">Assignment</h3></header>
+                <dl class="kv" id="rec-case-assignment"></dl>
+              </section>
+              <section class="card" aria-labelledby="h-rec-case-activity">
+                <header class="card-header"><h3 id="h-rec-case-activity">Activity</h3></header>
+                <ol id="rec-case-activity" class="timeline timeline-compact"></ol>
+              </section>
+              <section class="card" aria-labelledby="h-rec-docs">
+                <header class="card-header"><h3 id="h-rec-docs">Documents</h3></header>
+                <ul id="rec-case-docs" class="doc-list"></ul>
+              </section>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ RECOVERY: NOTICES ============ -->
+      <section class="view" id="view-recovery-notices" data-view="recovery-notices" aria-labelledby="h-recovery-notices" hidden>
+        <h2 id="h-recovery-notices" class="visually-hidden">Notices and legal documents</h2>
+
+        <div class="stat-grid rec-stat-grid rec-stat-grid-4">
+          <article class="stat-card rec-stat"><h3 class="stat-label">Drafts</h3><p class="stat-value" id="rec-notice-stat-draft">0</p><p class="rec-stat-sub">Awaiting dispatch</p></article>
+          <article class="stat-card rec-stat rec-stat-warn"><h3 class="stat-label">Dispatched</h3><p class="stat-value" id="rec-notice-stat-dispatched">0</p><p class="rec-stat-sub">Awaiting delivery confirmation</p></article>
+          <article class="stat-card rec-stat rec-stat-good"><h3 class="stat-label">Delivered</h3><p class="stat-value" id="rec-notice-stat-delivered">0</p><p class="rec-stat-sub">Proof on file</p></article>
+          <article class="stat-card rec-stat"><h3 class="stat-label">Responses</h3><p class="stat-value" id="rec-notice-stat-response">0</p><p class="rec-stat-sub">Borrower replied or objected</p></article>
+        </div>
+
+        <div class="toolbar">
+          <div class="field field-inline field-grow">
+            <label for="rec-notices-search">Search</label>
+            <input type="search" id="rec-notices-search" placeholder="Notice no, case or borrower" autocomplete="off">
+          </div>
+          <div class="field field-inline">
+            <label for="rec-notices-type">Type</label>
+            <select id="rec-notices-type">
+              <option value="">All types</option>
+              <option value="demand">Demand notice</option>
+              <option value="legal">Legal notice</option>
+              <option value="summons">Court summons</option>
+            </select>
+          </div>
+          <div class="field field-inline">
+            <label for="rec-notices-status">Status</label>
+            <select id="rec-notices-status">
+              <option value="">All statuses</option>
+              <option value="draft">Draft</option>
+              <option value="dispatched">Dispatched</option>
+              <option value="delivered">Delivered</option>
+              <option value="responded">Responded</option>
+            </select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-rec-new-notice" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>New notice</span>
+          </button>
+        </div>
+
+        <section class="card" aria-label="Notices table">
+          <header class="card-header">
+            <div><h3>Notice register</h3><p class="rec-card-sub" id="rec-notices-count">-</p></div>
+            <span class="chip">Demand · legal · summons</span>
+          </header>
+          <div class="table-wrap">
+            <table class="table rec-table">
+              <thead>
+                <tr>
+                  <th scope="col">Notice</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Case</th>
+                  <th scope="col">Borrower</th>
+                  <th scope="col">Issued</th>
+                  <th scope="col">Mode</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Due</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="rec-notices-table"></tbody>
+            </table>
+          </div>
+          <p id="rec-notices-empty" class="empty-state" hidden>No notices match these filters.</p>
+        </section>
+      </section>
+
+      <!-- ============ RECOVERY: SETTLEMENTS ============ -->
+      <section class="view" id="view-recovery-settlements" data-view="recovery-settlements" aria-labelledby="h-recovery-settlements" hidden>
+        <h2 id="h-recovery-settlements" class="visually-hidden">Settlements</h2>
+
+        <div class="stat-grid rec-stat-grid rec-stat-grid-4">
+          <article class="stat-card rec-stat"><h3 class="stat-label">Pending approvals</h3><p class="stat-value" id="rec-settle-stat-pending">0</p><p class="rec-stat-sub">Awaiting manager decision</p></article>
+          <article class="stat-card rec-stat"><h3 class="stat-label">Proposed amount</h3><p class="stat-value" id="rec-settle-stat-proposed">-</p><p class="rec-stat-sub">Across pending proposals</p></article>
+          <article class="stat-card rec-stat rec-stat-warn"><h3 class="stat-label">Waiver offered</h3><p class="stat-value" id="rec-settle-stat-waiver">-</p><p class="rec-stat-sub">Across pending proposals</p></article>
+          <article class="stat-card rec-stat rec-stat-good"><h3 class="stat-label">Approved / paid</h3><p class="stat-value" id="rec-settle-stat-approved">0</p><p class="rec-stat-sub">Settlements cleared</p></article>
+        </div>
+
+        <div class="rec-grid-2 rec-settlement-grid">
+          <section class="card" aria-labelledby="h-rec-calc">
+            <header class="card-header">
+              <div>
+                <h3 id="h-rec-calc">Settlement calculator</h3>
+                <p class="rec-card-sub">Compute the waiver and instalment schedule before proposing</p>
+              </div>
+            </header>
+            <form id="form-rec-settlement" class="form card-body" novalidate>
+              <div class="form-grid">
+                <div class="field field-full">
+                  <label for="rec-settle-case">Recovery case</label>
+                  <select id="rec-settle-case" name="case_id"></select>
+                  <p class="rec-calc-case-note" id="rec-calc-case-note">Select a case to see its dues.</p>
+                </div>
+                <div class="field">
+                  <label for="rec-settle-outstanding">Outstanding on record</label>
+                  <input type="text" id="rec-settle-outstanding" readonly value="-">
+                </div>
+                <div class="field">
+                  <label for="rec-settle-interest">Additional interest</label>
+                  <input type="number" id="rec-settle-interest" min="0" step="100" value="0">
+                </div>
+                <div class="field">
+                  <label for="rec-settle-charges">Other charges</label>
+                  <input type="number" id="rec-settle-charges" min="0" step="100" value="0">
+                </div>
+                <div class="field">
+                  <label for="rec-settle-proposed">Proposed settlement</label>
+                  <input type="number" id="rec-settle-proposed" min="0" step="1000" required>
+                </div>
+                <div class="field">
+                  <label for="rec-settle-installments">Instalments</label>
+                  <input type="number" id="rec-settle-installments" min="1" max="36" value="6">
+                </div>
+                <div class="field">
+                  <label for="rec-settle-first">First instalment due</label>
+                  <input type="date" id="rec-settle-first">
+                </div>
+                <div class="field field-full">
+                  <label for="rec-settle-remarks">Justification / remarks</label>
+                  <textarea id="rec-settle-remarks" rows="2" placeholder="Borrower's hardship, income position, security cover and negotiation history"></textarea>
+                </div>
+              </div>
+
+              <div class="rec-calc-result">
+                <div><span>Total dues</span><strong id="rec-calc-dues">-</strong></div>
+                <div><span>Waiver</span><strong id="rec-calc-waiver">-</strong></div>
+                <div><span>Waiver %</span><strong id="rec-calc-waiver-pct">-</strong></div>
+                <div><span>Per instalment</span><strong id="rec-calc-installment">-</strong></div>
+              </div>
+
+              <p class="rec-calc-hint" id="rec-calc-hint"></p>
+              <p class="form-error" id="rec-settle-error" role="alert" hidden></p>
+
+              <div class="form-actions">
+                <button type="button" id="btn-rec-settle-reset" class="btn">Reset</button>
+                <button type="submit" class="btn btn-primary">Create proposal</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="card rec-approval-card" aria-labelledby="h-rec-approval">
+            <header class="card-header"><h3 id="h-rec-approval">Approval authority</h3></header>
+            <div class="card-body rec-approval-body">
+              <div class="rec-approval-row"><span>Recovery manager</span><strong>Up to 25% waiver</strong></div>
+              <div class="rec-approval-row"><span>Branch credit committee</span><strong>25% to 40% waiver</strong></div>
+              <div class="rec-approval-row"><span>Board / competent authority</span><strong>Above 40% waiver</strong></div>
+              <hr>
+              <p class="rec-note"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span>Every proposal needs a written justification, the latest ledger and the security cover note.</span></p>
+              <p class="rec-note"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span>Approval here only changes the demo status; no entries are posted to the loan account.</span></p>
+            </div>
+          </section>
+        </div>
+
+        <section class="card" aria-label="Settlement proposals">
+          <header class="card-header">
+            <div><h3>Settlement proposals</h3><p class="rec-card-sub">Pending items first</p></div>
+            <span class="chip" id="rec-proposals-count">-</span>
+          </header>
+          <div class="table-wrap">
+            <table class="table rec-table">
+              <thead>
+                <tr>
+                  <th scope="col">Proposal</th>
+                  <th scope="col">Case</th>
+                  <th scope="col">Borrower</th>
+                  <th scope="col">Total dues</th>
+                  <th scope="col">Proposed</th>
+                  <th scope="col">Waiver</th>
+                  <th scope="col">Instalments</th>
+                  <th scope="col">Requested by</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="rec-proposals-table"></tbody>
+            </table>
+          </div>
+          <p id="rec-proposals-empty" class="empty-state" hidden>No settlement proposals yet.</p>
+        </section>
+      </section>
+
+      <!-- ============ RECOVERY: REPORTS ============ -->
+      <section class="view" id="view-recovery-reports" data-view="recovery-reports" aria-labelledby="h-recovery-reports" hidden>
+        <header class="rec-report-head">
+          <img class="rec-report-logo" src="assets/hccs-logo.png" alt="HINDUSTHAN Co-op Credit Society Ltd">
+          <div class="rec-report-title">
+            <p class="rec-report-kicker">Recovery management</p>
+            <h2 id="h-recovery-reports">Recovery Report</h2>
+            <p class="rec-report-meta" id="rec-report-meta">All branches · Last 6 months</p>
+          </div>
+        </header>
+
+        <div class="toolbar">
+          <div class="field field-inline">
+            <label for="rec-report-branch">Branch</label>
+            <select id="rec-report-branch"></select>
+          </div>
+          <div class="field field-inline">
+            <label for="rec-report-period">Period</label>
+            <select id="rec-report-period">
+              <option value="3">Last 3 months</option>
+              <option value="6" selected>Last 6 months</option>
+              <option value="12">Last 12 months</option>
+            </select>
+          </div>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-rec-print-report" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-printer"/></svg><span>Print report</span>
+          </button>
+          <button type="button" id="btn-rec-export-report" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export report</span>
+          </button>
+        </div>
+
+        <div class="stat-grid rec-stat-grid rec-stat-grid-4">
+          <article class="stat-card rec-stat rec-stat-good"><h3 class="stat-label">Amount realized</h3><p class="stat-value" id="rec-report-stat-recovered">-</p><p class="rec-stat-sub">Selected period and branch</p></article>
+          <article class="stat-card rec-stat"><h3 class="stat-label">Cases resolved</h3><p class="stat-value" id="rec-report-stat-resolved">-</p><p class="rec-stat-sub">Closed after recovery</p></article>
+          <article class="stat-card rec-stat"><h3 class="stat-label">Average resolution time</h3><p class="stat-value" id="rec-report-stat-avgdays">-</p><p class="rec-stat-sub">Days from overdue to closure</p></article>
+          <article class="stat-card rec-stat rec-stat-legal"><h3 class="stat-label">Settlements cleared</h3><p class="stat-value" id="rec-report-stat-settlements">-</p><p class="rec-stat-sub">Approved or paid proposals</p></article>
+        </div>
+
+        <div class="rec-grid-2">
+          <section class="card" aria-labelledby="h-rec-report-stage">
+            <header class="card-header"><h3 id="h-rec-report-stage">Exposure by stage group</h3></header>
+            <div class="table-wrap">
+              <table class="table table-sm">
+                <thead><tr><th scope="col">Stage group</th><th scope="col">Cases</th><th scope="col">Outstanding</th><th scope="col">Overdue</th><th scope="col">Share</th></tr></thead>
+                <tbody id="rec-report-stage-table"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card" aria-labelledby="h-rec-report-aging">
+            <header class="card-header"><h3 id="h-rec-report-aging">Ageing analysis</h3></header>
+            <div class="table-wrap">
+              <table class="table table-sm">
+                <thead><tr><th scope="col">Ageing bucket</th><th scope="col">Cases</th><th scope="col">Overdue</th><th scope="col">Outstanding</th></tr></thead>
+                <tbody id="rec-report-aging-table"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <section class="card" aria-labelledby="h-rec-report-chart">
+          <header class="card-header">
+            <div><h3 id="h-rec-report-chart">Monthly realization</h3><p class="rec-card-sub">Payments credited in the selected period</p></div>
+          </header>
+          <div class="rec-chart" id="rec-report-chart"></div>
+        </section>
+
+        <section class="card" aria-labelledby="h-rec-report-officers">
+          <header class="card-header"><h3 id="h-rec-report-officers">Recovery officer performance</h3></header>
+          <div class="table-wrap">
+            <table class="table rec-table">
+              <thead><tr><th scope="col">Officer</th><th scope="col">Cases</th><th scope="col">Active</th><th scope="col">Outstanding</th><th scope="col">Overdue</th><th scope="col">Realized</th><th scope="col">Realization share</th></tr></thead>
+              <tbody id="rec-report-officer-table"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- ============ RECOVERY: STAGE SETUP ============ -->
+      <section class="view" id="view-recovery-stages" data-view="recovery-stages" aria-labelledby="h-recovery-stages" hidden>
+        <h2 id="h-recovery-stages" class="visually-hidden">Recovery stage setup</h2>
+
+        <div class="toolbar">
+          <p class="rec-inline-note">
+            <svg class="icon" aria-hidden="true"><use href="#i-sliders"/></svg>
+            <span>Stage owners and SLAs are UI-only in this demo. Changes reset when the page reloads.</span>
+          </p>
+          <div class="toolbar-spacer"></div>
+          <button type="button" id="btn-rec-stages-reset" class="btn">Reset to defaults</button>
+        </div>
+
+        <section class="card" aria-label="Stage configuration">
+          <header class="card-header">
+            <div><h3>Recovery stage configuration</h3><p class="rec-card-sub" id="rec-stages-summary">-</p></div>
+            <span class="chip">Pre-legal → Legal → Final</span>
+          </header>
+          <div class="table-wrap">
+            <table class="table rec-table rec-stage-config">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Stage</th>
+                  <th scope="col">Group</th>
+                  <th scope="col">Owner role</th>
+                  <th scope="col">SLA</th>
+                  <th scope="col">Active</th>
+                </tr>
+              </thead>
+              <tbody id="rec-stages-table"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
       <!-- ============ 8. TEAM ============ -->
       <section class="view" id="view-team" data-view="team" aria-labelledby="h-team" hidden>
         <h2 id="h-team" class="visually-hidden">Team</h2>
@@ -627,6 +1192,7 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
               <option value="admin" data-roles="admin">Admin</option>
               <option value="branch_manager">Branch manager</option>
               <option value="field_officer">Field officer</option>
+              <option value="recovery_manager">Recovery manager</option>
             </select>
           </div>
           <div class="field field-inline">
@@ -849,6 +1415,7 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
         <select id="user-role-select" name="role" required>
           <option value="field_officer" selected>Field officer</option>
           <option value="branch_manager" data-roles="admin">Branch manager</option>
+          <option value="recovery_manager" data-roles="admin">Recovery manager</option>
           <option value="admin" data-roles="admin">Admin</option>
         </select>
       </div>
@@ -909,6 +1476,239 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
       <button type="submit" id="btn-save-branch" class="btn btn-primary">Save</button>
     </footer>
   </form>
+</dialog>
+
+<!-- ===================== RECOVERY: NEW CASE ===================== -->
+<dialog class="modal" id="modal-rec-case" aria-labelledby="rec-case-modal-title">
+  <form id="form-rec-case" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="rec-case-modal-title">New recovery case</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field">
+          <label for="rec-new-borrower">Borrower name *</label>
+          <input type="text" id="rec-new-borrower" autocomplete="off" required>
+        </div>
+        <div class="field">
+          <label for="rec-new-member">Member number</label>
+          <input type="text" id="rec-new-member" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="rec-new-phone">Mobile</label>
+          <input type="tel" id="rec-new-phone" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="rec-new-village">Village / area</label>
+          <input type="text" id="rec-new-village" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="rec-new-branch">Branch *</label>
+          <select id="rec-new-branch" required></select>
+        </div>
+        <div class="field">
+          <label for="rec-new-loan-type">Loan type *</label>
+          <input type="text" id="rec-new-loan-type" placeholder="Gold loan, cash credit, term loan…" autocomplete="off" required>
+        </div>
+        <div class="field">
+          <label for="rec-new-loan-no">Loan account no</label>
+          <input type="text" id="rec-new-loan-no" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="rec-new-sanctioned">Sanctioned limit</label>
+          <input type="number" id="rec-new-sanctioned" min="0" step="100" value="0">
+        </div>
+        <div class="field">
+          <label for="rec-new-outstanding">Outstanding *</label>
+          <input type="number" id="rec-new-outstanding" min="0" step="100" required>
+        </div>
+        <div class="field">
+          <label for="rec-new-overdue">Overdue amount *</label>
+          <input type="number" id="rec-new-overdue" min="0" step="100" required>
+        </div>
+        <div class="field">
+          <label for="rec-new-overdue-since">Overdue since</label>
+          <input type="date" id="rec-new-overdue-since">
+        </div>
+        <div class="field">
+          <label for="rec-new-officer">Recovery officer *</label>
+          <select id="rec-new-officer" required></select>
+        </div>
+        <div class="field field-full">
+          <label for="rec-new-note">Case note</label>
+          <textarea id="rec-new-note" rows="2" placeholder="Security cover, borrower response, branch recommendation"></textarea>
+        </div>
+      </div>
+      <p class="form-error" id="rec-case-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-save-rec-case" class="btn btn-primary">Create case</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ===================== RECOVERY: STAGE ===================== -->
+<dialog class="modal" id="modal-rec-stage" aria-labelledby="rec-stage-title">
+  <form id="form-rec-stage" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="rec-stage-title">Stage</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <p class="rec-modal-desc" id="rec-stage-desc"></p>
+      <p class="rec-modal-meta" id="rec-stage-meta"></p>
+      <p class="rec-stage-status" id="rec-stage-status" hidden></p>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="rec-stage-outcome">Outcome</label>
+          <select id="rec-stage-outcome">
+            <option value="Completed">Completed</option>
+            <option value="Follow-up required">Follow-up required</option>
+            <option value="No response">No response</option>
+            <option value="Payment received">Payment received</option>
+            <option value="Escalated to legal">Escalated to legal</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="rec-stage-next">Next follow-up date</label>
+          <input type="date" id="rec-stage-next">
+        </div>
+        <div class="field field-full">
+          <label for="rec-stage-note">Stage note</label>
+          <textarea id="rec-stage-note" rows="3" placeholder="What happened, who was contacted and what was agreed"></textarea>
+        </div>
+        <div class="field field-full">
+          <label class="check"><input type="checkbox" id="rec-stage-doc" checked><span>Evidence attached to the case file</span></label>
+        </div>
+      </div>
+      <p class="form-error" id="rec-stage-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-rec-complete-stage" class="btn btn-primary">Complete stage &amp; continue</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ===================== RECOVERY: PAYMENT ===================== -->
+<dialog class="modal" id="modal-rec-payment" aria-labelledby="rec-payment-title">
+  <form id="form-rec-payment" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="rec-payment-title">Record recovery payment</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <p class="rec-modal-meta">Outstanding on record: <strong id="rec-pay-outstanding">-</strong></p>
+      <div class="form-grid">
+        <div class="field">
+          <label for="rec-pay-amount">Amount received *</label>
+          <input type="number" id="rec-pay-amount" min="1" step="100" required>
+        </div>
+        <div class="field">
+          <label for="rec-pay-date">Payment date</label>
+          <input type="date" id="rec-pay-date">
+        </div>
+        <div class="field">
+          <label for="rec-pay-mode">Mode</label>
+          <select id="rec-pay-mode">
+            <option>NEFT</option>
+            <option>UPI</option>
+            <option>Cash</option>
+            <option>Cheque</option>
+            <option>Gold auction</option>
+            <option>Property sale</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="rec-pay-ref">Reference</label>
+          <input type="text" id="rec-pay-ref" placeholder="UTR, receipt or auction reference" autocomplete="off">
+        </div>
+      </div>
+      <p class="form-error" id="rec-payment-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-save-rec-payment" class="btn btn-primary">Record payment</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ===================== RECOVERY: NOTICE FORM ===================== -->
+<dialog class="modal" id="modal-rec-notice" aria-labelledby="rec-notice-form-title">
+  <form id="form-rec-notice" class="modal-form" novalidate>
+    <header class="modal-header">
+      <h2 id="rec-notice-form-title">Draft a notice</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field field-full">
+          <label for="rec-notice-case">Recovery case *</label>
+          <select id="rec-notice-case" required></select>
+        </div>
+        <div class="field">
+          <label for="rec-notice-type">Notice type</label>
+          <select id="rec-notice-type">
+            <option value="demand">Demand notice</option>
+            <option value="legal">Legal notice</option>
+            <option value="summons">Court summons</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="rec-notice-amount">Amount to demand</label>
+          <input type="number" id="rec-notice-amount" readonly>
+        </div>
+        <div class="field">
+          <label for="rec-notice-mode">Dispatch mode</label>
+          <select id="rec-notice-mode">
+            <option>Registered post</option>
+            <option>Speed post</option>
+            <option>Email</option>
+            <option>Email + registered post</option>
+            <option>Court service</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="rec-notice-due">Payment / response deadline</label>
+          <input type="date" id="rec-notice-due">
+        </div>
+        <div class="field">
+          <label for="rec-notice-ref">Postal / case reference</label>
+          <input type="text" id="rec-notice-ref" placeholder="Optional" autocomplete="off">
+        </div>
+        <div class="field field-full">
+          <label for="rec-notice-body">Additional paragraphs</label>
+          <textarea id="rec-notice-body" rows="3" placeholder="Optional: case-specific facts, guarantor details, statutory reference"></textarea>
+        </div>
+      </div>
+      <p class="form-error" id="rec-notice-error" role="alert" hidden></p>
+    </div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" id="btn-save-rec-notice" class="btn btn-primary">Create draft</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ===================== RECOVERY: NOTICE PREVIEW ===================== -->
+<dialog class="modal modal-lg" id="modal-rec-notice-preview" aria-labelledby="modal-rec-notice-title">
+  <div class="modal-form">
+    <header class="modal-header">
+      <h2 id="modal-rec-notice-title">Notice preview</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body notice-preview-body" id="rec-notice-sheet"></div>
+    <footer class="modal-footer">
+      <button type="button" class="btn" data-close>Close</button>
+      <button type="button" id="btn-rec-notice-action" class="btn" hidden>Mark dispatched</button>
+      <button type="button" id="btn-rec-print-notice" class="btn btn-primary">
+        <svg class="icon" aria-hidden="true"><use href="#i-printer"/></svg><span>Print / PDF</span>
+      </button>
+    </footer>
+  </div>
 </dialog>
 
 <dialog class="modal modal-sm" id="modal-confirm" aria-labelledby="confirm-title" aria-describedby="confirm-message">
@@ -1197,6 +1997,60 @@ TRACK_KARO app shell - conventions for the CSS and JS authors
       <button type="button" class="icon-btn" data-action="delete" aria-label="Delete branch">
         <svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>
       </button>
+    </td>
+  </tr>
+</template>
+
+<!-- Recovery: one case row -->
+<template id="tpl-rec-case-row">
+  <tr data-case-id="">
+    <td data-field="case_id" class="rec-case-id"></td>
+    <td data-field="borrower"></td>
+    <td data-field="branch"></td>
+    <td data-field="loan_type"></td>
+    <td data-field="outstanding"></td>
+    <td data-field="overdue"></td>
+    <td><span class="chip" data-field="days"></span></td>
+    <td><span class="chip" data-field="stage"></span></td>
+    <td data-field="officer"></td>
+    <td><span data-field="next_action"></span><span class="rec-cell-sub" data-field="next_due"></span></td>
+    <td><button type="button" class="btn btn-sm" data-action="open">Open</button></td>
+  </tr>
+</template>
+
+<!-- Recovery: one notice row -->
+<template id="tpl-rec-notice-row">
+  <tr data-notice-id="">
+    <td data-field="notice_id" class="rec-case-id"></td>
+    <td><span class="chip" data-field="type"></span></td>
+    <td data-field="case_id"></td>
+    <td data-field="borrower"></td>
+    <td data-field="issued"></td>
+    <td data-field="mode"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td data-field="due"></td>
+    <td class="rec-actions">
+      <button type="button" class="btn btn-sm" data-action="preview">Preview</button>
+      <button type="button" class="btn btn-sm" data-action="advance">Dispatch</button>
+    </td>
+  </tr>
+</template>
+
+<!-- Recovery: one settlement proposal row -->
+<template id="tpl-rec-proposal-row">
+  <tr data-proposal-id="">
+    <td data-field="proposal_id" class="rec-case-id"></td>
+    <td data-field="case_id"></td>
+    <td data-field="borrower"></td>
+    <td data-field="dues"></td>
+    <td><strong data-field="proposed"></strong></td>
+    <td data-field="waiver"></td>
+    <td data-field="installments"></td>
+    <td data-field="requested"></td>
+    <td><span class="chip" data-field="status"></span></td>
+    <td class="rec-actions">
+      <button type="button" class="btn btn-sm btn-primary" data-action="approve">Approve</button>
+      <button type="button" class="btn btn-sm" data-action="reject">Reject</button>
     </td>
   </tr>
 </template>

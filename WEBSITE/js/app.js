@@ -1,5 +1,5 @@
 // Track_karo admin website - entry point (app.html).
-import { getToken, getStoredUser, saveUser, get, logoutAndRedirect, clearAuth } from './api.js';
+import { getToken, getStoredUser, saveUser, get, logoutAndRedirect, clearAuth, isDemoSession } from './api.js';
 import { $, $$, initDialogs, initConfirm, toast, label, ROLE_LABELS, ALERT_LABELS } from './ui.js';
 import { state, on, setUnread, bumpUnread, fillBranchSelect } from './state.js';
 import { startStream, stopStream } from './stream.js';
@@ -14,9 +14,25 @@ import customers from './views/customers.js';
 import team from './views/team.js';
 import branches from './views/branches.js';
 import settings from './views/settings.js';
+import recovery from './views/recovery.js';
+import recoveryCases from './views/recovery-cases.js';
+import recoveryCase from './views/recovery-case.js';
+import recoveryNotices from './views/recovery-notices.js';
+import recoverySettlements from './views/recovery-settlements.js';
+import recoveryReports from './views/recovery-reports.js';
+import recoveryStages from './views/recovery-stages.js';
 
-const VIEWS = { dashboard, live, replay, tasks, reports, alerts, customers, team, branches, settings };
-const WEB_ROLES = ['admin', 'branch_manager'];
+const VIEWS = {
+  dashboard, live, replay, tasks, reports, alerts, customers, team, branches, settings,
+  recovery,
+  'recovery-cases': recoveryCases,
+  'recovery-case': recoveryCase,
+  'recovery-notices': recoveryNotices,
+  'recovery-settlements': recoverySettlements,
+  'recovery-reports': recoveryReports,
+  'recovery-stages': recoveryStages,
+};
+const WEB_ROLES = ['admin', 'branch_manager', 'recovery_manager'];
 const MOBILE_QUERY = window.matchMedia('(max-width: 900px)');
 
 // ---------- auth ----------
@@ -44,6 +60,33 @@ function applyRoleGating() {
     if (el.classList.contains('view')) { el.hidden = true; el.dataset.removed = 'true'; continue; }
     el.remove();
   }
+  // The recovery manager desk is scoped to the recovery module only.
+  if (role === 'recovery_manager') {
+    for (const sec of $$('.view')) {
+      if (String(sec.dataset.view || '').startsWith('recovery')) continue;
+      sec.hidden = true;
+      sec.dataset.removed = 'true';
+    }
+    for (const btn of $$('.nav-item[data-view]')) {
+      if (!String(btn.dataset.view || '').startsWith('recovery')) btn.remove();
+    }
+    $('btn-bell')?.remove();
+    $('live-status')?.remove();
+  }
+}
+
+const defaultView = () => (state.user?.role === 'recovery_manager' ? 'recovery' : 'dashboard');
+
+/** The recovery desk uses the society's own logo; the rest of the app keeps Track_karo branding. */
+function applyBrand(viewName) {
+  const recovery = String(viewName || '').startsWith('recovery');
+  const logo = document.querySelector('.sidebar-logo');
+  const brand = document.querySelector('.sidebar-brand');
+  if (!logo || !brand) return;
+  logo.src = recovery ? 'assets/hccs-logo.png' : 'assets/logo.png';
+  logo.alt = recovery ? 'HINDUSTHAN Co-op Credit Society Ltd' : 'Track_karo logo';
+  logo.classList.toggle('is-recovery-logo', recovery);
+  brand.classList.toggle('is-recovery-brand', recovery);
 }
 
 const viewAllowed = (name) => {
@@ -63,7 +106,7 @@ function setSidebar(open) {
 // ---------- router ----------
 function routeFromHash() {
   const name = (location.hash || '').replace(/^#\/?/, '').split(/[/?]/)[0];
-  return viewAllowed(name) ? name : 'dashboard';
+  return viewAllowed(name) ? name : defaultView();
 }
 
 function showView(name) {
@@ -80,6 +123,7 @@ function showView(name) {
   const title = navLabel ? navLabel.textContent.trim() : name;
   $('page-title').textContent = title;
   document.title = `${title} - Track_karo`;
+  applyBrand(name);
   if (MOBILE_QUERY.matches) setSidebar(false);
   $('content')?.scrollTo?.(0, 0);
 
@@ -141,16 +185,17 @@ async function boot() {
   initDialogs();
   initConfirm();
 
+  const demo = isDemoSession();
   const stored = getStoredUser();
   if (stored) applyUser(stored);
-  const ok = await refreshMe();
+  const ok = demo ? true : await refreshMe();
   if (!ok || !state.user) { if (!state.user) logoutAndRedirect(); return; }
   if (!WEB_ROLES.includes(state.user.role)) { logoutAndRedirect(); return; }
   applyRoleGating();
 
   for (const [name, v] of Object.entries(VIEWS)) {
     if (!viewAllowed(name)) continue;
-    try { v.init(); } catch (err) { console.error(`init ${name}`, err); }
+    try { v.init?.(); } catch (err) { console.error(`init ${name}`, err); }
   }
 
   // Navigation
@@ -179,7 +224,7 @@ async function boot() {
   MOBILE_QUERY.addEventListener?.('change', (e) => { if (!e.matches) setSidebar(false); });
 
   // Bell: ask for notification permission on first click, then go to alerts.
-  $('btn-bell').addEventListener('click', () => {
+  $('btn-bell')?.addEventListener('click', () => {
     if ('Notification' in window && Notification.permission === 'default') {
       try { Notification.requestPermission().catch(() => {}); } catch { /* old Safari: callback form */ }
     }
@@ -206,8 +251,10 @@ async function boot() {
   });
 
   onHashChange();
-  refreshUnread();
-  startStream();
+  if (!demo) {
+    refreshUnread();
+    startStream();
+  }
 }
 
 async function refreshUnread() {

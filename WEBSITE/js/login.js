@@ -1,7 +1,7 @@
 // Track_karo - sign-in page (index.html)
-import { api, saveAuth, getToken, tokenLooksValid, clearAuth } from './api.js';
+import { api, saveAuth, getToken, tokenLooksValid, clearAuth, startDemoSession } from './api.js';
 
-const WEB_ROLES = ['admin', 'branch_manager'];
+const WEB_ROLES = ['admin', 'branch_manager', 'recovery_manager'];
 
 function init() {
   const stored = getToken();
@@ -37,6 +37,19 @@ function init() {
   });
 
   [useridEl, pwEl].forEach((el) => el.addEventListener('input', () => showError('')));
+
+  document.getElementById('btn-demo-recovery')?.addEventListener('click', () => {
+    startDemoSession({
+      id: 'demo-recovery-manager',
+      userid: 'RM001',
+      name: 'Priya Deshmukh',
+      role: 'recovery_manager',
+      branch_id: null,
+      branch_name: 'Head Office - Recovery Cell',
+      phone: '',
+    });
+    location.replace('app.html');
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
