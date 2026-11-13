@@ -2828,3 +2828,10 @@ div.doc-list { display: flex; flex-direction: column; gap: 8px; padding: 0; }
   .run-row { grid-template-columns: 1fr auto; }
   .run-row .muted { grid-column: 1 / -1; }
 }
+
+/* 27. Internal audit: keep its own status colours ========================== */
+/* The recovery and HR modules reuse the same status words with other colours. */
+:is(#view-audit, #modal-finding-detail, #modal-scorecard) .chip[data-value="critical"] { --chip-fg: #fff; --chip-bg: var(--darkred); }
+:is(#view-audit, #modal-finding-detail, #modal-scorecard) .chip[data-value="low"] { --chip-fg: var(--grey); --chip-bg: var(--grey-bg); }
+:is(#view-audit, #modal-finding-detail, #modal-scorecard) .chip[data-value="open"] { --chip-fg: var(--amber); --chip-bg: var(--amber-bg); }
+:is(#view-audit, #modal-finding-detail, #modal-scorecard) .chip[data-value="closed"] { --chip-fg: var(--slate); --chip-bg: var(--slate-bg); }
