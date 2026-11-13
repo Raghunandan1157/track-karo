@@ -9,6 +9,7 @@ import live from './views/live.js';
 import replay from './views/replay.js';
 import tasks from './views/tasks.js';
 import reports from './views/reports.js';
+import audit from './views/audit.js';
 import alerts from './views/alerts.js';
 import chat from './views/chat.js';
 import customers from './views/customers.js';
@@ -33,7 +34,7 @@ import hrPerformance from './hr/views/performance.js';
 import hrDocuments from './hr/views/documents.js';
 
 const VIEWS = {
-  dashboard, live, replay, tasks, reports, alerts, chat, customers, team,
+  dashboard, live, replay, tasks, reports, audit, alerts, chat, customers, team,
   recovery,
   'recovery-cases': recoveryCases,
   'recovery-case': recoveryCase,
@@ -49,7 +50,7 @@ const HR_VIEWS = ['hr', 'employees', 'attendance', 'leave', 'recruitment', 'payr
 // Two local-only demo sessions exist: the HR demo (token 'demo') and the recovery demo.
 const DEMO = getToken() === 'demo';
 // Screens that run on sample data in the browser and need no server.
-const isLocalView = (name) => HR_VIEWS.includes(name) || name === 'chat' || String(name).startsWith('recovery');
+const isLocalView = (name) => HR_VIEWS.includes(name) || name === 'chat' || name === 'audit' || String(name).startsWith('recovery');
 const WEB_ROLES = ['admin', 'branch_manager', 'recovery_manager'];
 const MOBILE_QUERY = window.matchMedia('(max-width: 900px)');
 
