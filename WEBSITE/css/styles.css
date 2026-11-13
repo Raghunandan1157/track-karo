@@ -2113,8 +2113,8 @@ input[type="range"] {
 .doc-icon { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; background: var(--rec-50); color: var(--rec); flex: none; }
 .doc-icon .icon { width: 15px; height: 15px; }
 .doc-main { display: flex; flex-direction: column; flex: 1; min-width: 0; font-size: var(--fs-sm); }
-.doc-main strong { color: var(--navy); font-weight: 600; overflow-wrap: anywhere; }
-.doc-main span { font-size: var(--fs-xs); color: var(--text-faint); }
+.doc-item .doc-main strong { color: var(--navy); font-weight: 600; overflow-wrap: anywhere; }
+.doc-item .doc-main span { font-size: var(--fs-xs); color: var(--text-faint); }
 
 /* Tables */
 .rec-table th, .rec-table td { white-space: nowrap; }
@@ -2321,7 +2321,7 @@ input[type="range"] {
   #view-recovery-reports .toolbar { display: none !important; }
 }
 
-/* 25. HRMS ================================================================= */
+/* 26. HRMS ================================================================= */
 /* Sidebar group label */
 .nav-section {
   margin: 12px 10px 4px;
@@ -2442,16 +2442,16 @@ input[type="range"] {
 .legend-list { list-style: none; margin: 0; padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 8px; }
 .legend-item { display: flex; align-items: center; gap: 8px; font-size: var(--fs-sm); }
 .legend-item strong { margin-left: auto; color: var(--navy); }
-.legend-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--blue); }
+.legend-dot[class*="is-"] { width: 9px; height: 9px; border-radius: 50%; background: var(--blue); }
 .legend-dot.is-present { background: var(--green); }
 .legend-dot.is-absent { background: var(--red); }
 .legend-foot { margin: 6px 0 0; font-size: var(--fs-xs); color: var(--text-muted); }
 
 /* Key/value lists */
 .kv-list { padding: 6px 16px 16px; display: flex; flex-direction: column; gap: 2px; }
-.kv-row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: var(--fs-sm); }
-.kv-row:last-of-type { border-bottom: 0; }
-.kv-row strong { color: var(--navy); }
+.kv-list .kv-row { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: var(--fs-sm); }
+.kv-list .kv-row:last-of-type { border-bottom: 0; }
+.kv-list .kv-row strong { color: var(--navy); }
 .notice-line { margin: 8px 0; font-size: var(--fs-xs); color: var(--text-muted); }
 
 /* Simple lists inside cards */
@@ -2567,7 +2567,7 @@ input[type="range"] {
 .detail-grid { display: grid; grid-template-columns: minmax(120px, 34%) minmax(0, 1fr); gap: 8px 16px; margin: 0; }
 .detail-grid dt { color: var(--text-muted); font-size: var(--fs-sm); }
 .detail-grid dd { margin: 0; font-size: var(--fs-sm); color: var(--text); overflow-wrap: anywhere; }
-.doc-list { display: flex; flex-direction: column; gap: 8px; }
+div.doc-list { display: flex; flex-direction: column; gap: 8px; padding: 0; }
 .doc-row, .doc-alert { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-2); }
 .doc-main { display: flex; flex-direction: column; min-width: 0; flex: 1; font-size: var(--fs-sm); }
 .doc-row .chip, .doc-alert .chip { margin-left: auto; }

@@ -22,6 +22,7 @@ class ChatReaction {
 class ChatMessage {
   ChatMessage({
     required this.id,
+    this.conversationId = '',
     required this.authorId,
     required this.authorName,
     required this.mine,
