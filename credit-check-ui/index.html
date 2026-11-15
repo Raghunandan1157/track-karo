@@ -1,0 +1,2377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<meta name="color-scheme" content="light">
+<title>Track Karo · Credit Check</title>
+
+<!-- ============================================================
+     FONTS — Space Grotesk (headings) + Inter (body)
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   1. DESIGN TOKENS
+   ============================================================ */
+:root{
+  /* brand */
+  --navy:#13294B;
+  --green:#1F8A5B;
+  --gold:#E0A526;
+  --mint:#CDEBDC;
+  --bg:#F6F4EE;
+  --red:#C8553D;
+
+  /* derived surfaces */
+  --navy-soft:#1C3559;
+  --navy-active:#22406D;
+  --white:#FFFFFF;
+
+  /* text */
+  --ink:#13294B;
+  --body:#39445A;
+  --muted:#5D6879;
+
+  /* lines */
+  --line:#E4DFD2;
+  --line-strong:#CFC8B8;
+  --line-soft:#EFECE2;
+
+  /* status tints (all pair with 4.5:1+ text) */
+  --green-bg:#E6F3EC;  --green-fg:#14663F;
+  --gold-bg:#FBF0D6;   --gold-fg:#7A5410;
+  --red-bg:#F9E7E2;    --red-fg:#9E3A26;
+  --info-bg:#E7EDF7;   --info-fg:#1B3A6B;
+  --orange:#D98324;
+  --orange-fg:#8A4E0C;
+
+  --radius:12px;
+  --sidebar-w:240px;
+  --topbar-h:68px;
+}
+
+/* ============================================================
+   2. RESET + BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none !important}
+
+html,body{height:100%}
+
+body{
+  margin:0;
+  min-width:1280px;                 /* desktop-only target */
+  background:var(--bg);
+  color:var(--body);
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:14px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,h4{
+  font-family:"Space Grotesk","Inter",sans-serif;
+  color:var(--navy);
+  margin:0;
+  letter-spacing:-.012em;
+}
+h1{font-size:24px;font-weight:600}
+h2{font-size:15.5px;font-weight:600}
+h3{font-size:14px;font-weight:600}
+
+p{margin:0}
+a{color:var(--navy)}
+
+/* visible keyboard focus everywhere */
+:focus-visible{
+  outline:2px solid var(--navy);
+  outline-offset:2px;
+  border-radius:6px;
+}
+.sidebar :focus-visible{outline-color:#FFD98A}
+h1[tabindex="-1"]:focus{outline:none}
+
+/* util */
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.num{font-variant-numeric:tabular-nums}
+.text-red{color:var(--red-fg);font-weight:600}
+.text-gold{color:var(--gold-fg);font-weight:600}
+.text-orange{color:var(--orange-fg);font-weight:600}
+.right{text-align:right}
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+
+/* ============================================================
+   3. APP SHELL — fixed sidebar + top bar + scrolling main
+   ============================================================ */
+.app{display:flex;min-height:100vh}
+
+/* ---- sidebar ---- */
+.sidebar{
+  position:fixed; inset:0 auto 0 0;
+  width:var(--sidebar-w);
+  background:var(--navy);
+  color:#C7D3E5;
+  display:flex; flex-direction:column;
+  padding:18px 14px 16px;
+  z-index:30;
+  overflow-y:auto;
+}
+
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 22px}
+.brand-mark{
+  width:34px;height:34px;flex:0 0 34px;border-radius:9px;
+  background:var(--gold);color:var(--navy);
+  font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:13px;
+  display:grid;place-items:center;letter-spacing:.02em;
+}
+.brand strong{
+  display:block;color:#fff;font-family:"Space Grotesk",sans-serif;
+  font-size:15px;font-weight:600;line-height:1.2;
+}
+.brand small{
+  display:block;color:#8FA3C2;font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-top:2px;
+}
+
+.nav-label{
+  font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:#8FA3C2;font-weight:600;margin:14px 10px 8px;
+}
+
+.nav{display:flex;flex-direction:column;gap:3px}
+
+.nav-item{
+  display:flex;align-items:center;gap:10px;width:100%;
+  background:none;border:0;border-radius:9px;
+  color:#C7D3E5;font:inherit;font-size:13.5px;font-weight:500;
+  padding:10px;cursor:pointer;text-align:left;
+  transition:background .15s,color .15s;
+}
+.nav-item svg{width:18px;height:18px;flex:0 0 18px;opacity:.85}
+.nav-item:hover{background:var(--navy-soft);color:#fff}
+.nav-item.is-active{
+  background:var(--navy-active);color:#fff;
+  box-shadow:inset 3px 0 0 0 var(--gold);
+}
+.nav-item.is-active svg{opacity:1}
+
+.sidebar-foot{margin-top:auto;padding-top:18px;border-top:1px solid rgba(255,255,255,.10)}
+.user-mini{display:flex;align-items:center;gap:10px;padding:2px 8px}
+.user-mini .avatar{background:#2B4A78;color:#fff}
+.user-mini strong{display:block;color:#fff;font-size:12.5px;font-weight:600}
+.user-mini span{display:block;color:#8FA3C2;font-size:11px}
+
+/* ---- content column ---- */
+.content{
+  margin-left:var(--sidebar-w);
+  flex:1;min-width:0;
+  display:flex;flex-direction:column;
+  height:100vh;
+}
+
+/* ---- top bar (sticky) ---- */
+.topbar{
+  position:sticky;top:0;z-index:20;
+  flex:0 0 var(--topbar-h);height:var(--topbar-h);
+  display:flex;align-items:center;gap:16px;
+  padding:0 28px;
+  background:var(--white);
+  border-bottom:1px solid var(--line);
+}
+
+.search{position:relative;flex:1;max-width:420px}
+.search svg{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:16px;height:16px;color:var(--muted);pointer-events:none;
+}
+.search input{
+  width:100%;height:38px;padding:0 12px 0 36px;
+  border:1px solid var(--line);border-radius:9px;
+  background:#FBFAF6;font:inherit;font-size:13px;color:var(--ink);
+  transition:border-color .15s,background .15s;
+}
+.search input::placeholder{color:#6E7A8F}
+.search input:hover{border-color:var(--line-strong)}
+.search input:focus{
+  outline:none;border-color:var(--navy);background:#fff;
+  box-shadow:0 0 0 3px rgba(19,41,75,.10);
+}
+
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+
+.branch-pick{position:relative}
+.branch-pick select{
+  height:38px;padding:0 34px 0 12px;
+  border:1px solid var(--line);border-radius:9px;
+  background:#FBFAF6;color:var(--ink);
+  font:inherit;font-size:13px;font-weight:500;cursor:pointer;
+  appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235D6879' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 10px center;
+  transition:border-color .15s;
+}
+.branch-pick select:hover{border-color:var(--line-strong)}
+.branch-pick select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(19,41,75,.10)}
+
+.icon-btn{
+  position:relative;width:38px;height:38px;
+  display:grid;place-items:center;
+  background:#fff;border:1px solid var(--line);border-radius:9px;
+  color:var(--navy);cursor:pointer;
+  transition:background .15s,border-color .15s;
+}
+.icon-btn:hover{background:#F1EEE5;border-color:var(--line-strong)}
+.icon-btn svg{width:18px;height:18px}
+.icon-btn .dot{
+  position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;
+  background:var(--red);border:1.5px solid #fff;
+}
+
+.avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--navy);color:#fff;
+  display:grid;place-items:center;
+  font-family:"Space Grotesk",sans-serif;font-size:12.5px;font-weight:600;
+  letter-spacing:.02em;user-select:none;
+}
+
+/* ---- main scroll area ---- */
+.main{
+  flex:1;min-height:0;
+  overflow-y:auto;
+  padding:26px 30px 56px;
+}
+.main::-webkit-scrollbar{width:11px}
+.main::-webkit-scrollbar-thumb{background:#D8D3C4;border-radius:99px;border:3px solid var(--bg)}
+.main::-webkit-scrollbar-track{background:var(--bg)}
+
+/* ============================================================
+   4. GENERIC BLOCKS
+   ============================================================ */
+.page-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:20px;margin-bottom:20px;
+}
+.eyebrow{
+  font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:#6B7488;font-weight:600;margin-bottom:6px;
+}
+.sub{margin-top:6px;font-size:13px;color:var(--muted)}
+.head-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+.card{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:20px;
+  transition:border-color .15s;
+}
+.card + .card{margin-top:16px}
+.card:hover{border-color:var(--line-strong)}
+
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;margin-bottom:14px;
+}
+
+/* ---- buttons ---- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  height:38px;padding:0 14px;
+  border-radius:9px;border:1px solid transparent;
+  font:inherit;font-size:13px;font-weight:500;
+  cursor:pointer;white-space:nowrap;
+  transition:background .15s,border-color .15s,color .15s,opacity .15s;
+}
+.btn svg{width:16px;height:16px;flex:0 0 16px}
+
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy-soft)}
+.btn-primary:active{background:#0F2039}
+.btn-primary:disabled{background:#94A0B4;cursor:not-allowed}
+
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{background:#F1EEE5;border-color:var(--line-strong)}
+
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:#1A7550}
+
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:#B0492F}
+
+.btn-gold{background:#fff;border-color:#E7CB84;color:var(--gold-fg)}
+.btn-gold:hover{background:var(--gold-bg)}
+
+.btn-sm{height:32px;padding:0 11px;font-size:12.5px;border-radius:8px}
+.btn-sm svg{width:14px;height:14px;flex:0 0 14px}
+
+/* ---- chips ---- */
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  height:22px;padding:0 9px;border-radius:999px;
+  font-size:11.5px;font-weight:600;white-space:nowrap;
+}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.chip-success{background:var(--green-bg);color:var(--green-fg)}
+.chip-warn{background:var(--gold-bg);color:var(--gold-fg)}
+.chip-danger{background:var(--red-bg);color:var(--red-fg)}
+.chip-info{background:var(--info-bg);color:var(--info-fg)}
+.chip-neutral{background:#EEEDE7;color:#4B5364}
+.chip-plain{background:transparent;color:var(--muted);padding-left:0}
+.chip-plain::before{display:none}
+
+/* ============================================================
+   5. DASHBOARD
+   ============================================================ */
+.kpi-grid{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:14px;margin-bottom:16px;
+}
+.kpi{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px;transition:border-color .15s;
+}
+.kpi:hover{border-color:var(--line-strong)}
+.kpi-icon{
+  width:32px;height:32px;border-radius:9px;
+  display:grid;place-items:center;margin-bottom:12px;
+}
+.kpi-icon svg{width:17px;height:17px}
+.tone-navy{background:var(--info-bg);color:var(--info-fg)}
+.tone-green{background:var(--green-bg);color:var(--green-fg)}
+.tone-red{background:var(--red-bg);color:var(--red-fg)}
+.tone-gold{background:var(--gold-bg);color:var(--gold-fg)}
+
+.kpi-label{font-size:12px;color:var(--muted);font-weight:500}
+.kpi-value{
+  font-family:"Space Grotesk",sans-serif;font-size:27px;font-weight:600;
+  color:var(--navy);line-height:1.15;margin-top:4px;
+  font-variant-numeric:tabular-nums;
+}
+.kpi-foot{font-size:11.5px;color:var(--muted);margin-top:6px}
+
+/* ---- tables ---- */
+.table-wrap{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table th{
+  text-align:left;padding:10px 14px;
+  font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:#6B7488;font-weight:600;
+  background:#FBFAF6;border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+.table td{
+  padding:11px 14px;border-bottom:1px solid var(--line-soft);
+  color:var(--body);vertical-align:middle;
+}
+.table tbody tr{transition:background .12s}
+.table tbody tr:hover{background:#FBFAF3}
+.table tbody tr:last-child td{border-bottom:0}
+.table th.num,.table td.num{text-align:right}
+.table td.right{text-align:right}
+
+.who{display:flex;align-items:center;gap:10px}
+.who .avatar-sm{
+  width:30px;height:30px;flex:0 0 30px;border-radius:50%;
+  background:#E7EDF7;color:var(--info-fg);
+  display:grid;place-items:center;
+  font-family:"Space Grotesk",sans-serif;font-size:11px;font-weight:600;
+}
+.who strong{display:block;font-size:13px;color:var(--ink);font-weight:600;line-height:1.3}
+.who .pan{display:block;font-size:11px;color:var(--muted);letter-spacing:.02em}
+
+.score-cell{display:inline-flex;align-items:center;gap:7px}
+.score-dot{width:8px;height:8px;border-radius:50%;flex:0 0 8px}
+
+/* ---- empty state ---- */
+.empty{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:44px 20px;text-align:center;
+}
+.empty svg{width:36px;height:36px;color:#B4BCCB}
+.empty strong{color:var(--ink);font-size:13.5px;font-family:"Space Grotesk",sans-serif}
+.empty span{font-size:12.5px;color:var(--muted);max-width:320px}
+
+/* ---- skeletons ---- */
+.skel{background:#E9E5D9;border-radius:6px;animation:pulse 1.15s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.skel-line{height:12px;margin-bottom:9px}
+.skel-kpi{height:112px;border-radius:var(--radius)}
+
+/* ============================================================
+   6. FORMS
+   ============================================================ */
+.form-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px 18px;
+}
+.span-2{grid-column:span 2}
+.span-3{grid-column:span 3}
+
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field > label,.lab{
+  font-size:12.5px;font-weight:600;color:var(--navy);
+  display:flex;align-items:center;gap:6px;
+}
+.req{color:var(--red);font-weight:700}
+
+.input,.select,.textarea{
+  width:100%;height:40px;padding:0 12px;
+  border:1px solid #DCD6C7;border-radius:9px;
+  background:#fff;color:var(--ink);
+  font:inherit;font-size:13.5px;
+  transition:border-color .15s,box-shadow .15s;
+}
+.textarea{height:auto;min-height:78px;padding:10px 12px;resize:vertical;line-height:1.5}
+.input::placeholder,.textarea::placeholder{color:#6E7A8F}
+.input:hover,.select:hover,.textarea:hover{border-color:var(--line-strong)}
+.input:focus,.select:focus,.textarea:focus{
+  outline:none;border-color:var(--navy);
+  box-shadow:0 0 0 3px rgba(19,41,75,.10);
+}
+.select{
+  appearance:none;cursor:pointer;padding-right:32px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235D6879' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+.input[type=number]{font-variant-numeric:tabular-nums}
+
+.hint{font-size:11.5px;color:var(--muted)}
+.err-msg{font-size:11.5px;color:var(--red-fg);font-weight:500;display:none}
+.field.has-error .err-msg{display:block}
+.field.has-error .input,
+.field.has-error .select,
+.field.has-error .textarea{border-color:var(--red);background:#FDF7F5}
+
+/* consent block */
+.consent{
+  display:flex;gap:12px;align-items:flex-start;
+  margin-top:20px;padding:14px 16px;
+  background:#F1F9F5;border:1px solid #BEE2CE;border-radius:10px;
+}
+.consent input{
+  width:18px;height:18px;flex:0 0 18px;margin-top:1px;
+  accent-color:var(--green);cursor:pointer;
+}
+.consent label{font-size:12.5px;color:var(--ink);cursor:pointer;line-height:1.55}
+.consent strong{color:var(--navy)}
+
+.form-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line-soft);
+}
+.form-foot .note{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.form-foot .note svg{width:15px;height:15px;color:var(--muted);flex:0 0 15px}
+.form-actions{display:flex;gap:10px;margin-left:auto}
+
+/* fetching state */
+.fetching{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  gap:6px;padding:56px 24px;border:1px solid var(--line);
+  border-radius:var(--radius);background:#FBFAF6;
+}
+.spinner{
+  width:26px;height:26px;border-radius:50%;
+  border:2.5px solid #DCE7DF;border-top-color:var(--green);
+  animation:spin .8s linear infinite;margin-bottom:8px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fetching strong{font-family:"Space Grotesk",sans-serif;font-size:15px;color:var(--navy)}
+.fetching p{font-size:12.5px;color:var(--muted)}
+.fetching .skel-wrap{width:100%;max-width:560px;margin-top:18px}
+
+/* ============================================================
+   7. CREDIT REPORT
+   ============================================================ */
+.report-top{
+  display:grid;grid-template-columns:420px minmax(0,1fr);
+  gap:16px;margin-bottom:16px;
+}
+.report-top .card + .card{margin-top:0}
+
+/* gauge */
+.gauge{position:relative;width:100%;max-width:372px;margin:6px auto 0}
+.gauge svg{display:block;width:100%;height:auto}
+.arc-track{fill:none;stroke:#EDE9DE;stroke-width:18;stroke-linecap:round}
+.arc-value{fill:none;stroke-width:18;stroke-linecap:round}
+.gauge-tick{stroke:#CFC8B8;stroke-width:2;stroke-linecap:round}
+.gauge-cap{fill:#6B7488;font-size:11px;font-weight:600;font-family:"Inter",sans-serif}
+
+.gauge-center{
+  position:absolute;left:0;right:0;top:56%;
+  transform:translateY(-50%);text-align:center;pointer-events:none;
+}
+.gauge-score{
+  font-family:"Space Grotesk",sans-serif;font-size:46px;font-weight:700;
+  color:var(--navy);line-height:1;font-variant-numeric:tabular-nums;
+}
+.gauge-band{font-size:12px;font-weight:600;margin-top:6px;letter-spacing:.02em}
+.gauge-of{font-size:11px;color:var(--muted);margin-top:3px}
+
+.gauge-legend{
+  list-style:none;display:flex;justify-content:center;flex-wrap:wrap;
+  gap:10px 16px;margin:10px 0 0;padding:12px 0 0;
+  border-top:1px solid var(--line-soft);
+}
+.gauge-legend li{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted)}
+.gauge-legend .sw{width:8px;height:8px;border-radius:2px}
+
+/* summary grid */
+.summary-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:1px;background:var(--line-soft);
+  border:1px solid var(--line-soft);border-radius:10px;overflow:hidden;
+}
+.stat{background:#fff;padding:14px 16px}
+.stat-label{font-size:11.5px;color:var(--muted);font-weight:500}
+.stat-value{
+  font-family:"Space Grotesk",sans-serif;font-size:20px;font-weight:600;
+  color:var(--navy);margin-top:3px;font-variant-numeric:tabular-nums;
+}
+.stat-value.is-risk{color:var(--red-fg)}
+.stat-note{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* heatmap */
+.heatmap{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:5px;margin-top:4px}
+.hm-cell{
+  height:34px;border-radius:5px;transition:transform .12s,outline .12s;
+}
+.hm-cell:hover{transform:scale(1.12);outline:2px solid var(--navy);outline-offset:1px}
+.hm-0{background:#1F8A5B}
+.hm-1{background:var(--gold)}
+.hm-2{background:var(--orange)}
+.hm-3{background:var(--red)}
+.hm-legend{list-style:none;display:flex;flex-wrap:wrap;gap:14px;margin:14px 0 0;padding:0}
+.hm-legend li{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted)}
+.hm-legend .sw{width:11px;height:11px;border-radius:3px}
+
+.report-bottom{
+  display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);
+  gap:16px;margin-top:16px;
+}
+.report-bottom .card + .card{margin-top:0}
+
+/* red flags */
+.flags{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.flag{
+  display:flex;gap:10px;align-items:flex-start;
+  padding:11px 2px;border-bottom:1px solid var(--line-soft);
+}
+.flag:last-child{border-bottom:0}
+.flag-icon{
+  width:20px;height:20px;flex:0 0 20px;border-radius:50%;
+  display:grid;place-items:center;
+  font-size:11px;font-weight:700;margin-top:1px;
+}
+.flag-warn .flag-icon{background:var(--gold-bg);color:var(--gold-fg)}
+.flag-ok .flag-icon{background:var(--green-bg);color:var(--green-fg)}
+.flag-info .flag-icon{background:var(--info-bg);color:var(--info-fg)}
+.flag strong{display:block;font-size:12.5px;color:var(--ink);font-weight:600;line-height:1.4}
+.flag span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+
+/* ============================================================
+   8. UNDERWRITING
+   ============================================================ */
+.uw-grid{
+  display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);
+  gap:16px;align-items:start;
+}
+.uw-grid .card + .card{margin-top:0}
+
+.uw-inputs{display:flex;flex-direction:column;gap:16px}
+
+/* FOIR meter */
+.foir-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.foir-value{
+  font-family:"Space Grotesk",sans-serif;font-size:30px;font-weight:700;
+  color:var(--navy);line-height:1;font-variant-numeric:tabular-nums;
+}
+.foir-value.over{color:var(--red-fg)}
+.foir-value.watch{color:var(--gold-fg)}
+
+.meter{
+  position:relative;height:14px;border-radius:999px;
+  background:#EDE9DE;overflow:hidden;margin-top:14px;
+}
+.meter-fill{
+  height:100%;width:0;border-radius:999px;background:var(--green);
+  transition:width .35s ease,background .2s;
+}
+.meter-mark{
+  position:absolute;top:-3px;bottom:-3px;left:50%;width:2px;
+  background:#8E97A8;opacity:.55;border-radius:2px;
+}
+.meter-scale{
+  display:flex;justify-content:space-between;
+  font-size:11px;color:var(--muted);margin-top:7px;
+  font-variant-numeric:tabular-nums;
+}
+
+.alert{
+  display:flex;gap:10px;align-items:flex-start;
+  margin-top:14px;padding:11px 13px;border-radius:9px;
+  background:var(--red-bg);border:1px solid #EFC6BC;
+  color:var(--red-fg);font-size:12.5px;font-weight:500;
+}
+.alert svg{width:16px;height:16px;flex:0 0 16px;margin-top:1px}
+
+/* verdict card */
+.verdict{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:16px;border-radius:10px;border:1px solid;
+}
+.verdict-eligible{background:#F0F9F4;border-color:#B9DFC9}
+.verdict-refer{background:#FDF6E7;border-color:#EBD9A8}
+.verdict-not{background:#FBEDE9;border-color:#EFC6BC}
+.verdict-icon{
+  width:34px;height:34px;flex:0 0 34px;border-radius:50%;
+  display:grid;place-items:center;
+}
+.verdict-icon svg{width:18px;height:18px}
+.verdict-eligible .verdict-icon{background:#D8EFE2;color:var(--green-fg)}
+.verdict-refer .verdict-icon{background:#F7E8C6;color:var(--gold-fg)}
+.verdict-not .verdict-icon{background:#F6DAD3;color:var(--red-fg)}
+
+.verdict-title{font-family:"Space Grotesk",sans-serif;font-size:16px;font-weight:600;color:var(--navy);line-height:1.3}
+.verdict-desc{font-size:12.5px;color:var(--muted);margin-top:3px}
+
+.reasons{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
+.reasons li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:var(--body)}
+.reasons svg{width:15px;height:15px;flex:0 0 15px;margin-top:2px}
+.r-ok svg{color:var(--green)}
+.r-warn svg{color:var(--gold-fg)}
+.r-bad svg{color:var(--red)}
+
+.uw-actions{
+  display:flex;gap:10px;margin-top:18px;padding-top:16px;
+  border-top:1px solid var(--line-soft);
+}
+.uw-actions .btn{flex:1}
+
+.decision-note{
+  display:flex;align-items:center;gap:8px;margin-top:12px;
+  font-size:12px;color:var(--muted);
+}
+
+/* ============================================================
+   9. HISTORY TOOLBAR
+   ============================================================ */
+.toolbar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.toolbar .search{max-width:300px;flex:0 0 300px}
+.toolbar .select{width:auto;min-width:150px;height:38px;font-size:13px}
+.toolbar .spacer{margin-left:auto}
+.count-pill{
+  font-size:11.5px;color:var(--muted);font-weight:500;
+  background:#EDEAE0;border-radius:999px;padding:4px 10px;
+}
+
+/* ============================================================
+   10. MODAL
+   ============================================================ */
+dialog{
+  border:0;padding:0;border-radius:14px;width:460px;
+  max-width:calc(100vw - 48px);
+  background:#fff;color:var(--body);
+}
+dialog::backdrop{background:rgba(19,41,75,.45)}
+
+.modal-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  padding:20px 20px 0;
+}
+.modal-close{
+  width:30px;height:30px;border-radius:7px;border:1px solid var(--line);
+  background:#fff;color:var(--muted);cursor:pointer;
+  display:grid;place-items:center;font-size:16px;line-height:1;
+  transition:background .15s;
+}
+.modal-close:hover{background:#F1EEE5;color:var(--ink)}
+.modal-body{padding:10px 20px 0;display:flex;flex-direction:column;gap:8px}
+.modal-body .lab{margin-top:6px}
+.modal-foot{
+  display:flex;justify-content:flex-end;gap:10px;
+  padding:20px;margin-top:16px;border-top:1px solid var(--line-soft);
+}
+
+/* ============================================================
+   11. TOASTS
+   ============================================================ */
+.toasts{
+  position:fixed;right:24px;bottom:24px;z-index:70;
+  display:flex;flex-direction:column;gap:10px;pointer-events:none;
+}
+.toast{
+  pointer-events:auto;
+  display:flex;gap:10px;align-items:flex-start;
+  min-width:290px;max-width:380px;
+  background:#fff;border:1px solid var(--line);
+  border-left:4px solid var(--green);border-radius:10px;
+  padding:12px 14px;
+  animation:toastIn .2s ease-out;
+}
+.toast.leaving{animation:toastOut .18s ease-in forwards}
+.toast svg{width:17px;height:17px;flex:0 0 17px;margin-top:1px}
+.toast-success{border-left-color:var(--green)}
+.toast-success svg{color:var(--green)}
+.toast-warn{border-left-color:var(--gold)}
+.toast-warn svg{color:var(--gold-fg)}
+.toast-error{border-left-color:var(--red)}
+.toast-error svg{color:var(--red)}
+.toast strong{display:block;font-size:12.5px;color:var(--ink);font-weight:600;line-height:1.4}
+.toast span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(6px)}}
+
+/* ============================================================
+   12. PRINT STYLESHEET — "Download PDF"
+   ============================================================ */
+.print-head{display:none}
+
+@media print{
+  @page{size:A4;margin:14mm}
+
+  html,body{height:auto;min-width:0;background:#fff}
+  .sidebar,.topbar,.no-print,.toasts,.head-actions{display:none !important}
+
+  .content{margin-left:0;height:auto;display:block}
+  .main{height:auto;overflow:visible;padding:0}
+
+  .card{border-color:#C9C4B6;break-inside:avoid;page-break-inside:avoid}
+  .card + .card{margin-top:12px}
+
+  .print-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding-bottom:10px;margin-bottom:14px;border-bottom:2px solid #13294B;
+  }
+  .print-head strong{font-family:"Space Grotesk",sans-serif;font-size:14px;color:#13294B}
+  .print-head span{font-size:11px;color:#5D6879}
+
+  .report-top{grid-template-columns:340px 1fr}
+  .report-bottom{grid-template-columns:1fr 1fr}
+  .table tbody tr:hover{background:transparent}
+  .heatmap .hm-cell{outline:1px solid #fff}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- ==========================================================
+       SIDEBAR
+       ========================================================== -->
+  <aside class="sidebar" aria-label="Primary navigation">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">TK</span>
+      <div>
+        <strong>Track Karo</strong>
+        <small>Credit Desk</small>
+      </div>
+    </div>
+
+    <p class="nav-label" id="navLabelCredit">Credit checks</p>
+    <nav class="nav" aria-labelledby="navLabelCredit">
+      <button class="nav-item is-active" data-go="dashboard" aria-current="page">
+        <span data-icon="grid" aria-hidden="true"></span>Dashboard
+      </button>
+      <button class="nav-item" data-go="new">
+        <span data-icon="fileplus" aria-hidden="true"></span>New Credit Check
+      </button>
+      <button class="nav-item" data-go="report">
+        <span data-icon="gauge" aria-hidden="true"></span>Credit Report
+      </button>
+      <button class="nav-item" data-go="underwriting">
+        <span data-icon="calc" aria-hidden="true"></span>Underwriting
+      </button>
+      <button class="nav-item" data-go="history">
+        <span data-icon="history" aria-hidden="true"></span>Report History
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <p class="nav-label">Signed in</p>
+      <div class="user-mini">
+        <span class="avatar" aria-hidden="true">RM</span>
+        <div>
+          <strong>Ravi Menon</strong>
+          <span>Credit Officer</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==========================================================
+       CONTENT COLUMN
+       ========================================================== -->
+  <div class="content">
+
+    <!-- ---------- TOP BAR ---------- -->
+    <header class="topbar">
+      <div class="search">
+        <span data-icon="search" aria-hidden="true"></span>
+        <label class="sr-only" for="globalSearch">Search applications</label>
+        <input id="globalSearch" type="search" placeholder="Search applicant, PAN or branch…"
+               autocomplete="off">
+      </div>
+
+      <div class="topbar-right">
+        <div class="branch-pick">
+          <label class="sr-only" for="branchSelect">Branch</label>
+          <select id="branchSelect"></select>
+        </div>
+
+        <button class="icon-btn" id="notifBtn" aria-label="Notifications, 3 unread">
+          <span data-icon="bell" aria-hidden="true"></span>
+          <span class="dot" aria-hidden="true"></span>
+        </button>
+
+        <div class="avatar" title="Ravi Menon · Credit Officer">RM</div>
+      </div>
+    </header>
+
+    <!-- ---------- MAIN SCROLL AREA ---------- -->
+    <main class="main" id="main">
+
+      <!-- print-only masthead -->
+      <div class="print-head">
+        <strong>Track Karo · Credit Bureau Report</strong>
+        <span id="printMeta"></span>
+      </div>
+
+      <!-- ========================================================
+           SCREEN 1 — DASHBOARD
+           ======================================================== -->
+      <section class="screen" id="screen-dashboard" aria-labelledby="h-dashboard">
+        <div class="page-head">
+          <div>
+            <p class="eyebrow">Credit overview</p>
+            <h1 id="h-dashboard" tabindex="-1">Good morning, Ravi</h1>
+            <p class="sub" id="dashSub">Here is what the credit desk worked on today.</p>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-ghost" data-go="history">
+              <span data-icon="history" aria-hidden="true"></span>History
+            </button>
+            <button class="btn btn-primary" data-go="new">
+              <span data-icon="plus" aria-hidden="true"></span>New credit check
+            </button>
+          </div>
+        </div>
+
+        <div class="kpi-grid" id="kpiGrid" aria-label="Key metrics"></div>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>Recent credit checks</h2>
+            <button class="btn btn-ghost btn-sm" data-go="history">View all</button>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Applicant</th>
+                  <th scope="col">Branch</th>
+                  <th scope="col" class="num">Score</th>
+                  <th scope="col">Bureau</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Date</th>
+                  <th scope="col" class="right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="recentBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <!-- ========================================================
+           SCREEN 2 — NEW CREDIT CHECK
+           ======================================================== -->
+      <section class="screen" id="screen-new" aria-labelledby="h-new" hidden>
+        <div class="page-head">
+          <div>
+            <p class="eyebrow">Step 1 of 3</p>
+            <h1 id="h-new" tabindex="-1">New credit check</h1>
+            <p class="sub">Capture the applicant, take consent, then pull the bureau report.</p>
+          </div>
+        </div>
+
+        <section class="card">
+          <form id="creditForm" novalidate autocomplete="off">
+
+            <div class="form-grid">
+
+              <!-- Full name -->
+              <div class="field span-2" data-field="name">
+                <label for="fName">Full name <span class="req" aria-hidden="true">*</span></label>
+                <input class="input" id="fName" name="name" type="text"
+                       placeholder="As printed on the PAN card" required>
+                <p class="err-msg" role="alert">Enter the applicant's full name.</p>
+              </div>
+
+              <!-- DOB -->
+              <div class="field" data-field="dob">
+                <label for="fDob">Date of birth <span class="req" aria-hidden="true">*</span></label>
+                <input class="input" id="fDob" name="dob" type="date" required>
+                <p class="err-msg" role="alert">Select a date of birth.</p>
+              </div>
+
+              <!-- Gender -->
+              <div class="field" data-field="gender">
+                <label for="fGender">Gender</label>
+                <select class="select" id="fGender" name="gender">
+                  <option value="">Select…</option>
+                  <option>Female</option>
+                  <option>Male</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <!-- Mobile -->
+              <div class="field" data-field="mobile">
+                <label for="fMobile">Mobile <span class="req" aria-hidden="true">*</span></label>
+                <input class="input" id="fMobile" name="mobile" type="tel"
+                       inputmode="numeric" maxlength="10" placeholder="10-digit number" required>
+                <p class="err-msg" role="alert">Enter a valid 10-digit mobile number.</p>
+              </div>
+
+              <!-- PAN -->
+              <div class="field" data-field="pan">
+                <label for="fPan">PAN <span class="req" aria-hidden="true">*</span></label>
+                <input class="input" id="fPan" name="pan" type="text"
+                       maxlength="10" placeholder="ABCDE1234F" spellcheck="false" required>
+                <p class="hint" id="panHint">Stored masked as ABCDE****F</p>
+                <p class="err-msg" role="alert">PAN must be 5 letters, 4 digits, 1 letter.</p>
+              </div>
+
+              <!-- Aadhaar last 4 -->
+              <div class="field" data-field="aadhaar">
+                <label for="fAadhaar">Aadhaar (last 4) <span class="req" aria-hidden="true">*</span></label>
+                <input class="input" id="fAadhaar" name="aadhaar" type="text"
+                       inputmode="numeric" maxlength="4" placeholder="XXXX" required>
+                <p class="hint">Only the last four digits are stored.</p>
+                <p class="err-msg" role="alert">Enter the last 4 digits of Aadhaar.</p>
+              </div>
+
+              <!-- PIN -->
+              <div class="field" data-field="pin">
+                <label for="fPin">PIN code <span class="req" aria-hidden="true">*</span></label>
+                <input class="input" id="fPin" name="pin" type="text"
+                       inputmode="numeric" maxlength="6" placeholder="6 digits" required>
+                <p class="err-msg" role="alert">Enter a valid 6-digit PIN code.</p>
+              </div>
+
+              <!-- Loan type -->
+              <div class="field" data-field="loanType">
+                <label for="fLoanType">Loan type</label>
+                <select class="select" id="fLoanType" name="loanType">
+                  <option value="JLG">JLG — Joint Liability Group</option>
+                  <option value="MSME">MSME</option>
+                  <option value="Individual">Individual</option>
+                </select>
+              </div>
+
+              <!-- Loan amount -->
+              <div class="field span-2" data-field="amount">
+                <label for="fAmount">Loan amount <span class="req" aria-hidden="true">*</span></label>
+                <input class="input" id="fAmount" name="amount" type="number"
+                       min="5000" step="1000" placeholder="125000" required>
+                <p class="hint" id="amountHint">₹ 0</p>
+                <p class="err-msg" role="alert">Enter the requested loan amount.</p>
+              </div>
+
+              <!-- Bureau -->
+              <div class="field" data-field="bureau">
+                <label for="fBureau">Bureau</label>
+                <select class="select" id="fBureau" name="bureau">
+                  <option>CIBIL</option>
+                  <option>CRIF High Mark</option>
+                  <option>Equifax</option>
+                  <option>Experian</option>
+                </select>
+              </div>
+
+              <!-- Address -->
+              <div class="field span-3" data-field="address">
+                <label for="fAddress">Address</label>
+                <textarea class="textarea" id="fAddress" name="address" rows="2"
+                          placeholder="House / street, locality, city, state"></textarea>
+              </div>
+
+            </div>
+
+            <!-- consent gate -->
+            <div class="consent">
+              <input type="checkbox" id="fConsent">
+              <label for="fConsent">
+                <strong>Customer consent recorded.</strong>
+                The applicant has signed the bureau enquiry consent form and authorises
+                us to pull their credit information from the selected bureau.
+              </label>
+            </div>
+
+            <div class="form-foot">
+              <p class="note">
+                <span data-icon="lock" aria-hidden="true"></span>
+                Data stays on this device — no server call is made in this demo.
+              </p>
+              <div class="form-actions">
+                <button type="button" class="btn btn-ghost" id="formReset">Clear</button>
+                <button type="submit" class="btn btn-primary" id="fetchBtn" disabled
+                        aria-describedby="consentHelp">
+                  <span data-icon="search" aria-hidden="true"></span>Fetch report
+                </button>
+              </div>
+            </div>
+            <p class="hint" id="consentHelp" style="margin-top:8px">
+              Tick the consent box to enable the bureau fetch.
+            </p>
+          </form>
+
+          <!-- 2-second loading state -->
+          <div class="fetching" id="fetching" hidden>
+            <div class="spinner" aria-hidden="true"></div>
+            <strong>Fetching bureau report…</strong>
+            <p id="fetchingSub">Contacting CIBIL · verifying consent token</p>
+            <div class="skel-wrap" aria-hidden="true">
+              <div class="skel skel-line" style="width:82%"></div>
+              <div class="skel skel-line" style="width:64%"></div>
+              <div class="skel skel-line" style="width:73%"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ========================================================
+           SCREEN 3 — CREDIT REPORT
+           ======================================================== -->
+      <section class="screen" id="screen-report" aria-labelledby="h-report" hidden>
+        <div class="page-head">
+          <div>
+            <p class="eyebrow">Bureau report</p>
+            <h1 id="h-report" tabindex="-1">—</h1>
+            <p class="sub" id="repMeta">—</p>
+          </div>
+          <div class="head-actions no-print">
+            <button class="btn btn-ghost" id="printBtn">
+              <span data-icon="download" aria-hidden="true"></span>Download PDF
+            </button>
+            <button class="btn btn-primary" data-go="underwriting">
+              <span data-icon="calc" aria-hidden="true"></span>Run underwriting
+            </button>
+          </div>
+        </div>
+
+        <div class="report-top">
+          <!-- gauge -->
+          <section class="card">
+            <div class="card-head">
+              <h2>Bureau score</h2>
+              <span class="chip chip-info" id="repBureau">CIBIL</span>
+            </div>
+
+            <div class="gauge">
+              <svg viewBox="0 0 360 210" role="img" aria-labelledby="gaugeTitle">
+                <title id="gaugeTitle">Bureau score gauge, bands Poor, Fair, Good and Excellent</title>
+                <path class="arc-track" d="M30 180 A150 150 0 0 1 330 180"></path>
+                <path class="arc-value" id="arcValue" d="M30 180 A150 150 0 0 1 330 180"></path>
+                <g id="gaugeTicks"></g>
+                <text class="gauge-cap" x="30" y="202" text-anchor="middle">300</text>
+                <text class="gauge-cap" x="330" y="202" text-anchor="middle">900</text>
+              </svg>
+
+              <div class="gauge-center">
+                <div class="gauge-score" id="gaugeScore">—</div>
+                <div class="gauge-band" id="gaugeBand">—</div>
+                <div class="gauge-of">out of 900</div>
+              </div>
+            </div>
+
+            <ul class="gauge-legend" aria-label="Score bands">
+              <li><span class="sw" style="background:#C8553D"></span>Poor 300–549</li>
+              <li><span class="sw" style="background:#D98324"></span>Fair 550–649</li>
+              <li><span class="sw" style="background:#E0A526"></span>Good 650–749</li>
+              <li><span class="sw" style="background:#1F8A5B"></span>Excellent 750+</li>
+            </ul>
+          </section>
+
+          <!-- summary -->
+          <section class="card">
+            <div class="card-head">
+              <h2>Summary</h2>
+              <span class="muted small" id="repDate"></span>
+            </div>
+            <div class="summary-grid" id="summaryGrid"></div>
+
+            <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <span class="chip chip-neutral" id="repLoanType">JLG</span>
+              <span class="chip chip-neutral" id="repAmount">₹ 0</span>
+              <span class="chip chip-neutral" id="repMobile">—</span>
+            </div>
+          </section>
+        </div>
+
+        <!-- accounts -->
+        <section class="card">
+          <div class="card-head">
+            <h2>Credit accounts</h2>
+            <span class="muted small" id="acctCount"></span>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Lender</th>
+                  <th scope="col">Loan type</th>
+                  <th scope="col" class="num">Sanctioned</th>
+                  <th scope="col" class="num">Outstanding</th>
+                  <th scope="col" class="num">EMI</th>
+                  <th scope="col">Status</th>
+                  <th scope="col" class="num">DPD</th>
+                </tr>
+              </thead>
+              <tbody id="acctBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- heatmap + flags -->
+        <div class="report-bottom">
+          <section class="card">
+            <div class="card-head">
+              <h2>Days past due — last 24 months</h2>
+              <span class="muted small">0 = clean</span>
+            </div>
+            <div class="heatmap" id="heatmap" role="img"
+                 aria-label="Repayment heatmap for the last 24 months"></div>
+            <p class="hint" id="hmRange" style="margin-top:10px"></p>
+            <ul class="hm-legend">
+              <li><span class="sw" style="background:#1F8A5B"></span>0</li>
+              <li><span class="sw" style="background:#E0A526"></span>1–30</li>
+              <li><span class="sw" style="background:#D98324"></span>31–90</li>
+              <li><span class="sw" style="background:#C8553D"></span>90+</li>
+            </ul>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <h2>Red flags</h2>
+              <span class="chip chip-warn" id="flagCount">—</span>
+            </div>
+            <ul class="flags" id="flagList"></ul>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SCREEN 4 — UNDERWRITING
+           ======================================================== -->
+      <section class="screen" id="screen-underwriting" aria-labelledby="h-uw" hidden>
+        <div class="page-head">
+          <div>
+            <p class="eyebrow">Step 2 of 3</p>
+            <h1 id="h-uw" tabindex="-1">Underwriting &amp; eligibility</h1>
+            <p class="sub" id="uwSub">—</p>
+          </div>
+          <div class="head-actions no-print">
+            <button class="btn btn-ghost" data-go="report">
+              <span data-icon="gauge" aria-hidden="true"></span>Back to report
+            </button>
+          </div>
+        </div>
+
+        <div class="uw-grid">
+          <!-- inputs -->
+          <section class="card">
+            <div class="card-head"><h2>Affordability inputs</h2></div>
+
+            <div class="uw-inputs">
+              <div class="field">
+                <label for="uwIncome">Monthly household income (₹)</label>
+                <input class="input" id="uwIncome" type="number" min="0" step="500" value="32000">
+              </div>
+
+              <div class="field">
+                <label for="uwExisting">Existing EMIs (₹)</label>
+                <input class="input" id="uwExisting" type="number" min="0" step="100" value="6500">
+              </div>
+
+              <div class="field">
+                <label for="uwProposed">Proposed EMI (₹)</label>
+                <input class="input" id="uwProposed" type="number" min="0" step="100" value="4200">
+              </div>
+            </div>
+
+            <p class="hint" style="margin-top:14px">
+              FOIR = (existing EMIs + proposed EMI) ÷ household income.
+            </p>
+          </section>
+
+          <!-- meter + verdict -->
+          <section class="card">
+            <div class="card-head">
+              <h2>Fixed obligation to income ratio</h2>
+              <span class="chip chip-neutral" id="foirChip">—</span>
+            </div>
+
+            <div class="foir-head">
+              <div>
+                <div class="foir-value" id="foirValue">0.0%</div>
+                <p class="hint" id="foirNote">—</p>
+              </div>
+              <div style="text-align:right">
+                <p class="hint">Obligations</p>
+                <p style="font-family:'Space Grotesk',sans-serif;font-size:16px;color:var(--navy);font-weight:600"
+                   id="foirObligations">₹ 0</p>
+              </div>
+            </div>
+
+            <div class="meter" role="progressbar" aria-labelledby="foirValue"
+                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="foirMeter">
+              <div class="meter-fill" id="foirFill"></div>
+              <div class="meter-mark" aria-hidden="true"></div>
+            </div>
+            <div class="meter-scale">
+              <span>0%</span><span>25%</span><span>50% cap</span><span>75%</span><span>100%</span>
+            </div>
+
+            <div class="alert" id="foirAlert" hidden>
+              <span data-icon="alert" aria-hidden="true"></span>
+              <span id="foirAlertText">FOIR is above the 50% policy cap.</span>
+            </div>
+
+            <!-- verdict -->
+            <div class="verdict verdict-eligible" id="verdict" style="margin-top:18px">
+              <div class="verdict-icon">
+                <span data-icon="check" aria-hidden="true"></span>
+              </div>
+              <div>
+                <div class="verdict-title" id="verdictTitle">—</div>
+                <div class="verdict-desc" id="verdictDesc">—</div>
+                <ul class="reasons" id="reasons"></ul>
+              </div>
+            </div>
+
+            <div class="uw-actions">
+              <button class="btn btn-green" data-decision="Approve">
+                <span data-icon="check" aria-hidden="true"></span>Approve
+              </button>
+              <button class="btn btn-gold" data-decision="Refer">
+                <span data-icon="flag" aria-hidden="true"></span>Refer
+              </button>
+              <button class="btn btn-danger" data-decision="Reject">
+                <span data-icon="x" aria-hidden="true"></span>Reject
+              </button>
+            </div>
+
+            <p class="decision-note" id="decisionNote">
+              No decision recorded yet for this application.
+            </p>
+          </section>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SCREEN 5 — REPORT HISTORY
+           ======================================================== -->
+      <section class="screen" id="screen-history" aria-labelledby="h-hist" hidden>
+        <div class="page-head">
+          <div>
+            <p class="eyebrow">Archive</p>
+            <h1 id="h-hist" tabindex="-1">Report history</h1>
+            <p class="sub">Every bureau pull in the last 60 days, searchable and filterable.</p>
+          </div>
+          <div class="head-actions no-print">
+            <button class="btn btn-primary" data-go="new">
+              <span data-icon="plus" aria-hidden="true"></span>New credit check
+            </button>
+          </div>
+        </div>
+
+        <section class="card">
+          <div class="toolbar no-print">
+            <div class="search">
+              <span data-icon="search" aria-hidden="true"></span>
+              <label class="sr-only" for="histSearch">Search history</label>
+              <input id="histSearch" type="search" placeholder="Search name, PAN, branch…">
+            </div>
+
+            <label class="sr-only" for="histStatus">Filter by status</label>
+            <select class="select" id="histStatus">
+              <option value="">All statuses</option>
+              <option value="approved">Approved</option>
+              <option value="pending">Pending review</option>
+              <option value="rejected">Rejected</option>
+            </select>
+
+            <label class="sr-only" for="histBureau">Filter by bureau</label>
+            <select class="select" id="histBureau">
+              <option value="">All bureaus</option>
+              <option>CIBIL</option>
+              <option>CRIF High Mark</option>
+              <option>Equifax</option>
+              <option>Experian</option>
+            </select>
+
+            <button class="btn btn-ghost btn-sm" id="histReset">Reset</button>
+
+            <span class="spacer"></span>
+            <span class="count-pill" id="histCount">0 reports</span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Applicant</th>
+                  <th scope="col">Branch</th>
+                  <th scope="col" class="num">Score</th>
+                  <th scope="col">Bureau</th>
+                  <th scope="col">Loan</th>
+                  <th scope="col" class="num">Amount</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Date</th>
+                  <th scope="col" class="right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="histBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ============================================================
+     TOASTS
+     ============================================================ -->
+<div class="toasts" id="toasts" role="status" aria-live="polite" aria-atomic="false"></div>
+
+<!-- ============================================================
+     REMARKS MODAL
+     ============================================================ -->
+<dialog id="remarksModal" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+  <div class="modal-head">
+    <div>
+      <h2 id="modalTitle">Approve application</h2>
+      <p class="hint" id="modalDesc">Add a remark for the audit trail.</p>
+    </div>
+    <button type="button" class="modal-close" id="modalClose" aria-label="Close dialog">✕</button>
+  </div>
+
+  <div class="modal-body">
+    <label class="lab" for="remarks">Remarks <span class="req" aria-hidden="true">*</span></label>
+    <textarea class="textarea" id="remarks" rows="3"
+              placeholder="Reason for this decision…"></textarea>
+    <p class="err-msg" id="remarksErr" role="alert">Please add a remark before confirming.</p>
+  </div>
+
+  <div class="modal-foot">
+    <button type="button" class="btn btn-ghost" id="modalCancel">Cancel</button>
+    <button type="button" class="btn btn-primary" id="modalConfirm">Confirm</button>
+  </div>
+</dialog>
+
+<script>
+"use strict";
+
+/* ============================================================
+   1. ICONS — inline stroke SVGs
+   ============================================================ */
+const S = 'fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"';
+const svg = body => '<svg viewBox="0 0 24 24" ' + S + ' aria-hidden="true">' + body + '</svg>';
+
+const ICON = {
+  grid:      svg('<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>'),
+  fileplus:  svg('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 12v5"/><path d="M9.5 14.5h5"/>'),
+  gauge:     svg('<path d="M4 18a9 9 0 1 1 16 0"/><path d="M12 14l4-4"/><circle cx="12" cy="14" r="1.4"/>'),
+  calc:      svg('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8"/><path d="M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 19h.01M12 19h.01M16 19h.01"/>'),
+  history:   svg('<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/>'),
+  search:    svg('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2"/>'),
+  bell:      svg('<path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6"/><path d="M10.5 20a2 2 0 0 0 3 0"/>'),
+  plus:      svg('<path d="M12 5v14M5 12h14"/>'),
+  download:  svg('<path d="M12 4v11"/><path d="M8 11l4 4 4-4"/><path d="M5 19h14"/>'),
+  check:     svg('<circle cx="12" cy="12" r="9"/><path d="M8.5 12.2l2.4 2.4 4.6-4.8"/>'),
+  x:         svg('<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/>'),
+  clock:     svg('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.8"/>'),
+  shield:    svg('<path d="M12 3l7 3v6c0 4.2-3 7.4-7 9-4-1.6-7-4.8-7-9V6z"/><path d="M9.2 12.2l2 2 3.6-3.9"/>'),
+  alert:     svg('<path d="M12 4l9 16H3z"/><path d="M12 10v4"/><path d="M12 17h.01"/>'),
+  lock:      svg('<rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>'),
+  flag:      svg('<path d="M5 21V4"/><path d="M5 4h11l-1.6 4L16 12H5"/>'),
+  info:      svg('<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/>'),
+  user:      svg('<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5S20 17 20 21"/>'),
+  wallet:    svg('<path d="M3 8.5A2.5 2.5 0 0 1 5.5 6H18a3 3 0 0 1 3 3v9a2 2 0 0 1-2 2H5.5A2.5 2.5 0 0 1 3 17.5z"/><path d="M3 9h13"/><circle cx="17" cy="14" r="1.2"/>'),
+  users:     svg('<circle cx="9" cy="8" r="3.4"/><path d="M3 20c0-3.2 2.7-5.3 6-5.3s6 2.1 6 5.3"/><path d="M16.5 5.3a3.4 3.4 0 0 1 0 6.4"/><path d="M18 14.9c2.3.6 3.9 2.3 3.9 5.1"/>')
+};
+
+// hydrates every <span data-icon="name"> in the document
+function hydrateIcons(root) {
+  (root || document).querySelectorAll('[data-icon]').forEach(function (el) {
+    var name = el.getAttribute('data-icon');
+    if (ICON[name] && !el.firstChild) el.innerHTML = ICON[name];
+  });
+}
+
+/* ============================================================
+   2. DUMMY DATA
+   ============================================================ */
+const pad2 = n => String(n).padStart(2, '0');
+const isoOf = d => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+
+const TODAY = new Date(); TODAY.setHours(0, 0, 0, 0);
+const daysAgo = n => { const d = new Date(TODAY); d.setDate(d.getDate() - n); return isoOf(d); };
+
+const DB = {
+  user: { name: 'Ravi Menon', role: 'Credit Officer', initials: 'RM' },
+
+  branches: [
+    'All branches',
+    'Jaipur – Malviya Nagar',
+    'Kota – Talwandi',
+    'Ajmer – Vaishali Nagar',
+    'Udaipur – Hiran Magri',
+    'Alwar – Scheme No. 1'
+  ],
+
+  /* ---- credit check archive ---- */
+  checks: [
+    { id:'CHK-1042', name:'Sunita Devi',     pan:'ABCDE1234F', branch:'Jaipur – Malviya Nagar', score:712, bureau:'CIBIL',           status:'approved', date:daysAgo(0),  loanType:'JLG',        amount:120000 },
+    { id:'CHK-1041', name:'Ramesh Kumar',    pan:'BXKPS4521M', branch:'Kota – Talwandi',        score:648, bureau:'CRIF High Mark',  status:'pending',  date:daysAgo(0),  loanType:'MSME',       amount:450000 },
+    { id:'CHK-1040', name:'Fatima Sheikh',   pan:'CDLPQ7789K', branch:'Jaipur – Malviya Nagar', score:781, bureau:'CIBIL',           status:'approved', date:daysAgo(0),  loanType:'Individual', amount:300000 },
+    { id:'CHK-1039', name:'Deepak Sharma',   pan:'EQRST1122P', branch:'Ajmer – Vaishali Nagar', score:534, bureau:'Equifax',         status:'rejected', date:daysAgo(0),  loanType:'JLG',        amount:60000  },
+    { id:'CHK-1038', name:'Anjali Verma',    pan:'FGHIJ3344L', branch:'Udaipur – Hiran Magri',  score:695, bureau:'CRIF High Mark',  status:'pending',  date:daysAgo(0),  loanType:'MSME',       amount:250000 },
+    { id:'CHK-1037', name:'Mohd Irfan',      pan:'KLMNO5566R', branch:'Alwar – Scheme No. 1',   score:602, bureau:'Experian',        status:'approved', date:daysAgo(0),  loanType:'JLG',        amount:80000  },
+
+    { id:'CHK-1036', name:'Priya Nair',      pan:'PQRST7788T', branch:'Jaipur – Malviya Nagar', score:745, bureau:'CIBIL',           status:'approved', date:daysAgo(1),  loanType:'Individual', amount:500000 },
+    { id:'CHK-1035', name:'Suresh Yadav',    pan:'UVWXY9900H', branch:'Kota – Talwandi',        score:489, bureau:'Equifax',         status:'rejected', date:daysAgo(1),  loanType:'JLG',        amount:50000  },
+    { id:'CHK-1034', name:'Kavita Joshi',    pan:'ZABCD1234J', branch:'Ajmer – Vaishali Nagar', score:668, bureau:'CIBIL',           status:'approved', date:daysAgo(2),  loanType:'MSME',       amount:350000 },
+    { id:'CHK-1033', name:'Arun Pillai',     pan:'EFGHI5678D', branch:'Udaipur – Hiran Magri',  score:588, bureau:'Experian',        status:'rejected', date:daysAgo(3),  loanType:'Individual', amount:200000 },
+    { id:'CHK-1032', name:'Neha Gupta',      pan:'JKLMN4321S', branch:'Alwar – Scheme No. 1',   score:723, bureau:'CRIF High Mark',  status:'approved', date:daysAgo(5),  loanType:'JLG',        amount:90000  },
+    { id:'CHK-1031', name:'Vikram Singh',    pan:'OPQRS8765W', branch:'Jaipur – Malviya Nagar', score:651, bureau:'CIBIL',           status:'pending',  date:daysAgo(7),  loanType:'MSME',       amount:600000 },
+    { id:'CHK-1030', name:'Lakshmi Rao',     pan:'TUVWX2345B', branch:'Kota – Talwandi',        score:799, bureau:'CIBIL',           status:'approved', date:daysAgo(9),  loanType:'Individual', amount:750000 },
+    { id:'CHK-1029', name:'Imran Qureshi',   pan:'YZABC6789N', branch:'Ajmer – Vaishali Nagar', score:512, bureau:'Equifax',         status:'rejected', date:daysAgo(12), loanType:'JLG',        amount:40000  },
+    { id:'CHK-1028', name:'Geeta Kumari',    pan:'DEFGH3456V', branch:'Udaipur – Hiran Magri',  score:634, bureau:'Experian',        status:'pending',  date:daysAgo(15), loanType:'JLG',        amount:70000  },
+    { id:'CHK-1027', name:'Sanjay Mehta',    pan:'IJKLN7890C', branch:'Alwar – Scheme No. 1',   score:706, bureau:'CRIF High Mark',  status:'approved', date:daysAgo(20), loanType:'MSME',       amount:420000 }
+  ],
+
+  /* ---- the bureau report shown on screen 3 ---- */
+  report: {
+    score: 712,
+    applicant: null,       // filled at runtime from a check, or from the form
+    fetchedAt: isoOf(TODAY),
+
+    accounts: [
+      { lender:'Ujjivan Small Finance Bank', type:'JLG',            sanctioned:120000, outstanding: 68400, emi:3150, status:'Active',  dpd: 0 },
+      { lender:'Bandhan Bank',               type:'MSME',           sanctioned:450000, outstanding:210000, emi:9800, status:'Active',  dpd:12 },
+      { lender:'IndusInd Bank',              type:'Two-wheeler',    sanctioned: 85000, outstanding: 18200, emi:2470, status:'Active',  dpd: 0 },
+      { lender:'Satin Creditcare',           type:'MFI',            sanctioned: 60000, outstanding:     0, emi:   0, status:'Closed',  dpd: 0 },
+      { lender:'IIFL Finance',               type:'Gold loan',      sanctioned:150000, outstanding:112500, emi:   0, status:'Active',  dpd:45 },
+      { lender:'CreditAccess Grameen',       type:'JLG',            sanctioned: 80000, outstanding: 44000, emi:2050, status:'Active',  dpd: 0 },
+      { lender:'Tata Capital',               type:'Consumer durable',sanctioned:35000, outstanding:     0, emi:   0, status:'Settled', dpd: 0 }
+    ],
+
+    /* 24 monthly buckets, oldest first — 0 = clean */
+    dpd: [0,0,0,0,0,0,0,0,0,96,12,0,0,0,0,0,0,0,0,0,0,35,0,0],
+
+    flags: [
+      { level:'warn', title:'90+ DPD reported once',
+        detail:'Bandhan Bank · 96 days past due around Aug 2025, regularised since' },
+      { level:'warn', title:'Settled account reported',
+        detail:'Tata Capital · consumer durable · closed with a settled status' },
+      { level:'warn', title:'More than 3 MFI lenders',
+        detail:'4 microfinance lenders report active exposure' },
+      { level:'info', title:'3 enquiries in the last 6 months',
+        detail:'Within the 4-enquiry tolerance for this product' },
+      { level:'ok',   title:'No write-off on record' },
+      { level:'ok',   title:'No wilful default reported' }
+    ]
+  }
+};
+
+/* ============================================================
+   3. STATE + HELPERS
+   ============================================================ */
+const state = {
+  screen: 'dashboard',
+  search: '',
+  branch: 'All branches',
+  histStatus: '',
+  histBureau: '',
+  decision: null,
+  reportReady: false
+};
+
+const $  = (sel, root) => (root || document).querySelector(sel);
+const $$ = (sel, root) => Array.prototype.slice.call((root || document).querySelectorAll(sel));
+
+/* Indian number format: 125000 -> ₹1,25,000 */
+const inr = n => '₹' + Number(n || 0).toLocaleString('en-IN');
+
+const fmtDate = iso => new Date(iso + 'T00:00:00')
+  .toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+const initials = name => name.trim().split(/\s+/).slice(0, 2)
+  .map(w => w[0]).join('').toUpperCase();
+
+/* score bands */
+function bandOf(score) {
+  if (score >= 750) return { key:'excellent', name:'Excellent', color:'#1F8A5B', fg:'#14663F' };
+  if (score >= 650) return { key:'good',      name:'Good',      color:'#E0A526', fg:'#7A5410' };
+  if (score >= 550) return { key:'fair',      name:'Fair',      color:'#D98324', fg:'#8A4E0C' };
+  return                    { key:'poor',      name:'Poor',      color:'#C8553D', fg:'#9E3A26' };
+}
+
+/* status chip markup */
+const STATUS_MAP = {
+  approved: { label:'Approved',       cls:'chip-success' },
+  pending:  { label:'Pending review', cls:'chip-warn'    },
+  rejected: { label:'Rejected',       cls:'chip-danger'  }
+};
+const statusChip = s => {
+  const m = STATUS_MAP[s] || { label: s, cls: 'chip-neutral' };
+  return '<span class="chip ' + m.cls + '">' + m.label + '</span>';
+};
+
+const acctChip = s => {
+  const map = { Active:'chip-success', Closed:'chip-neutral', Settled:'chip-danger' };
+  return '<span class="chip ' + (map[s] || 'chip-neutral') + '">' + s + '</span>';
+};
+
+const dpdClass = d => d === 0 ? '' : d <= 30 ? 'text-gold' : d <= 90 ? 'text-orange' : 'text-red';
+
+/* ============================================================
+   4. TOASTS
+   ============================================================ */
+function toast(title, kind, detail) {
+  kind = kind || 'success';
+  const host = $('#toasts');
+  const icons = { success: ICON.check, warn: ICON.alert, error: ICON.x };
+  const el = document.createElement('div');
+  el.className = 'toast toast-' + kind;
+  el.innerHTML = icons[kind] +
+    '<div><strong>' + title + '</strong>' +
+    (detail ? '<span>' + detail + '</span>' : '') + '</div>';
+  host.appendChild(el);
+
+  setTimeout(function () {
+    el.classList.add('leaving');
+    setTimeout(() => el.remove(), 200);
+  }, 3400);
+}
+
+/* ============================================================
+   5. NAVIGATION
+   ============================================================ */
+const SCREENS = ['dashboard', 'new', 'report', 'underwriting', 'history'];
+
+function go(name) {
+  if (SCREENS.indexOf(name) === -1) return;
+  state.screen = name;
+
+  SCREENS.forEach(s => { $('#screen-' + s).hidden = (s !== name); });
+
+  $$('.nav-item').forEach(btn => {
+    const on = btn.dataset.go === name;
+    btn.classList.toggle('is-active', on);
+    if (on) btn.setAttribute('aria-current', 'page');
+    else btn.removeAttribute('aria-current');
+  });
+
+  $('#main').scrollTop = 0;
+
+  if (name === 'report')  renderReport();
+  if (name === 'underwriting') calcFoir();
+
+  const h = $('#screen-' + name + ' h1');
+  if (h) h.focus({ preventScroll: true });
+}
+
+/* ============================================================
+   6. DASHBOARD
+   ============================================================ */
+function renderKpiSkeleton() {
+  const host = $('#kpiGrid');
+  host.innerHTML = Array.from({ length: 5 }, () =>
+    '<div class="skel skel-kpi"></div>').join('');
+}
+
+function renderRecentSkeleton() {
+  const rows = Array.from({ length: 5 }, () =>
+    '<tr>' + Array.from({ length: 7 }, () =>
+      '<td><div class="skel skel-line" style="width:' +
+      (40 + Math.random() * 45 | 0) + '%"></div></td>').join('') + '</tr>').join('');
+  $('#recentBody').innerHTML = rows;
+}
+
+function renderKpis() {
+  const todays = DB.checks.filter(c => c.date === isoOf(TODAY));
+  const approved = todays.filter(c => c.status === 'approved').length;
+  const rejected = todays.filter(c => c.status === 'rejected').length;
+  const pending  = todays.filter(c => c.status === 'pending').length;
+  const avg = todays.length
+    ? Math.round(todays.reduce((s, c) => s + c.score, 0) / todays.length)
+    : 0;
+
+  const cards = [
+    { label:'Bureau checks today', value: todays.length, foot:'3 bureaus queried',      icon:'shield', tone:'navy'  },
+    { label:'Approved',            value: approved,      foot:'cleared for disbursal',   icon:'check',  tone:'green' },
+    { label:'Rejected',            value: rejected,      foot:'declined this morning',   icon:'x',      tone:'red'   },
+    { label:'Pending review',      value: pending,       foot:'waiting on credit manager', icon:'clock', tone:'gold'  },
+    { label:'Average score',       value: avg,           foot:'across today\u2019s pulls', icon:'gauge', tone:'navy'  }
+  ];
+
+  $('#kpiGrid').innerHTML = cards.map(c =>
+    '<article class="kpi">' +
+      '<div class="kpi-icon tone-' + c.tone + '">' + ICON[c.icon] + '</div>' +
+      '<div class="kpi-label">' + c.label + '</div>' +
+      '<div class="kpi-value">' + c.value + '</div>' +
+      '<div class="kpi-foot">' + c.foot + '</div>' +
+    '</article>').join('');
+}
+
+function matchesFilters(c) {
+  const q = state.search.trim().toLowerCase();
+  const okQ = !q ||
+    c.name.toLowerCase().includes(q) ||
+    c.pan.toLowerCase().includes(q) ||
+    c.branch.toLowerCase().includes(q);
+  const okB = state.branch === 'All branches' || c.branch === state.branch;
+  return okQ && okB;
+}
+
+function emptyRow(cols, title, hint) {
+  return '<tr><td colspan="' + cols + '"><div class="empty">' +
+    ICON.search +
+    '<strong>' + title + '</strong>' +
+    '<span>' + hint + '</span>' +
+    '</div></td></tr>';
+}
+
+function renderRecent() {
+  const rows = DB.checks.filter(matchesFilters).slice(0, 6);
+
+  if (!rows.length) {
+    $('#recentBody').innerHTML = emptyRow(7, 'No credit checks found',
+      'Try clearing the search or switching the branch filter.');
+    return;
+  }
+
+  $('#recentBody').innerHTML = rows.map(c => {
+    const b = bandOf(c.score);
+    return '<tr>' +
+      '<td><div class="who">' +
+        '<span class="avatar-sm" aria-hidden="true">' + initials(c.name) + '</span>' +
+        '<div><strong>' + c.name + '</strong><span class="pan">' + c.pan + '</span></div>' +
+      '</div></td>' +
+      '<td>' + c.branch + '</td>' +
+      '<td class="num"><span class="score-cell">' +
+        '<span class="score-dot" style="background:' + b.color + '"></span>' +
+        '<strong>' + c.score + '</strong></span></td>' +
+      '<td>' + c.bureau + '</td>' +
+      '<td>' + statusChip(c.status) + '</td>' +
+      '<td>' + fmtDate(c.date) + '</td>' +
+      '<td class="right"><button class="btn btn-ghost btn-sm" data-view="' + c.id + '">View</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+/* ============================================================
+   7. REPORT SCREEN
+   ============================================================ */
+function buildTicks() {
+  const g = $('#gaugeTicks');
+  const cx = 180, cy = 180, R = 150;
+  const out = [];
+  [550, 650, 750].forEach(v => {
+    const theta = (180 + (v - 300) / 600 * 180) * Math.PI / 180;
+    const r1 = R + 10, r2 = R + 16;
+    out.push('<line class="gauge-tick" x1="' + (cx + r1 * Math.cos(theta)).toFixed(1) +
+      '" y1="' + (cy + r1 * Math.sin(theta)).toFixed(1) +
+      '" x2="' + (cx + r2 * Math.cos(theta)).toFixed(1) +
+      '" y2="' + (cy + r2 * Math.sin(theta)).toFixed(1) + '"/>');
+  });
+  g.innerHTML = out.join('');
+}
+
+/* animated semicircle gauge */
+let gaugeTimer = null;
+function animateGauge(score) {
+  const arc = $('#arcValue');
+  const band = bandOf(score);
+  const L = arc.getTotalLength();
+  const target = L * (1 - (score - 300) / 600);
+
+  arc.style.stroke = band.color;
+  arc.style.transition = 'none';
+  arc.style.strokeDasharray = L + ' ' + L;
+  arc.style.strokeDashoffset = L;
+
+  // force reflow so the transition restarts from empty
+  void arc.getBoundingClientRect();
+
+  // start the sweep on the next macrotask (rAF fires too rarely in
+  // background tabs, so a timeout keeps the animation reliable)
+  setTimeout(() => {
+    arc.style.transition = 'stroke-dashoffset 1.05s cubic-bezier(.22,.61,.36,1)';
+    arc.style.strokeDashoffset = target;
+  }, 30);
+
+  // count the score up
+  const el = $('#gaugeScore');
+  const t0 = performance.now();
+  const dur = 1050;
+  if (gaugeTimer) clearInterval(gaugeTimer);
+
+  gaugeTimer = setInterval(() => {
+    const p = Math.min(1, (performance.now() - t0) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(300 + (score - 300) * eased);
+    if (p >= 1) {
+      clearInterval(gaugeTimer);
+      gaugeTimer = null;
+      el.textContent = score;
+    }
+  }, 30);
+
+  $('#gaugeBand').textContent = band.name;
+  $('#gaugeBand').style.color = band.fg;
+}
+
+function renderReport() {
+  const rep = DB.report;
+  const app = rep.applicant || DB.checks[0];
+
+  /* header */
+  $('#h-report').textContent = app.name;
+  $('#repMeta').textContent =
+    ['PAN ' + app.pan,
+     app.branch || 'All branches',
+     app.bureau + ' · fetched ' + fmtDate(rep.fetchedAt)].join('  ·  ');
+  $('#repBureau').textContent = app.bureau;
+  $('#repDate').textContent = fmtDate(rep.fetchedAt);
+  $('#repLoanType').textContent = app.loanType;
+  $('#repAmount').textContent = inr(app.amount);
+  $('#repMobile').textContent = app.mobile ? '···' + String(app.mobile).slice(-4) : 'Mobile on file';
+
+  $('#printMeta').textContent = app.name + ' · ' + app.pan + ' · ' + fmtDate(rep.fetchedAt);
+
+  /* summary */
+  const accts = rep.accounts;
+  const outstanding = accts.reduce((s, a) => s + a.outstanding, 0);
+  const active = accts.filter(a => a.status === 'Active').length;
+  const overdue = 18400;
+  const mfi = 4;
+
+  const stats = [
+    { label:'Active loans',        value: active },
+    { label:'Total outstanding',   value: inr(outstanding) },
+    { label:'Overdue amount',      value: inr(overdue), risk: overdue > 0 },
+    { label:'Enquiries (6 months)',value: 3 },
+    { label:'MFI lenders',         value: mfi, risk: mfi > 3 },
+    { label:'Accounts reported',   value: accts.length }
+  ];
+
+  $('#summaryGrid').innerHTML = stats.map(s =>
+    '<div class="stat">' +
+      '<div class="stat-label">' + s.label + '</div>' +
+      '<div class="stat-value' + (s.risk ? ' is-risk' : '') + '">' + s.value + '</div>' +
+    '</div>').join('');
+
+  /* accounts */
+  $('#acctBody').innerHTML = accts.map(a =>
+    '<tr>' +
+      '<td><strong>' + a.lender + '</strong></td>' +
+      '<td>' + a.type + '</td>' +
+      '<td class="num">' + inr(a.sanctioned) + '</td>' +
+      '<td class="num">' + inr(a.outstanding) + '</td>' +
+      '<td class="num">' + (a.emi ? inr(a.emi) : '—') + '</td>' +
+      '<td>' + acctChip(a.status) + '</td>' +
+      '<td class="num ' + dpdClass(a.dpd) + '">' + a.dpd + '</td>' +
+    '</tr>').join('');
+  $('#acctCount').textContent = accts.length + ' accounts · ' + inr(outstanding) + ' outstanding';
+
+  /* heatmap */
+  renderHeatmap(rep.dpd);
+
+  /* flags */
+  renderFlags(rep.flags);
+
+  /* gauge */
+  animateGauge(rep.score);
+  state.reportReady = true;
+}
+
+function renderHeatmap(values) {
+  const host = $('#heatmap');
+  const now = new Date();
+  const cells = [];
+  const labels = [];
+
+  values.forEach((v, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (values.length - 1 - i), 1);
+    const label = d.toLocaleDateString('en-IN', { month:'short', year:'numeric' });
+    const cls = v === 0 ? 'hm-0' : v <= 30 ? 'hm-1' : v <= 90 ? 'hm-2' : 'hm-3';
+    cells.push('<div class="hm-cell ' + cls + '" title="' + label + ' · ' + v + ' DPD"></div>');
+    if (i === 0 || i === values.length - 1 || i === 11) labels.push(label);
+  });
+
+  host.innerHTML = cells.join('');
+  host.setAttribute('aria-label',
+    'Repayment heatmap, ' + labels[0] + ' to ' + labels[labels.length - 1] +
+    '. ' + values.filter(v => v === 0).length + ' of ' + values.length + ' months clean.');
+
+  $('#hmRange').textContent = labels[0] + ' → ' + labels[labels.length - 1] +
+    ' · ' + values.filter(v => v > 0).length + ' months with delinquency';
+}
+
+function renderFlags(flags) {
+  $('#flagList').innerHTML = flags.map(f =>
+    '<li class="flag flag-' + f.level + '">' +
+      '<span class="flag-icon" aria-hidden="true">' +
+        (f.level === 'ok' ? '✓' : f.level === 'warn' ? '!' : 'i') +
+      '</span>' +
+      '<div><strong>' + f.title + '</strong>' +
+        (f.detail ? '<span>' + f.detail + '</span>' : '') +
+      '</div>' +
+    '</li>').join('');
+
+  const warn = flags.filter(f => f.level === 'warn').length;
+  const chip = $('#flagCount');
+  chip.textContent = warn + (warn === 1 ? ' flag' : ' flags');
+  chip.className = 'chip ' + (warn ? 'chip-warn' : 'chip-success');
+}
+
+/* open the report for a table row */
+function openReport(check) {
+  DB.report.applicant = {
+    name: check.name,
+    pan: check.pan,
+    branch: check.branch,
+    bureau: check.bureau,
+    loanType: check.loanType,
+    amount: check.amount,
+    mobile: ''
+  };
+  DB.report.fetchedAt = check.date;
+  go('report');
+}
+
+/* ============================================================
+   8. NEW CREDIT CHECK FORM
+   ============================================================ */
+const form = $('#creditForm');
+const fetchBtn = $('#fetchBtn');
+const consent = $('#fConsent');
+
+/* consent gate */
+consent.addEventListener('change', () => {
+  fetchBtn.disabled = !consent.checked;
+  $('#consentHelp').textContent = consent.checked
+    ? 'Consent recorded — you can fetch the bureau report.'
+    : 'Tick the consent box to enable the bureau fetch.';
+});
+
+/* PAN auto-mask: ABCDE1234F  ->  ABCDE****F */
+let panFull = '';
+const panEl = $('#fPan');
+
+panEl.addEventListener('input', () => {
+  panEl.value = panEl.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+  panEl.dataset.masked = 'false';
+});
+
+panEl.addEventListener('blur', () => {
+  const v = panEl.value.trim().toUpperCase();
+  if (/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(v)) {
+    panFull = v;
+    panEl.value = v.slice(0, 5) + '****' + v.slice(9);
+    panEl.dataset.masked = 'true';
+    $('#panHint').textContent = 'Masked for display · stored end-to-end encrypted';
+  }
+});
+
+panEl.addEventListener('focus', () => {
+  if (panEl.dataset.masked === 'true') {
+    panEl.value = panFull;
+    panEl.dataset.masked = 'false';
+  }
+});
+
+/* loan amount preview in Indian format */
+$('#fAmount').addEventListener('input', e => {
+  const v = Number(e.target.value || 0);
+  $('#amountHint').textContent = v ? inr(v) : '₹ 0';
+});
+
+/* mobile / aadhaar / pin: digits only */
+['#fMobile', '#fAadhaar', '#fPin'].forEach(sel => {
+  $(sel).addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, e.target.maxLength);
+  });
+});
+
+function setError(name, on) {
+  const field = $('[data-field="' + name + '"]');
+  if (!field) return;
+  field.classList.toggle('has-error', !!on);
+  const input = field.querySelector('input, select, textarea');
+  if (input) input.setAttribute('aria-invalid', on ? 'true' : 'false');
+}
+
+function validateForm() {
+  const name  = $('#fName').value.trim();
+  const dob   = $('#fDob').value;
+  const mob   = $('#fMobile').value.trim();
+  const panVal = panEl.dataset.masked === 'true' ? panFull : panEl.value.trim().toUpperCase();
+  const aad   = $('#fAadhaar').value.trim();
+  const pin   = $('#fPin').value.trim();
+  const amt   = Number($('#fAmount').value);
+
+  const checks = {
+    name: name.length < 3,
+    dob: !dob,
+    mobile: !/^\d{10}$/.test(mob),
+    pan: !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(panVal),
+    aadhaar: !/^\d{4}$/.test(aad),
+    pin: !/^\d{6}$/.test(pin),
+    amount: !(amt > 0)
+  };
+
+  let firstBad = null;
+  Object.keys(checks).forEach(k => {
+    setError(k, checks[k]);
+    if (checks[k] && !firstBad) firstBad = k;
+  });
+
+  if (firstBad) {
+    const el = $('[data-field="' + firstBad + '"] input, [data-field="' + firstBad + '"] select');
+    if (el) el.focus();
+    toast('Check the highlighted fields', 'error', 'Some required details are missing.');
+    return false;
+  }
+
+  if (!consent.checked) {
+    toast('Consent required', 'warn', 'Tick the consent box before fetching.');
+    return false;
+  }
+  return true;
+}
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  if (!validateForm()) return;
+
+  const bureau = $('#fBureau').value;
+
+  /* ---- 2-second loading state ---- */
+  form.hidden = true;
+  $('#fetching').hidden = false;
+  $('#fetchingSub').textContent = 'Contacting ' + bureau + ' · verifying consent token';
+
+  setTimeout(() => {
+    DB.report.score = 712;
+    DB.report.applicant = {
+      name: $('#fName').value.trim(),
+      pan: panEl.dataset.masked === 'true' ? panFull : panEl.value.trim().toUpperCase(),
+      branch: state.branch === 'All branches' ? DB.branches[1] : state.branch,
+      bureau: bureau,
+      loanType: $('#fLoanType').value,
+      amount: Number($('#fAmount').value),
+      mobile: $('#fMobile').value
+    };
+    DB.report.fetchedAt = isoOf(TODAY);
+
+    $('#fetching').hidden = true;
+    form.hidden = false;
+
+    go('report');
+    toast('Report fetched', 'success',
+      DB.report.applicant.name + ' · ' + bureau + ' · score ' + DB.report.score);
+
+    /* reset the form for the next applicant */
+    form.reset();
+    consent.checked = false;
+    fetchBtn.disabled = true;
+    $('#consentHelp').textContent = 'Tick the consent box to enable the bureau fetch.';
+    $('#amountHint').textContent = '₹ 0';
+    $('#panHint').textContent = 'Stored masked as ABCDE****F';
+    $$('.field').forEach(f => f.classList.remove('has-error'));
+  }, 2000);
+});
+
+$('#formReset').addEventListener('click', () => {
+  form.reset();
+  consent.checked = false;
+  fetchBtn.disabled = true;
+  $('#amountHint').textContent = '₹ 0';
+  $$('.field').forEach(f => f.classList.remove('has-error'));
+  toast('Form cleared', 'warn', 'All fields were reset.');
+});
+
+/* ============================================================
+   9. UNDERWRITING
+   ============================================================ */
+const REASON_ICON = {
+  ok:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/></svg>',
+  bad:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>'
+};
+
+function calcFoir() {
+  const inc = Number($('#uwIncome').value) || 0;
+  const ex  = Number($('#uwExisting').value) || 0;
+  const pr  = Number($('#uwProposed').value) || 0;
+  const obl = ex + pr;
+  const foir = inc > 0 ? (obl / inc) * 100 : 0;
+
+  const valueEl = $('#foirValue');
+  const fill = $('#foirFill');
+
+  valueEl.textContent = inc > 0 ? foir.toFixed(1) + '%' : '—';
+  valueEl.className = 'foir-value' + (foir > 50 ? ' over' : foir > 40 ? ' watch' : '');
+  $('#foirObligations').textContent = inr(obl);
+
+  fill.style.width = Math.min(100, foir) + '%';
+  fill.style.background = foir > 50 ? 'var(--red)' : foir > 40 ? 'var(--gold)' : 'var(--green)';
+
+  const meter = $('#foirMeter');
+  meter.setAttribute('aria-valuenow', Math.min(100, Math.round(foir)));
+  meter.setAttribute('aria-valuetext', foir.toFixed(1) + '% of income');
+
+  const chip = $('#foirChip');
+  if (foir > 50)      { chip.textContent = 'Above cap';  chip.className = 'chip chip-danger'; }
+  else if (foir > 40) { chip.textContent = 'Near cap';   chip.className = 'chip chip-warn'; }
+  else                { chip.textContent = 'Within cap'; chip.className = 'chip chip-success'; }
+
+  $('#foirNote').textContent = inc > 0
+    ? 'of ' + inr(inc) + ' monthly household income'
+    : 'Enter an income to calculate FOIR';
+
+  const alert = $('#foirAlert');
+  if (foir > 50) {
+    alert.hidden = false;
+    $('#foirAlertText').textContent =
+      'FOIR is ' + foir.toFixed(1) + '% — above the 50% policy cap. Reduce the proposed EMI or add a co-applicant.';
+  } else {
+    alert.hidden = true;
+  }
+
+  renderVerdict(foir, inc);
+}
+
+function renderVerdict(foir, income) {
+  const score = DB.report.score;
+  const band = bandOf(score);
+  const box = $('#verdict');
+  const titleEl = $('#verdictTitle');
+  const descEl = $('#verdictDesc');
+  const reasons = [];
+
+  let kind = 'eligible';
+
+  if (income <= 0) {
+    kind = 'refer';
+    titleEl.textContent = 'Not enough data';
+    descEl.textContent = 'Add a household income to run the affordability check.';
+  } else if (foir > 50) {
+    kind = 'not';
+    titleEl.textContent = 'Not eligible';
+    descEl.textContent = 'Obligations exceed the 50% FOIR policy cap.';
+  } else if (foir > 40 || score < 650) {
+    kind = 'refer';
+    titleEl.textContent = 'Refer to credit manager';
+    descEl.textContent = 'Outside auto-approval limits — a human decision is required.';
+  } else {
+    kind = 'eligible';
+    titleEl.textContent = 'Eligible';
+    descEl.textContent = 'Within auto-approval limits for this product.';
+  }
+
+  /* reason 1 — FOIR */
+  if (income > 0) {
+    if (foir <= 40) reasons.push({ t:'ok',   x:'FOIR ' + foir.toFixed(1) + '% is within the 40% auto-approval limit' });
+    else if (foir <= 50) reasons.push({ t:'warn', x:'FOIR ' + foir.toFixed(1) + '% is above 40% but under the 50% cap' });
+    else reasons.push({ t:'bad',  x:'FOIR ' + foir.toFixed(1) + '% breaches the 50% policy cap' });
+  }
+
+  /* reason 2 — score */
+  if (score >= 700)      reasons.push({ t:'ok',   x:'Bureau score ' + score + ' (' + band.name + ') clears the 700 cut-off' });
+  else if (score >= 650) reasons.push({ t:'warn', x:'Bureau score ' + score + ' (' + band.name + ') is below the 700 cut-off' });
+  else                   reasons.push({ t:'bad',  x:'Bureau score ' + score + ' (' + band.name + ') is below the minimum 650' });
+
+  /* reason 3 — flags */
+  reasons.push({ t:'warn', x:'4 MFI lenders reported — above the 3-lender threshold' });
+  reasons.push({ t:'ok',   x:'No write-off or wilful default on record' });
+
+  $('#reasons').innerHTML = reasons.map(r =>
+    '<li class="r-' + r.t + '">' + REASON_ICON[r.t] + '<span>' + r.x + '</span></li>').join('');
+
+  box.className = 'verdict verdict-' + kind;
+
+  /* subtitle reflects the applicant */
+  const app = DB.report.applicant;
+  $('#uwSub').textContent = app
+    ? app.name + ' · ' + inr(app.amount) + ' ' + app.loanType + ' · score ' + score
+    : 'Affordability and policy checks';
+}
+
+['#uwIncome', '#uwExisting', '#uwProposed'].forEach(sel => {
+  $(sel).addEventListener('input', calcFoir);
+});
+
+/* ============================================================
+   10. REMARKS MODAL + DECISIONS
+   ============================================================ */
+const modal = $('#remarksModal');
+const remarks = $('#remarks');
+const modalConfirm = $('#modalConfirm');
+let pendingDecision = null;
+
+const DECISION_COPY = {
+  Approve: { title:'Approve application', desc:'Confirm the sanction and record a remark.', btn:'btn btn-green', label:'Approve' },
+  Refer:   { title:'Refer to credit manager', desc:'Send this file up for a manual review.', btn:'btn btn-gold', label:'Refer' },
+  Reject:  { title:'Reject application', desc:'Decline the file and record the reason.', btn:'btn btn-danger', label:'Reject' }
+};
+
+$$('[data-decision]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const kind = btn.dataset.decision;
+    pendingDecision = kind;
+    const copy = DECISION_COPY[kind];
+
+    $('#modalTitle').textContent = copy.title;
+    $('#modalDesc').textContent = copy.desc;
+    remarks.value = '';
+    $('#remarksErr').style.display = 'none';
+    modalConfirm.className = copy.btn;
+    modalConfirm.textContent = copy.label;
+
+    modal.showModal();
+    setTimeout(() => remarks.focus(), 30);
+  });
+});
+
+$('#modalClose').addEventListener('click', () => modal.close());
+$('#modalCancel').addEventListener('click', () => modal.close());
+
+modalConfirm.addEventListener('click', () => {
+  const text = remarks.value.trim();
+  if (!text) {
+    $('#remarksErr').style.display = 'block';
+    remarks.focus();
+    return;
+  }
+
+  const kind = pendingDecision;
+  state.decision = kind;
+  modal.close();
+
+  const app = DB.report.applicant;
+  $('#decisionNote').textContent =
+    kind + ' recorded · ' + text + ' · ' + fmtDate(isoOf(TODAY));
+
+  const kindMap = { Approve:'success', Refer:'warn', Reject:'error' };
+  const msgMap = {
+    Approve: 'Application approved',
+    Refer:   'Application referred',
+    Reject:  'Application rejected'
+  };
+  toast(msgMap[kind], kindMap[kind], app ? app.name + ' · remark saved' : 'Remark saved');
+
+  /* reflect the decision in the history archive */
+  if (app) {
+    const row = DB.checks.find(c => c.name === app.name);
+    if (row) {
+      row.status = kind === 'Approve' ? 'approved' : kind === 'Reject' ? 'rejected' : 'pending';
+      renderRecent();
+      renderHistory();
+    }
+  }
+});
+
+/* ============================================================
+   11. HISTORY
+   ============================================================ */
+let historySkeletonShown = false;
+
+function renderHistory(skeleton) {
+  const body = $('#histBody');
+
+  if (skeleton) {
+    body.innerHTML = Array.from({ length: 6 }, () =>
+      '<tr>' + Array.from({ length: 9 }, () =>
+        '<td><div class="skel skel-line" style="width:' +
+        (45 + Math.random() * 40 | 0) + '%"></div></td>').join('') + '</tr>').join('');
+    return;
+  }
+
+  const rows = DB.checks.filter(c => {
+    if (!matchesFilters(c)) return false;
+    if (state.histStatus && c.status !== state.histStatus) return false;
+    if (state.histBureau && c.bureau !== state.histBureau) return false;
+    return true;
+  });
+
+  $('#histCount').textContent = rows.length + (rows.length === 1 ? ' report' : ' reports');
+
+  if (!rows.length) {
+    body.innerHTML = emptyRow(9, 'No reports match those filters',
+      'Try a different status or bureau, or clear the search.');
+    return;
+  }
+
+  body.innerHTML = rows.map(c => {
+    const b = bandOf(c.score);
+    return '<tr>' +
+      '<td><div class="who">' +
+        '<span class="avatar-sm" aria-hidden="true">' + initials(c.name) + '</span>' +
+        '<div><strong>' + c.name + '</strong><span class="pan">' + c.id + '</span></div>' +
+      '</div></td>' +
+      '<td>' + c.branch + '</td>' +
+      '<td class="num"><span class="score-cell">' +
+        '<span class="score-dot" style="background:' + b.color + '"></span>' +
+        '<strong>' + c.score + '</strong></span></td>' +
+      '<td>' + c.bureau + '</td>' +
+      '<td>' + c.loanType + '</td>' +
+      '<td class="num">' + inr(c.amount) + '</td>' +
+      '<td>' + statusChip(c.status) + '</td>' +
+      '<td>' + fmtDate(c.date) + '</td>' +
+      '<td class="right" style="white-space:nowrap">' +
+        '<button class="btn btn-ghost btn-sm" data-view="' + c.id + '">View</button> ' +
+        '<button class="btn btn-ghost btn-sm" data-pdf="' + c.id + '">' + ICON.download + 'PDF</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+/* filters */
+$('#histSearch').addEventListener('input', e => setSearch(e.target.value, 'hist'));
+$('#histStatus').addEventListener('change', e => {
+  state.histStatus = e.target.value;
+  renderHistory();
+});
+$('#histBureau').addEventListener('change', e => {
+  state.histBureau = e.target.value;
+  renderHistory();
+});
+$('#histReset').addEventListener('click', () => {
+  state.histStatus = '';
+  state.histBureau = '';
+  $('#histStatus').value = '';
+  $('#histBureau').value = '';
+  setSearch('', 'reset');
+  toast('Filters cleared', 'warn');
+});
+
+/* global search keeps both tables in sync */
+function setSearch(value, from) {
+  state.search = value;
+  if (from !== 'top') $('#globalSearch').value = value;
+  if (from !== 'hist') $('#histSearch').value = value;
+  renderRecent();
+  renderHistory();
+}
+
+$('#globalSearch').addEventListener('input', e => setSearch(e.target.value, 'top'));
+$('#globalSearch').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && state.screen !== 'history') go('history');
+});
+
+/* branch selector */
+function fillBranches() {
+  const sel = $('#branchSelect');
+  sel.innerHTML = DB.branches.map(b =>
+    '<option' + (b === state.branch ? ' selected' : '') + '>' + b + '</option>').join('');
+}
+$('#branchSelect').addEventListener('change', e => {
+  state.branch = e.target.value;
+  renderRecent();
+  renderHistory();
+  toast('Branch switched', 'success', state.branch === 'All branches'
+    ? 'Showing every branch' : 'Filtered to ' + state.branch);
+});
+
+/* notifications */
+$('#notifBtn').addEventListener('click', () => {
+  toast('3 new alerts', 'warn', '2 pending reviews · 1 bureau outage resolved');
+});
+
+/* ============================================================
+   12. DELEGATED CLICKS
+   ============================================================ */
+document.addEventListener('click', e => {
+  const nav = e.target.closest('[data-go]');
+  if (nav) { go(nav.dataset.go); return; }
+
+  const view = e.target.closest('[data-view]');
+  if (view) {
+    const check = DB.checks.find(c => c.id === view.dataset.view);
+    if (check) openReport(check);
+    return;
+  }
+
+  const pdf = e.target.closest('[data-pdf]');
+  if (pdf) {
+    const check = DB.checks.find(c => c.id === pdf.dataset.pdf);
+    if (!check) return;
+    openReport(check);
+    toast('Preparing PDF', 'success', 'Opening the print dialog…');
+    setTimeout(() => window.print(), 700);
+    return;
+  }
+});
+
+/* ============================================================
+   13. PRINT
+   ============================================================ */
+$('#printBtn').addEventListener('click', () => {
+  toast('Preparing PDF', 'success', 'Opening the print dialog…');
+  setTimeout(() => window.print(), 250);
+});
+
+/* ============================================================
+   14. INIT
+   ============================================================ */
+(function init() {
+  hydrateIcons();
+  fillBranches();
+  buildTicks();
+
+  /* skeletons first, then the real dashboard */
+  renderKpiSkeleton();
+  renderRecentSkeleton();
+  renderHistory(true);
+
+  setTimeout(() => {
+    renderKpis();
+    renderRecent();
+    renderHistory();
+    toast('Welcome back, Ravi', 'success', '6 credit checks filed today.');
+  }, 650);
+
+  /* first report render so the gauge has a size to animate against */
+  DB.report.applicant = DB.checks[0];
+  DB.report.fetchedAt = DB.checks[0].date;
+  renderReport();
+  go('dashboard');
+
+  console.log('%cTrack Karo · Credit Check UI', 'color:#1F8A5B;font-weight:600',
+    '\nFront-end only. Dummy data lives in the DB object.');
+})();
+</script>
+</body>
+</html>
